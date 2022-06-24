@@ -3,7 +3,7 @@ resource "aws_cloudwatch_log_group" "msk_broker_logs" {
 }
 
 resource "aws_msk_cluster" "kafka" {
-  cluster_name           = "kafka-eshop"
+  cluster_name           = "kafka-ecommerce"
   kafka_version          = "2.8.1"
   number_of_broker_nodes = 3
 

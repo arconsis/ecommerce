@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: debezium-deployment
+  labels:
+    app: debezium-connector
+  namespace: ecommerce
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: debezium-connector
+  template:
+    metadata:
+      labels:
+        app: debezium-connector
+    spec:
+      containers:
+        - name: debezium-connector
+          imagePullPolicy: IfNotPresent
+          image: debezium/connect:1.8
+          ports:
+            - containerPort: 8083
+              protocol: TCP
+          resources:
+            limits:
+              cpu: '600m'
+              memory: '2048Mi'
+            requests:
+              cpu: '300m'
+              memory: '2048Mi'
+          env:
+            - name: BOOTSTRAP_SERVERS
+              valueFrom:
+                configMapKeyRef:
+                  name: eda-configmap
+                  key: KAFKA_BROKERS_PLAINTEXT
+            - name: GROUP_ID
+              valueFrom:
+                configMapKeyRef:
+                  name: eda-configmap
+                  key: GROUP_ID
+            - name: CONFIG_STORAGE_TOPIC
+              valueFrom:
+                configMapKeyRef:
+                  name: eda-configmap
+                  key: CONFIG_STORAGE_TOPIC
+            - name: OFFSET_STORAGE_TOPIC
+              valueFrom:
+                configMapKeyRef:
+                  name: eda-configmap
+                  key: OFFSET_STORAGE_TOPIC
+            - name: STATUS_STORAGE_TOPIC
+              valueFrom:
+                configMapKeyRef:
+                  name: eda-configmap
+                  key: STATUS_STORAGE_TOPIC
+            - name: CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR
+              value: "3"
+            - name: CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR
+              value: "3"
+            - name: CONNECT_STATUS_STORAGE_REPLICATION_FACTOR
+              value: "3"
