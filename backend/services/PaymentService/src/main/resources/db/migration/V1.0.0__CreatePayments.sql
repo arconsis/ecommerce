@@ -5,7 +5,7 @@ CREATE TYPE payment_status AS ENUM (
 
 CREATE TABLE payments
 (
-    id             UUID PRIMARY KEY,
+    payment_id     UUID PRIMARY KEY,
     transaction_id UUID,
     user_id        UUID           NOT NULL,
     order_id       UUID           NOT NULL,

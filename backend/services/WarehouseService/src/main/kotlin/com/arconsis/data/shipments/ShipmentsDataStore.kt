@@ -32,15 +32,17 @@ class ShipmentsDataStore : PanacheRepository<ShipmentEntity> {
 	fun updateShipmentStatus(id: UUID, status: ShipmentStatus): Uni<Shipment> {
 		val params: MutableMap<String, Any> = HashMap()
 		params["status"] = status
-		return update("id", id, params).map {
-			it > 0
-		}.flatMap { result ->
-			Uni.combine().all().unis(
-				getShipment(id),
-				result.toUni(),
-			).asPair()
-		}.map { (shipment, _) ->
-			shipment
-		}
+		params["id"] = id
+		return update("update shipments s set s.status = :status where s.id = :id", params)
+			.map {
+				it > 0
+			}.flatMap { result ->
+				Uni.combine().all().unis(
+					getShipment(id),
+					result.toUni(),
+				).asPair()
+			}.map { (shipment, _) ->
+				shipment
+			}
 	}
 }

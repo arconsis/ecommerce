@@ -18,102 +18,102 @@ import javax.enterprise.context.ApplicationScoped
 
 @ApplicationScoped
 class OrdersService(
-    private val shipmentsRepository: ShipmentsRepository,
-    private val inventoryRepository: InventoryRepository,
-    private val outboxEventsRepository: OutboxEventsRepository,
-    private val objectMapper: ObjectMapper,
-    private val processedEventsRepository: ProcessedEventsRepository
+	private val shipmentsRepository: ShipmentsRepository,
+	private val inventoryRepository: InventoryRepository,
+	private val outboxEventsRepository: OutboxEventsRepository,
+	private val objectMapper: ObjectMapper,
+	private val processedEventsRepository: ProcessedEventsRepository
 ) {
-    @ReactiveTransactional
-    fun handleOrderEvents(eventId: UUID, order: Order): Uni<Void> {
-        return when (order.status) {
-            OrderStatus.REQUESTED -> handleOrderPending(eventId, order)
-            OrderStatus.PAID -> handleOrderPaid(eventId, order)
-            OrderStatus.PAYMENT_FAILED -> handleOrderPaymentFailed(eventId, order)
-            else -> Uni.createFrom().voidItem()
-        }
-    }
+	@ReactiveTransactional
+	fun handleOrderEvents(eventId: UUID, order: Order): Uni<Void> {
+		return when (order.status) {
+			OrderStatus.REQUESTED -> handleOrderPending(eventId, order)
+			OrderStatus.PAID -> handleOrderPaid(eventId, order)
+			OrderStatus.PAYMENT_FAILED -> handleOrderPaymentFailed(eventId, order)
+			else -> Uni.createFrom().voidItem()
+		}
+	}
 
-    @ReactiveTransactional
-    private fun handleOrderPending(eventId: UUID, order: Order): Uni<Void> {
-        val proceedEvent = ProcessedEvent(
-            eventId = eventId,
-            processedAt = Instant.now()
-        )
-        return processedEventsRepository.createEvent(proceedEvent)
-            .flatMap { event ->
-                inventoryRepository.reserveProductStock(order.productId, order.quantity)
-            }
-            .createOrderValidation(order)
-            .createOrderValidationEvent()
-            .map {
-                null
-            }
-    }
+	@ReactiveTransactional
+	private fun handleOrderPending(eventId: UUID, order: Order): Uni<Void> {
+		val proceedEvent = ProcessedEvent(
+			eventId = eventId,
+			processedAt = Instant.now()
+		)
+		return processedEventsRepository.createEvent(proceedEvent)
+			.flatMap { event ->
+				inventoryRepository.reserveProductStock(order.productId, order.quantity)
+			}
+			.createOrderValidation(order)
+			.createOrderValidationEvent()
+			.map {
+				null
+			}
+	}
 
-    @ReactiveTransactional
-    private fun handleOrderPaid(eventId: UUID, order: Order): Uni<Void> {
-        val proceedEvent = ProcessedEvent(
-            eventId = eventId,
-            processedAt = Instant.now()
-        )
-        return processedEventsRepository.createEvent(proceedEvent)
-            .flatMap { event ->
-                val createShipment = CreateShipment(
-                    orderId = order.id,
-                    userId = order.userId,
-                    status = ShipmentStatus.PREPARING_SHIPMENT
-                )
-                shipmentsRepository.createShipment(createShipment)
-            }
-            .updateShipmentStatus(ShipmentStatus.SHIPPED)
-            .createShipmentEvent()
-            .map {
-                null
-            }
-    }
+	@ReactiveTransactional
+	private fun handleOrderPaid(eventId: UUID, order: Order): Uni<Void> {
+		val proceedEvent = ProcessedEvent(
+			eventId = eventId,
+			processedAt = Instant.now()
+		)
+		return processedEventsRepository.createEvent(proceedEvent)
+			.flatMap {
+				val createShipment = CreateShipment(
+					orderId = order.orderId,
+					userId = order.userId,
+					status = ShipmentStatus.PREPARING_SHIPMENT
+				)
+				shipmentsRepository.createShipment(createShipment)
+			}
+			.updateShipmentStatus(ShipmentStatus.SHIPPED)
+			.createShipmentEvent()
+			.map {
+				null
+			}
+	}
 
-    @ReactiveTransactional
-    private fun handleOrderPaymentFailed(eventId: UUID, order: Order): Uni<Void> {
-        val proceedEvent = ProcessedEvent(
-            eventId = eventId,
-            processedAt = Instant.now()
-        )
-        return processedEventsRepository.createEvent(proceedEvent)
-            .flatMap {
-                inventoryRepository.increaseProductStock(order.productId, order.quantity)
-            }
-            .flatMap {
-                Uni.createFrom().voidItem()
-            }
-    }
+	@ReactiveTransactional
+	private fun handleOrderPaymentFailed(eventId: UUID, order: Order): Uni<Void> {
+		val proceedEvent = ProcessedEvent(
+			eventId = eventId,
+			processedAt = Instant.now()
+		)
+		return processedEventsRepository.createEvent(proceedEvent)
+			.flatMap {
+				inventoryRepository.increaseProductStock(order.productId, order.quantity)
+			}
+			.flatMap {
+				Uni.createFrom().voidItem()
+			}
+	}
 
-    private fun Uni<Boolean>.createOrderValidation(order: Order) = map { stockUpdated ->
-        val orderValidation = OrderValidation(
-            productId = order.productId,
-            quantity = order.quantity,
-            orderId = order.id,
-            userId = order.userId,
-            status = if (stockUpdated) OrderValidationStatus.VALIDATED else OrderValidationStatus.INVALID
-        )
-        orderValidation
-    }
+	private fun Uni<Boolean>.createOrderValidation(order: Order) = map { stockUpdated ->
+		val orderValidation = OrderValidation(
+			productId = order.productId,
+			quantity = order.quantity,
+			orderId = order.orderId,
+			userId = order.userId,
+			status = if (stockUpdated) OrderValidationStatus.VALIDATED else OrderValidationStatus.INVALID
+		)
+		orderValidation
+	}
 
-    private fun Uni<OrderValidation>.createOrderValidationEvent() = flatMap { orderValidation ->
-        val createOutboxEvent = orderValidation.toCreateOutboxEvent(objectMapper)
-        outboxEventsRepository.createEvent(createOutboxEvent)
-    }
+	private fun Uni<OrderValidation>.createOrderValidationEvent() = flatMap { orderValidation ->
+		val createOutboxEvent = orderValidation.toCreateOutboxEvent(objectMapper)
+		outboxEventsRepository.createEvent(createOutboxEvent)
+	}
 
-    private fun Uni<Shipment>.updateShipmentStatus(status: ShipmentStatus) = flatMap { shipment ->
-        val updateShipment = UpdateShipment(
-            shipment.id,
-            status
-        )
-        shipmentsRepository.updateShipmentStatus(updateShipment)
-    }
+	private fun Uni<Shipment>.updateShipmentStatus(status: ShipmentStatus) = flatMap { shipment ->
+		val updateShipment = UpdateShipment(
+			shipment.id,
+			status
+		)
+		shipmentsRepository.updateShipmentStatus(updateShipment)
+	}
 
-    private fun Uni<Shipment>.createShipmentEvent() = flatMap { shipment ->
-        val createOutboxEvent = shipment.toCreateOutboxEvent(objectMapper)
-        outboxEventsRepository.createEvent(createOutboxEvent)
-    }
+	private fun Uni<Shipment>.createShipmentEvent() = flatMap { shipment ->
+		val createOutboxEvent = shipment.toCreateOutboxEvent(objectMapper)
+		outboxEventsRepository.createEvent(createOutboxEvent)
+	}
 }
