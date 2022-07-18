@@ -9,11 +9,11 @@ data class CreateOrderDto(
     @field:NotBlank
     @JsonProperty("userId") val userId: UUID,
     @field:NotBlank
-    @JsonProperty("amount") val amount: Double,
+    @JsonProperty("amount") val amount: String,
     @field:NotBlank
     @JsonProperty("currency") val currency: String,
     @field:NotBlank
-    @JsonProperty("productId") val productId: String,
+    @JsonProperty("productId") val productId: UUID,
     @field:NotBlank
     @JsonProperty("quantity") val quantity: Int,
 )

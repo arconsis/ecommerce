@@ -10,8 +10,8 @@ import com.arconsis.domain.ordersvalidations.toCreateOutboxEvent
 import com.arconsis.domain.processedevents.ProcessedEvent
 import com.arconsis.domain.shipments.*
 import com.fasterxml.jackson.databind.ObjectMapper
+import io.quarkus.hibernate.reactive.panache.common.runtime.ReactiveTransactional
 import io.smallrye.mutiny.Uni
-import org.hibernate.reactive.mutiny.Mutiny
 import java.time.Instant
 import java.util.*
 import javax.enterprise.context.ApplicationScoped
@@ -22,10 +22,9 @@ class OrdersService(
     private val inventoryRepository: InventoryRepository,
     private val outboxEventsRepository: OutboxEventsRepository,
     private val objectMapper: ObjectMapper,
-    private val sessionFactory: Mutiny.SessionFactory,
     private val processedEventsRepository: ProcessedEventsRepository
 ) {
-
+    @ReactiveTransactional
     fun handleOrderEvents(eventId: UUID, order: Order): Uni<Void> {
         return when (order.status) {
             OrderStatus.REQUESTED -> handleOrderPending(eventId, order)
@@ -35,57 +34,59 @@ class OrdersService(
         }
     }
 
+    @ReactiveTransactional
     private fun handleOrderPending(eventId: UUID, order: Order): Uni<Void> {
-        return sessionFactory.withTransaction { session, _ ->
-            processedEventsRepository.getEvent(eventId, session)
-                .flatMap { event ->
-                    if (event != null) Uni.createFrom().voidItem()
-                    inventoryRepository.reserveProductStock(order.productId, order.quantity, session)
-                }
-                .createOrderValidation(order)
-                .createOrderValidationEvent(session)
-                .createProceedEvent(eventId, session)
-                .map {
-                    null
-                }
-
-        }
+        val proceedEvent = ProcessedEvent(
+            eventId = eventId,
+            processedAt = Instant.now()
+        )
+        return processedEventsRepository.createEvent(proceedEvent)
+            .flatMap { event ->
+                inventoryRepository.reserveProductStock(order.productId, order.quantity)
+            }
+            .createOrderValidation(order)
+            .createOrderValidationEvent()
+            .map {
+                null
+            }
     }
 
+    @ReactiveTransactional
     private fun handleOrderPaid(eventId: UUID, order: Order): Uni<Void> {
-        return sessionFactory.withTransaction { session, _ ->
-            processedEventsRepository.getEvent(eventId, session)
-                .flatMap { event ->
-                    if (event != null) Uni.createFrom().voidItem()
-                    val createShipment = CreateShipment(
-                        orderId = order.id,
-                        userId = order.userId,
-                        status = ShipmentStatus.PREPARING_SHIPMENT
-                    )
-                    shipmentsRepository.createShipment(createShipment, session)
-                }
-                .updateShipment(session)
-                .createShipmentEvent(session)
-                .createProceedEvent(eventId, session)
-                .map {
-                    null
-                }
-        }
+        val proceedEvent = ProcessedEvent(
+            eventId = eventId,
+            processedAt = Instant.now()
+        )
+        return processedEventsRepository.createEvent(proceedEvent)
+            .flatMap { event ->
+                val createShipment = CreateShipment(
+                    orderId = order.id,
+                    userId = order.userId,
+                    status = ShipmentStatus.PREPARING_SHIPMENT
+                )
+                shipmentsRepository.createShipment(createShipment)
+            }
+            .updateShipmentStatus(ShipmentStatus.SHIPPED)
+            .createShipmentEvent()
+            .map {
+                null
+            }
     }
 
-    private fun handleOrderPaymentFailed(eventId: UUID, order: Order): Uni<Void> =
-        sessionFactory.withTransaction { session, _ ->
-            processedEventsRepository.getEvent(eventId, session)
-                .flatMap { event ->
-                    if (event != null) Uni.createFrom().voidItem()
-                    inventoryRepository.increaseProductStock(order.productId, order.quantity)
-                }
-                .createProceedEvent(eventId, session)
-                .flatMap {
-                    Uni.createFrom().voidItem()
-                }
-        }
-
+    @ReactiveTransactional
+    private fun handleOrderPaymentFailed(eventId: UUID, order: Order): Uni<Void> {
+        val proceedEvent = ProcessedEvent(
+            eventId = eventId,
+            processedAt = Instant.now()
+        )
+        return processedEventsRepository.createEvent(proceedEvent)
+            .flatMap {
+                inventoryRepository.increaseProductStock(order.productId, order.quantity)
+            }
+            .flatMap {
+                Uni.createFrom().voidItem()
+            }
+    }
 
     private fun Uni<Boolean>.createOrderValidation(order: Order) = map { stockUpdated ->
         val orderValidation = OrderValidation(
@@ -98,30 +99,21 @@ class OrdersService(
         orderValidation
     }
 
-    private fun Uni<OrderValidation>.createOrderValidationEvent(session: Mutiny.Session) = flatMap { orderValidation ->
+    private fun Uni<OrderValidation>.createOrderValidationEvent() = flatMap { orderValidation ->
         val createOutboxEvent = orderValidation.toCreateOutboxEvent(objectMapper)
-        outboxEventsRepository.createEvent(createOutboxEvent, session)
+        outboxEventsRepository.createEvent(createOutboxEvent)
     }
 
-    private fun <T> Uni<T>.createProceedEvent(eventId: UUID, session: Mutiny.Session) =
-        flatMap {
-            val proceedEvent = ProcessedEvent(
-                eventId = eventId,
-                processedAt = Instant.now()
-            )
-            processedEventsRepository.createEvent(proceedEvent, session)
-        }
-
-    private fun Uni<Shipment>.updateShipment(session: Mutiny.Session) = flatMap { shipment ->
+    private fun Uni<Shipment>.updateShipmentStatus(status: ShipmentStatus) = flatMap { shipment ->
         val updateShipment = UpdateShipment(
             shipment.id,
-            ShipmentStatus.SHIPPED
+            status
         )
-        shipmentsRepository.updateShipment(updateShipment, session)
+        shipmentsRepository.updateShipmentStatus(updateShipment)
     }
 
-    private fun Uni<Shipment>.createShipmentEvent(session: Mutiny.Session) = flatMap { shipment ->
+    private fun Uni<Shipment>.createShipmentEvent() = flatMap { shipment ->
         val createOutboxEvent = shipment.toCreateOutboxEvent(objectMapper)
-        outboxEventsRepository.createEvent(createOutboxEvent, session)
+        outboxEventsRepository.createEvent(createOutboxEvent)
     }
 }

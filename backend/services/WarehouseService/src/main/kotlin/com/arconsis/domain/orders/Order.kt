@@ -6,9 +6,9 @@ import java.util.*
 data class Order(
     val id: UUID,
     val userId: UUID,
-    val amount: Double,
+    val amount: String,
     val currency: String,
-    val productId: String,
+    val productId: UUID,
     val quantity: Int,
     val status: OrderStatus,
 )

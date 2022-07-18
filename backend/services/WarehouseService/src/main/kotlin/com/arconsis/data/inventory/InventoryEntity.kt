@@ -37,7 +37,7 @@ class InventoryEntity(
     var id: UUID? = null,
 
     @Column(name = "product_id", nullable = false)
-    var productId: String,
+    var productId: UUID,
 
     @Column(nullable = false)
     var stock: Int,

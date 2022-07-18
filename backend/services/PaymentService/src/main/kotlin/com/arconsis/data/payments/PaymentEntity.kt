@@ -38,7 +38,7 @@ class PaymentEntity(
     var status: PaymentStatus,
 
     @Column(nullable = false)
-    var amount: Double,
+    var amount: String,
 
     @Column(nullable = false)
     var currency: String,

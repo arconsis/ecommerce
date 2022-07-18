@@ -31,13 +31,13 @@ class OrderEntity(
     var status: OrderStatus,
 
     @Column(nullable = false)
-    var amount: Double,
+    var amount: String,
 
     @Column(nullable = false)
     var currency: String,
 
     @Column(name = "product_id", nullable = false)
-    var productId: String,
+    var productId: UUID,
 
     @Column(nullable = false)
     var quantity: Int,

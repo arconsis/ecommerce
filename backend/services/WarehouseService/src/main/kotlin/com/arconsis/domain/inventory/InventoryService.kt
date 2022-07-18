@@ -1,6 +1,9 @@
 package com.arconsis.domain.inventory
 
 import com.arconsis.data.inventory.InventoryRepository
+import io.quarkus.hibernate.reactive.panache.common.runtime.ReactiveTransactional
+import io.smallrye.mutiny.Uni
+import io.smallrye.mutiny.coroutines.awaitSuspending
 import java.util.*
 import javax.enterprise.context.ApplicationScoped
 
@@ -9,15 +12,13 @@ class InventoryService(
     private val inventoryRepository: InventoryRepository,
 ) {
 
-    suspend fun getInventory(id: UUID): Inventory? {
+    @ReactiveTransactional
+    fun getInventory(id: UUID): Uni<Inventory?> {
         return inventoryRepository.getInventory(id)
     }
 
-    suspend fun createInventory(createInventory: CreateInventory): Inventory {
+    @ReactiveTransactional
+    fun createInventory(createInventory: CreateInventory): Uni<Inventory> {
         return inventoryRepository.createInventory(createInventory)
-    }
-
-    suspend fun updateInventory(updateInventory: UpdateInventory): Inventory {
-        return inventoryRepository.updateInventory(updateInventory)
     }
 }

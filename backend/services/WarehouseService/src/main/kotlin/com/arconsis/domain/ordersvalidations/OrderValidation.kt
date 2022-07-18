@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import java.util.*
 
 data class OrderValidation(
-    val productId: String,
+    val productId: UUID,
     val quantity: Int,
     val orderId: UUID,
     val userId: UUID,

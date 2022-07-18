@@ -11,7 +11,7 @@ data class Payment(
     val transactionId: UUID?,
     val orderId: UUID,
     val userId: UUID,
-    val amount: Double,
+    val amount: String,
     val currency: String,
     val status: PaymentStatus,
 )
@@ -24,7 +24,7 @@ enum class PaymentStatus {
 data class CreatePayment(
     val orderId: UUID,
     val userId: UUID,
-    val amount: Double,
+    val amount: String,
     val currency: String
 )
 
