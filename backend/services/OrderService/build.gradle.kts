@@ -24,7 +24,6 @@ dependencies {
     implementation("io.quarkus:quarkus-kafka-client")
     implementation("io.quarkus:quarkus-smallrye-reactive-messaging-kafka")
     implementation("io.quarkus:quarkus-smallrye-reactive-messaging-kotlin")
-    implementation("io.quarkus:quarkus-hibernate-reactive-panache")
     implementation("io.quarkus:quarkus-reactive-pg-client")
     implementation("io.quarkus:quarkus-jdbc-postgresql")
     implementation("io.quarkus:quarkus-flyway")
@@ -32,6 +31,7 @@ dependencies {
     implementation("io.quarkus:quarkus-arc")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("io.quarkus:quarkus-hibernate-validator")
+    implementation("io.quarkus:quarkus-hibernate-reactive")
 
     testImplementation("io.quarkus:quarkus-junit5")
     testImplementation("io.rest-assured:rest-assured:4.4.0")

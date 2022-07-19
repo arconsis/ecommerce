@@ -4,7 +4,6 @@ import com.arconsis.domain.orders.Order
 import com.arconsis.domain.orders.OrdersService
 import com.arconsis.presentation.http.orders.dto.CreateOrderDto
 import com.arconsis.presentation.http.orders.dto.toCreateOrder
-import io.quarkus.hibernate.reactive.panache.common.runtime.ReactiveTransactional
 import io.smallrye.mutiny.Uni
 import java.util.*
 import javax.enterprise.context.ApplicationScoped
@@ -21,7 +20,6 @@ class OrdersResource(
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    @ReactiveTransactional
     fun createOrder(createOrder: CreateOrderDto, uriInfo: UriInfo): Uni<Order> {
         return ordersService.createOrder(createOrder.toCreateOrder())
     }
@@ -30,7 +28,6 @@ class OrdersResource(
     @Path("/{orderId}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    @ReactiveTransactional
     fun getOrder(@PathParam("orderId") orderId: UUID): Uni<Order> {
         return ordersService.getOrder(orderId)
     }

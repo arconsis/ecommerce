@@ -8,8 +8,9 @@ import com.arconsis.domain.orders.OrderStatus
 import com.arconsis.domain.orders.toCreateOutboxEvent
 import com.arconsis.domain.processedevents.ProcessedEvent
 import com.fasterxml.jackson.databind.ObjectMapper
-import io.quarkus.hibernate.reactive.panache.common.runtime.ReactiveTransactional
 import io.smallrye.mutiny.Uni
+import org.hibernate.reactive.mutiny.Mutiny
+import org.hibernate.reactive.mutiny.Mutiny.Session
 import java.time.Instant
 import java.util.*
 import javax.enterprise.context.ApplicationScoped
@@ -19,53 +20,59 @@ class PaymentsService(
     private val ordersRepository: OrdersRepository,
     private val outboxEventsRepository: OutboxEventsRepository,
     private val processedEventsRepository: ProcessedEventsRepository,
+    private val sessionFactory: Mutiny.SessionFactory,
     private val objectMapper: ObjectMapper,
 ) {
-    @ReactiveTransactional
     fun handlePaymentEvents(eventId: UUID, payment: Payment): Uni<Void> {
         return when (payment.status) {
-            PaymentStatus.SUCCEED -> handleSucceedPayment(eventId, payment).replaceWithVoid()
-            PaymentStatus.FAILED -> handleFailedPayment(eventId, payment).replaceWithVoid()
+            PaymentStatus.SUCCEED -> handleSucceedPayment(eventId, payment)
+            PaymentStatus.FAILED -> handleFailedPayment(eventId, payment)
         }
     }
 
     private fun handleSucceedPayment(eventId: UUID, payment: Payment): Uni<Void> {
-        val proceedEvent = ProcessedEvent(
-            eventId = eventId,
-            processedAt = Instant.now()
-        )
-        val orderStatus = OrderStatus.PAID
-        return processedEventsRepository.createEvent(proceedEvent)
-            .updateOrderStatus(payment, orderStatus)
-            .createOutboxEvent()
-            .map {
-                null
-            }
+        return sessionFactory.withTransaction { session, _ ->
+            val proceedEvent = ProcessedEvent(
+                eventId = eventId,
+                processedAt = Instant.now()
+            )
+            val orderStatus = OrderStatus.PAID
+            processedEventsRepository.createEvent(proceedEvent, session)
+                .updateOrderStatus(payment, orderStatus, session)
+                .createOutboxEvent(session)
+                .map {
+                    null
+                }
+        }
+
     }
 
     private fun handleFailedPayment(eventId: UUID, payment: Payment): Uni<Void> {
-        val proceedEvent = ProcessedEvent(
-            eventId = eventId,
-            processedAt = Instant.now()
-        )
-        val orderStatus = OrderStatus.PAYMENT_FAILED
-        return processedEventsRepository.createEvent(proceedEvent)
-            .updateOrderStatus(payment, orderStatus)
-            .createOutboxEvent()
-            .map {
-                null
-            }
+        return sessionFactory.withTransaction { session, _ ->
+            val proceedEvent = ProcessedEvent(
+                eventId = eventId,
+                processedAt = Instant.now()
+            )
+            val orderStatus = OrderStatus.PAYMENT_FAILED
+            processedEventsRepository.createEvent(proceedEvent, session)
+                .updateOrderStatus(payment, orderStatus, session)
+                .createOutboxEvent(session)
+                .map {
+                    null
+                }
+        }
     }
 
     private fun Uni<ProcessedEvent>.updateOrderStatus(
         payment: Payment,
         orderStatus: OrderStatus,
+        session: Session
     ) = flatMap { _ ->
-        ordersRepository.updateOrderStatus(payment.orderId, orderStatus)
+        ordersRepository.updateOrderStatus(payment.orderId, orderStatus, session)
     }
 
-    private fun Uni<Order>.createOutboxEvent() = flatMap { order ->
+    private fun Uni<Order>.createOutboxEvent(session: Session) = flatMap { order ->
         val createOutboxEvent = order.toCreateOutboxEvent(objectMapper)
-        outboxEventsRepository.createEvent(createOutboxEvent)
+        outboxEventsRepository.createEvent(createOutboxEvent, session)
     }
 }

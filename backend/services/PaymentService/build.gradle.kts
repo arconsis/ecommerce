@@ -21,7 +21,7 @@ dependencies {
     implementation("io.quarkus:quarkus-kafka-client")
     implementation("io.quarkus:quarkus-smallrye-reactive-messaging-kafka")
     implementation("io.quarkus:quarkus-smallrye-reactive-messaging-kotlin")
-    implementation("io.quarkus:quarkus-hibernate-reactive-panache")
+    implementation("io.quarkus:quarkus-hibernate-reactive")
     implementation("io.quarkus:quarkus-reactive-pg-client")
     implementation("io.quarkus:quarkus-jdbc-postgresql")
     implementation("io.quarkus:quarkus-flyway")

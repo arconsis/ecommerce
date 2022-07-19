@@ -1,26 +1,18 @@
 package com.arconsis.data.processedevents
 
 import com.arconsis.domain.processedevents.ProcessedEvent
-import io.quarkus.hibernate.reactive.panache.PanacheRepository
 import io.smallrye.mutiny.Uni
+import org.hibernate.reactive.mutiny.Mutiny
 import java.util.*
 import javax.enterprise.context.ApplicationScoped
 
 @ApplicationScoped
-class ProceedEventsDataStore : PanacheRepository<ProcessedEventEntity> {
-	fun createEvent(event: ProcessedEvent): Uni<ProcessedEvent> {
+class ProceedEventsDataStore {
+	fun createEvent(event: ProcessedEvent, session: Mutiny.Session): Uni<ProcessedEvent> {
 		val eventEntity = event.toProcessedEventEntity()
-		return persist(event.toProcessedEventEntity())
+		return session.persist(event.toProcessedEventEntity())
 			.map {
-				it.toProcessedEvent()
-			}
-	}
-
-	fun getEvent(eventId: UUID): Uni<ProcessedEvent?> {
-		return find("eventId", eventId)
-			.firstResult<ProcessedEventEntity?>()
-			.map {
-				it.toProcessedEvent()
+				eventEntity.toProcessedEvent()
 			}
 	}
 }

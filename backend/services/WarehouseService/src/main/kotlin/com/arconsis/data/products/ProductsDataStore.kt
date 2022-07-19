@@ -2,31 +2,23 @@ package com.arconsis.data.products
 
 import com.arconsis.domain.products.CreateProduct
 import com.arconsis.domain.products.Product
-import io.quarkus.hibernate.reactive.panache.PanacheRepository
 import io.smallrye.mutiny.Uni
+import org.hibernate.reactive.mutiny.Mutiny.Session
 import java.util.*
 import javax.enterprise.context.ApplicationScoped
-import javax.ws.rs.NotFoundException
-
 
 @ApplicationScoped
-class ProductsDataStore: PanacheRepository<ProductEntity> {
-	fun getProduct(productId: UUID): Uni<Product> {
-		return find("productId", productId)
-			.firstResult<ProductEntity?>()
-			.map {
-				if (it == null) {
-					throw NotFoundException("No results found");
-				}
-				it.toProduct()
-			}
+class ProductsDataStore {
+	fun getProduct(productId: UUID, session: Session): Uni<Product?> {
+		return session.createNamedQuery<ProductEntity>(ProductEntity.GET_BY_PRODUCT_ID)
+			.setParameter("productId", productId)
+			.singleResultOrNull
+			.map { it.toProduct() }
 	}
 
-	fun createProduct(newProduct: CreateProduct): Uni<Product> {
-		val eEntity = newProduct.toProductEntity()
-		return persist(eEntity)
-			.map {
-				it.toProduct()
-			}
+	fun createProduct(newProduct: CreateProduct, session: Session): Uni<Product> {
+		val entity = newProduct.toProductEntity()
+		return session.persist(entity)
+			.map { entity.toProduct() }
 	}
 }

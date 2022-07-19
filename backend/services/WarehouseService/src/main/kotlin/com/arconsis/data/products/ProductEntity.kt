@@ -11,6 +11,15 @@ import java.time.Instant
 import java.util.*
 import javax.persistence.*
 
+@NamedQueries(
+	NamedQuery(
+		name = ProductEntity.GET_BY_PRODUCT_ID,
+		query = """
+            select p from products p
+			where p.productId = :productId
+        """
+	)
+)
 @Entity(name = "products")
 @TypeDef(
 	name = "pgsql_enum",
@@ -35,7 +44,11 @@ class ProductEntity(
 	@UpdateTimestamp
 	@Column(name = "updated_at")
 	var updatedAt: Instant? = null,
-)
+) {
+	companion object {
+		const val GET_BY_PRODUCT_ID = "ProductEntity.get_by_product_id"
+	}
+}
 
 fun ProductEntity.toProduct() = Product(
 	productId = productId!!,

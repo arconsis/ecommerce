@@ -3,36 +3,38 @@ package com.arconsis.data.shipments
 import com.arconsis.domain.shipments.CreateShipment
 import com.arconsis.domain.shipments.Shipment
 import com.arconsis.domain.shipments.ShipmentStatus
-import io.quarkus.hibernate.reactive.panache.PanacheRepository
 import io.smallrye.mutiny.Uni
+import org.hibernate.reactive.mutiny.Mutiny.Session
 import java.util.HashMap
 import java.util.UUID
 import javax.enterprise.context.ApplicationScoped
 
 @ApplicationScoped
-class ShipmentsDataStore : PanacheRepository<ShipmentEntity> {
-	fun createShipment(createShipment: CreateShipment): Uni<Shipment> {
+class ShipmentsDataStore {
+	fun createShipment(createShipment: CreateShipment, session: Session): Uni<Shipment> {
 		val shipmentEntity = createShipment.toShipmentEntity()
-		return persist(shipmentEntity)
+		return session.persist(shipmentEntity)
+			.map { shipmentEntity.toShipment() }
+	}
+
+	private fun getShipment(shipmentId: UUID, session: Session): Uni<Shipment> {
+		return session.createNamedQuery<ShipmentEntity>(ShipmentEntity.GET_BY_SHIPMENT_ID)
+			.setParameter("shipmentId", shipmentId)
+			.singleResultOrNull
 			.map {
 				it.toShipment()
 			}
 	}
 
-	fun getShipment(shipmentId: UUID): Uni<Shipment> {
-		return find("shipmentId", shipmentId)
-			.firstResult<ShipmentEntity?>()
-			.map {
-				it.toShipment()
-			}
-	}
-
-	fun updateShipmentStatus(shipmentId: UUID, status: ShipmentStatus): Uni<Shipment> {
+	fun updateShipmentStatus(shipmentId: UUID, status: ShipmentStatus, session: Session): Uni<Shipment> {
 		val params: MutableMap<String, Any> = HashMap()
 		params["status"] = status
 		params["shipmentId"] = shipmentId
-		return update("update orders o set o.status = :status where o.orderId = :orderId", params)
+		return session.createNamedQuery<ShipmentEntity>(ShipmentEntity.UPDATE_STATUS)
+			.setParameter("status", status)
+			.setParameter("shipmentId", shipmentId)
+			.executeUpdate()
 			// TODO: Check if we have concurrency issues
-			.flatMap { getShipment(shipmentId) }
+			.flatMap { getShipment(shipmentId, session) }
 	}
 }

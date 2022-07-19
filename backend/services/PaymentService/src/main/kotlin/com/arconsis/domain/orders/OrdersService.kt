@@ -7,8 +7,8 @@ import com.arconsis.data.processedevents.ProcessedEventsRepository
 import com.arconsis.domain.payments.toCreateOutboxEvent
 import com.arconsis.domain.processedevents.ProcessedEvent
 import com.fasterxml.jackson.databind.ObjectMapper
-import io.quarkus.hibernate.reactive.panache.common.runtime.ReactiveTransactional
 import io.smallrye.mutiny.Uni
+import org.hibernate.reactive.mutiny.Mutiny
 import java.time.Instant
 import java.util.*
 import javax.enterprise.context.ApplicationScoped
@@ -18,10 +18,10 @@ class OrdersService(
     private val paymentsRepository: PaymentsRepository,
     private val processedEventsRepository: ProcessedEventsRepository,
     private val outboxEventsRepository: OutboxEventsRepository,
+    private val sessionFactory: Mutiny.SessionFactory,
     private val objectMapper: ObjectMapper,
 ) {
 
-    @ReactiveTransactional
     fun handleOrderEvents(eventId: UUID,  order: Order): Uni<Void> {
         return when (order.status) {
             OrderStatus.VALIDATED -> handleValidOrder(eventId, order)
@@ -30,18 +30,20 @@ class OrdersService(
     }
 
     private fun handleValidOrder(eventId: UUID, order: Order): Uni<Void> {
-        val proceedEvent = ProcessedEvent(
-            eventId = eventId,
-            processedAt = Instant.now()
-        )
-        return processedEventsRepository.createEvent(proceedEvent)
-            .flatMap {
-                paymentsRepository.createPayment(eventId, order.toCreatePayment())
-            }
-            .flatMap { payment ->
-                val createOutboxEvent = payment.toCreateOutboxEvent(objectMapper)
-                outboxEventsRepository.createEvent(createOutboxEvent)
-            }
-            .map { null }
+        return sessionFactory.withTransaction { session, _ ->
+            val proceedEvent = ProcessedEvent(
+                eventId = eventId,
+                processedAt = Instant.now()
+            )
+            processedEventsRepository.createEvent(proceedEvent, session)
+                .flatMap {
+                    paymentsRepository.createPayment(eventId, order.toCreatePayment(), session)
+                }
+                .flatMap { payment ->
+                    val createOutboxEvent = payment.toCreateOutboxEvent(objectMapper)
+                    outboxEventsRepository.createEvent(createOutboxEvent, session)
+                }
+                .map { null }
+        }
     }
 }
