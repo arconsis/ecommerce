@@ -9,9 +9,15 @@ data class Order(
     val userId: UUID,
     val amount: BigDecimal,
     val currency: String,
-    val productId: UUID,
     val quantity: Int,
     val status: OrderStatus,
+    val products: List<Product>
+)
+
+data class Product(
+    val productId: UUID,
+    val price: BigDecimal,
+    val currency: String
 )
 
 enum class OrderStatus {

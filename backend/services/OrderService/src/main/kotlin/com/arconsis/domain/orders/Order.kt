@@ -1,8 +1,10 @@
 package com.arconsis.domain.orders
 
+import com.arconsis.domain.orderitems.CreateOrderItem
 import com.arconsis.domain.outboxevents.AggregateType
 import com.arconsis.domain.outboxevents.CreateOutboxEvent
 import com.arconsis.domain.outboxevents.OutboxEventType
+import com.arconsis.domain.orderitems.OrderItem
 import com.fasterxml.jackson.databind.ObjectMapper
 import java.math.BigDecimal
 import java.util.*
@@ -11,8 +13,7 @@ data class CreateOrder(
     val userId: UUID,
     val amount: BigDecimal,
     val currency: String,
-    val productId: UUID,
-    val quantity: Int,
+    val items: List<CreateOrderItem>
 )
 
 data class Order(
@@ -20,9 +21,8 @@ data class Order(
     val userId: UUID,
     val amount: BigDecimal,
     val currency: String,
-    val productId: UUID,
-    val quantity: Int,
     val status: OrderStatus,
+    val items: List<OrderItem>
 )
 
 enum class OrderStatus {

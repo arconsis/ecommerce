@@ -17,8 +17,6 @@ CREATE TABLE orders
     status     order_status NOT NULL,
     amount     NUMERIC      NOT NULL,
     currency   VARCHAR      NOT NULL,
-    product_id UUID      NOT NULL,
-    quantity   INTEGER      NOT NULL,
     created_at TIMESTAMP,
     updated_at TIMESTAMP
 )

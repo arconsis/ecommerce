@@ -1,6 +1,8 @@
 package com.arconsis.data.orders
 
 import com.arconsis.data.PostgreSQLEnumType
+import com.arconsis.data.orderitems.OrderItemEntity
+import com.arconsis.domain.orderitems.OrderItem
 import com.arconsis.domain.orders.CreateOrder
 import com.arconsis.domain.orders.Order
 import com.arconsis.domain.orders.OrderStatus
@@ -38,12 +40,6 @@ class OrderEntity(
     @Column(nullable = false)
     var currency: String,
 
-    @Column(name = "product_id", nullable = false)
-    var productId: UUID,
-
-    @Column(nullable = false)
-    var quantity: Int,
-
     @CreationTimestamp
     @Column(name = "created_at")
     var createdAt: Instant? = null,
@@ -51,6 +47,9 @@ class OrderEntity(
     @UpdateTimestamp
     @Column(name = "updated_at")
     var updatedAt: Instant? = null,
+
+    @OneToMany(mappedBy = "orderId", cascade = [CascadeType.ALL], orphanRemoval = true)
+    var itemEntities: MutableList<OrderItemEntity> = mutableListOf()
 )
 
 fun OrderEntity.toOrder() = Order(
@@ -58,16 +57,22 @@ fun OrderEntity.toOrder() = Order(
     orderId = orderId!!,
     amount = amount,
     currency = currency,
-    productId = productId,
-    quantity = quantity,
     status = status,
+    items = itemEntities.map {
+        OrderItem(
+            itemId = it.itemId!!,
+            productId = it.productId,
+            orderId = it.orderId,
+            price = it.price,
+            currency = it.currency,
+            quantity = it.quantity
+        )
+    }
 )
 
 fun CreateOrder.toOrderEntity(status: OrderStatus) = OrderEntity(
     userId = userId,
     amount = amount,
     currency = currency,
-    productId = productId,
-    quantity = quantity,
     status = status,
 )
