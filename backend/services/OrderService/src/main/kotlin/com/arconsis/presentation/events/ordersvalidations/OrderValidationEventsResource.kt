@@ -6,6 +6,7 @@ import com.arconsis.domain.outboxevents.AggregateType
 import com.arconsis.presentation.events.common.WarehouseEventDto
 import com.arconsis.presentation.events.common.toOutboxEvent
 import com.fasterxml.jackson.databind.ObjectMapper
+import io.quarkus.hibernate.reactive.panache.common.runtime.ReactiveTransactional
 import io.smallrye.mutiny.Uni
 import io.smallrye.reactive.messaging.kafka.Record
 import org.eclipse.microprofile.reactive.messaging.Incoming

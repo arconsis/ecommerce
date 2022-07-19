@@ -24,13 +24,12 @@ class ShipmentsService(
 	@ReactiveTransactional
 	fun handleShipmentEvents(eventId: UUID, shipment: Shipment): Uni<Void> {
 		return when (shipment.status) {
-			ShipmentStatus.DELIVERED -> handleDeliveredShipment(eventId, shipment)
-			ShipmentStatus.SHIPPED -> handleOutForShipment(eventId, shipment)
-			else -> return Uni.createFrom().voidItem()
+			ShipmentStatus.DELIVERED -> handleDeliveredShipment(eventId, shipment).replaceWithVoid()
+			ShipmentStatus.SHIPPED -> handleOutForShipment(eventId, shipment).replaceWithVoid()
+			else -> return Uni.createFrom().voidItem().replaceWithVoid()
 		}
 	}
 
-	@ReactiveTransactional
 	private fun handleDeliveredShipment(eventId: UUID, shipment: Shipment): Uni<Void> {
 		val proceedEvent = ProcessedEvent(
 			eventId = eventId,
@@ -45,7 +44,6 @@ class ShipmentsService(
 			}
 	}
 
-	@ReactiveTransactional
 	private fun handleOutForShipment(eventId: UUID, shipment: Shipment): Uni<Void> {
 		val proceedEvent = ProcessedEvent(
 			eventId = eventId,

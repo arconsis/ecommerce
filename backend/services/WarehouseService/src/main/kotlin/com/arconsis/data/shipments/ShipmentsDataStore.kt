@@ -1,7 +1,5 @@
 package com.arconsis.data.shipments
 
-import com.arconsis.data.common.asPair
-import com.arconsis.data.common.toUni
 import com.arconsis.domain.shipments.CreateShipment
 import com.arconsis.domain.shipments.Shipment
 import com.arconsis.domain.shipments.ShipmentStatus
@@ -21,28 +19,20 @@ class ShipmentsDataStore : PanacheRepository<ShipmentEntity> {
 			}
 	}
 
-	private fun getShipment(id: UUID): Uni<Shipment?> {
-		return find("id", id)
+	fun getShipment(shipmentId: UUID): Uni<Shipment> {
+		return find("shipmentId", shipmentId)
 			.firstResult<ShipmentEntity?>()
 			.map {
 				it.toShipment()
 			}
 	}
 
-	fun updateShipmentStatus(id: UUID, status: ShipmentStatus): Uni<Shipment> {
+	fun updateShipmentStatus(shipmentId: UUID, status: ShipmentStatus): Uni<Shipment> {
 		val params: MutableMap<String, Any> = HashMap()
 		params["status"] = status
-		params["id"] = id
-		return update("update shipments s set s.status = :status where s.id = :id", params)
-			.map {
-				it > 0
-			}.flatMap { result ->
-				Uni.combine().all().unis(
-					getShipment(id),
-					result.toUni(),
-				).asPair()
-			}.map { (shipment, _) ->
-				shipment
-			}
+		params["shipmentId"] = shipmentId
+		return update("update orders o set o.status = :status where o.orderId = :orderId", params)
+			// TODO: Check if we have concurrency issues
+			.flatMap { getShipment(shipmentId) }
 	}
 }

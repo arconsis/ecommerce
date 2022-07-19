@@ -8,7 +8,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import io.quarkus.hibernate.reactive.panache.common.runtime.ReactiveTransactional
 import io.smallrye.mutiny.Uni
 import javax.enterprise.context.ApplicationScoped
-import javax.ws.rs.NotFoundException
 
 @ApplicationScoped
 class ShipmentsService(
@@ -16,9 +15,8 @@ class ShipmentsService(
     private val outboxEventsRepository: OutboxEventsRepository,
     private val objectMapper: ObjectMapper,
 ) {
-    @ReactiveTransactional
     fun updateShipment(updateShipment: UpdateShipment): Uni<Shipment> {
-        return shipmentsRepository.updateShipmentStatus(updateShipment)
+        return shipmentsRepository.updateShipmentStatus(updateShipment.shipmentId, updateShipment.status)
             .flatMap { shipment ->
                 val createOutboxEvent = shipment.toCreateOutboxEvent(objectMapper)
                 Uni.combine().all().unis(

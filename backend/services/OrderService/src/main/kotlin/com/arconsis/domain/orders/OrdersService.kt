@@ -14,7 +14,6 @@ class OrdersService(
     private val outboxEventsRepository: OutboxEventsRepository,
     private val objectMapper: ObjectMapper,
 ) {
-    @ReactiveTransactional
     fun createOrder(createOrder: CreateOrder): Uni<Order> {
         return ordersRepository.createOrder(createOrder)
             .flatMap { order ->
@@ -25,7 +24,6 @@ class OrdersService(
             }
     }
 
-    @ReactiveTransactional
     fun getOrder(orderId: UUID): Uni<Order> {
         return ordersRepository.getOrder(orderId)
     }

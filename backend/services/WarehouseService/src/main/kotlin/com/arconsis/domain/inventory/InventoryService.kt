@@ -11,13 +11,10 @@ import javax.enterprise.context.ApplicationScoped
 class InventoryService(
     private val inventoryRepository: InventoryRepository,
 ) {
-
-    @ReactiveTransactional
     fun getInventory(id: UUID): Uni<Inventory?> {
         return inventoryRepository.getInventory(id)
     }
 
-    @ReactiveTransactional
     fun createInventory(createInventory: CreateInventory): Uni<Inventory> {
         return inventoryRepository.createInventory(createInventory)
     }

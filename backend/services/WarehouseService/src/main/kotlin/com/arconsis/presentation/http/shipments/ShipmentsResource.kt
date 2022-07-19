@@ -3,6 +3,7 @@ package com.arconsis.presentation.http.shipments
 import com.arconsis.domain.shipments.Shipment
 import com.arconsis.domain.shipments.ShipmentsService
 import com.arconsis.domain.shipments.UpdateShipment
+import io.quarkus.hibernate.reactive.panache.common.runtime.ReactiveTransactional
 import io.smallrye.mutiny.Uni
 import java.util.*
 import javax.enterprise.context.ApplicationScoped
@@ -17,8 +18,9 @@ class ShipmentsResource(private val shipmentsService: ShipmentsService) {
 
     @PUT
     @Path("/{id}")
+    @ReactiveTransactional
     fun updateShipment(@PathParam("id") id: UUID, updateShipment: UpdateShipment): Uni<Shipment> {
-        if (id != updateShipment.id) {
+        if (id != updateShipment.shipmentId) {
             throw BadRequestException("Shipment id: $id is not correct")
         }
         return shipmentsService.updateShipment(updateShipment)

@@ -2,8 +2,9 @@ package com.arconsis.data.shipments
 
 import com.arconsis.domain.shipments.CreateShipment
 import com.arconsis.domain.shipments.Shipment
-import com.arconsis.domain.shipments.UpdateShipment
+import com.arconsis.domain.shipments.ShipmentStatus
 import io.smallrye.mutiny.Uni
+import java.util.UUID
 import javax.enterprise.context.ApplicationScoped
 
 @ApplicationScoped
@@ -13,7 +14,7 @@ class ShipmentsRepository(private val shipmentsDataStore: ShipmentsDataStore) {
         return shipmentsDataStore.createShipment(createShipment)
     }
 
-    fun updateShipmentStatus(updateShipment: UpdateShipment): Uni<Shipment> {
-        return shipmentsDataStore.updateShipmentStatus(updateShipment.id, updateShipment.status)
+    fun updateShipmentStatus(shipmentId: UUID, shipmentStatus: ShipmentStatus): Uni<Shipment> {
+        return shipmentsDataStore.updateShipmentStatus(shipmentId, shipmentStatus)
     }
 }

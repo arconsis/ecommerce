@@ -1,17 +1,17 @@
 package com.arconsis.data.payments
 
 import com.arconsis.domain.payments.Payment
+import io.quarkus.hibernate.reactive.panache.PanacheRepository
 import io.smallrye.mutiny.Uni
-import org.hibernate.reactive.mutiny.Mutiny
 import javax.enterprise.context.ApplicationScoped
 
 @ApplicationScoped
-class PaymentsDataStore {
-    fun createPayment(payment: Payment, session: Mutiny.Session): Uni<Payment> {
+class PaymentsDataStore : PanacheRepository<PaymentEntity> {
+    fun createPayment(payment: Payment): Uni<Payment> {
         val paymentEntity = payment.toPaymentEntity()
-        return session.persist(paymentEntity)
+        return persist(paymentEntity)
             .map {
-                paymentEntity.toPayment()
+                it.toPayment()
             }
     }
 }

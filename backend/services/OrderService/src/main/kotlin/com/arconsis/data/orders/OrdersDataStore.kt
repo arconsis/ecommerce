@@ -1,19 +1,16 @@
 package com.arconsis.data.orders
 
-import com.arconsis.data.outboxevents.toOutboxEvent
-import com.arconsis.data.processedevents.ProcessedEventEntity
-import com.arconsis.data.processedevents.toProcessedEvent
 import com.arconsis.domain.orders.CreateOrder
 import com.arconsis.domain.orders.Order
 import com.arconsis.domain.orders.OrderStatus
 import io.quarkus.hibernate.reactive.panache.PanacheRepository
 import io.smallrye.mutiny.Uni
-import org.hibernate.reactive.mutiny.Mutiny
+import org.jboss.logging.Logger
 import java.util.*
 import javax.enterprise.context.ApplicationScoped
 
 @ApplicationScoped
-class OrdersDataStore : PanacheRepository<OrderEntity> {
+class OrdersDataStore(val logger: Logger) : PanacheRepository<OrderEntity> {
 
 	fun createOrder(createOrder: CreateOrder): Uni<Order> {
 		val orderEntity = createOrder.toOrderEntity(OrderStatus.REQUESTED)
@@ -39,7 +36,7 @@ class OrdersDataStore : PanacheRepository<OrderEntity> {
 			// TODO: Check if we have concurrency issues
 			.flatMap { getOrder(orderId) }
 			.onFailure {
-				print(it.message)
+				logger.info("Error with updateOrderStatus")
 				false
 			}.recoverWithUni(getOrder(orderId))
 	}

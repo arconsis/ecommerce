@@ -20,7 +20,8 @@ import javax.persistence.*
 class ShipmentEntity(
     @Id
     @GeneratedValue
-    var id: UUID? = null,
+    @Column(name = "shipment_id")
+    var shipmentId: UUID? = null,
 
     @Column(name = "order_id", nullable = false)
     var orderId: UUID,
@@ -43,7 +44,7 @@ class ShipmentEntity(
 )
 
 fun ShipmentEntity.toShipment() = Shipment(
-    id = id!!,
+    shipmentId = shipmentId!!,
     orderId = orderId,
     status = status,
     userId = userId

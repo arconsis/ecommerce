@@ -15,13 +15,13 @@ enum class ShipmentStatus {
 }
 
 data class Shipment(
-    val id: UUID,
+    val shipmentId: UUID,
     val orderId: UUID,
     val status: ShipmentStatus,
     val userId: UUID
 )
 
-class UpdateShipment(val id: UUID, val status: ShipmentStatus)
+class UpdateShipment(val shipmentId: UUID, val status: ShipmentStatus)
 
 class CreateShipment(val orderId: UUID, val userId: UUID, val status: ShipmentStatus)
 
@@ -32,7 +32,7 @@ fun Shipment.toShipmentRecord(): Record<String, Shipment> = Record.of(
 
 fun Shipment.toCreateOutboxEvent(objectMapper: ObjectMapper): CreateOutboxEvent = CreateOutboxEvent(
     aggregateType = AggregateType.SHIPMENT,
-    aggregateId = this.id,
+    aggregateId = this.shipmentId,
     type = this.status.toOutboxEventType(),
     payload = objectMapper.writeValueAsString(this)
 )

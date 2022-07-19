@@ -26,11 +26,15 @@ class OrderValidationsService(
     fun handleOrderValidationEvents(eventId: UUID, orderValidation: OrderValidation): Uni<Void> {
         return when (orderValidation.status) {
             OrderValidationStatus.VALIDATED -> handleValidOrderValidation(eventId, orderValidation)
-            OrderValidationStatus.INVALID -> handleValidOrderInvalidation(eventId, orderValidation)
+                .replaceWithVoid()
+                .onTermination()
+                .call {
+                    getS
+                }
+            OrderValidationStatus.INVALID -> handleValidOrderInvalidation(eventId, orderValidation).replaceWithVoid()
         }
     }
 
-    @ReactiveTransactional
     private fun handleValidOrderValidation(eventId: UUID, orderValidation: OrderValidation): Uni<Void> {
         val proceedEvent = ProcessedEvent(
             eventId = eventId,
@@ -45,7 +49,6 @@ class OrderValidationsService(
             }
     }
 
-    @ReactiveTransactional
     private fun handleValidOrderInvalidation(eventId: UUID, orderValidation: OrderValidation): Uni<Void> {
         val proceedEvent = ProcessedEvent(
             eventId = eventId,

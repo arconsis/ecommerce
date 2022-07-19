@@ -27,21 +27,20 @@ class OrdersService(
 	@ReactiveTransactional
 	fun handleOrderEvents(eventId: UUID, order: Order): Uni<Void> {
 		return when (order.status) {
-			OrderStatus.REQUESTED -> handleOrderPending(eventId, order)
-			OrderStatus.PAID -> handleOrderPaid(eventId, order)
-			OrderStatus.PAYMENT_FAILED -> handleOrderPaymentFailed(eventId, order)
-			else -> Uni.createFrom().voidItem()
+			OrderStatus.REQUESTED -> handleOrderPending(eventId, order).replaceWithVoid()
+			OrderStatus.PAID -> handleOrderPaid(eventId, order).replaceWithVoid()
+			OrderStatus.PAYMENT_FAILED -> handleOrderPaymentFailed(eventId, order).replaceWithVoid()
+			else -> Uni.createFrom().voidItem().replaceWithVoid()
 		}
 	}
 
-	@ReactiveTransactional
 	private fun handleOrderPending(eventId: UUID, order: Order): Uni<Void> {
 		val proceedEvent = ProcessedEvent(
 			eventId = eventId,
 			processedAt = Instant.now()
 		)
 		return processedEventsRepository.createEvent(proceedEvent)
-			.flatMap { event ->
+			.flatMap {
 				inventoryRepository.reserveProductStock(order.productId, order.quantity)
 			}
 			.createOrderValidation(order)
@@ -51,7 +50,6 @@ class OrdersService(
 			}
 	}
 
-	@ReactiveTransactional
 	private fun handleOrderPaid(eventId: UUID, order: Order): Uni<Void> {
 		val proceedEvent = ProcessedEvent(
 			eventId = eventId,
@@ -73,7 +71,6 @@ class OrdersService(
 			}
 	}
 
-	@ReactiveTransactional
 	private fun handleOrderPaymentFailed(eventId: UUID, order: Order): Uni<Void> {
 		val proceedEvent = ProcessedEvent(
 			eventId = eventId,
@@ -105,11 +102,7 @@ class OrdersService(
 	}
 
 	private fun Uni<Shipment>.updateShipmentStatus(status: ShipmentStatus) = flatMap { shipment ->
-		val updateShipment = UpdateShipment(
-			shipment.id,
-			status
-		)
-		shipmentsRepository.updateShipmentStatus(updateShipment)
+		shipmentsRepository.updateShipmentStatus(shipment.shipmentId, status)
 	}
 
 	private fun Uni<Shipment>.createShipmentEvent() = flatMap { shipment ->

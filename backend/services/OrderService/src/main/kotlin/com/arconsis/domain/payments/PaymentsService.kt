@@ -24,12 +24,11 @@ class PaymentsService(
     @ReactiveTransactional
     fun handlePaymentEvents(eventId: UUID, payment: Payment): Uni<Void> {
         return when (payment.status) {
-            PaymentStatus.SUCCEED -> handleSucceedPayment(eventId, payment)
-            PaymentStatus.FAILED -> handleFailedPayment(eventId, payment)
+            PaymentStatus.SUCCEED -> handleSucceedPayment(eventId, payment).replaceWithVoid()
+            PaymentStatus.FAILED -> handleFailedPayment(eventId, payment).replaceWithVoid()
         }
     }
 
-    @ReactiveTransactional
     private fun handleSucceedPayment(eventId: UUID, payment: Payment): Uni<Void> {
         val proceedEvent = ProcessedEvent(
             eventId = eventId,
@@ -44,7 +43,6 @@ class PaymentsService(
             }
     }
 
-    @ReactiveTransactional
     private fun handleFailedPayment(eventId: UUID, payment: Payment): Uni<Void> {
         val proceedEvent = ProcessedEvent(
             eventId = eventId,

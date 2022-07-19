@@ -12,7 +12,8 @@ import javax.persistence.*
 class InventoryEntity(
     @Id
     @GeneratedValue
-    var id: UUID? = null,
+    @Column(name = "inventory_id")
+    var inventoryId: UUID? = null,
 
     @Column(name = "product_id", nullable = false)
     var productId: UUID,
@@ -35,7 +36,7 @@ fun CreateInventory.toInventoryEntity() = InventoryEntity(
 )
 
 fun InventoryEntity.toInventory() = Inventory(
-    id = id!!,
+    inventoryId = inventoryId!!,
     productId = productId,
     stock = stock,
 )

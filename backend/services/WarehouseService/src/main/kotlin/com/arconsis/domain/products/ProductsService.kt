@@ -19,7 +19,6 @@ class ProductsService(
 	private val productsRepository: ProductsRepository,
 	private val inventoryRepository: InventoryRepository,
 ) {
-	@ReactiveTransactional
 	fun getProduct(productId: UUID): Uni<Product?> {
 		return productsRepository.getProduct(productId)
 			.flatMap { product ->
@@ -33,10 +32,7 @@ class ProductsService(
 			}
 	}
 
-	@ReactiveTransactional
 	fun createProduct(newProduct: CreateProduct): Uni<Product> {
 		return productsRepository.createProduct(newProduct)
-
-		// return productsRepository.createProduct(newProduct)
 	}
 }
