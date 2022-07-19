@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import io.smallrye.mutiny.Uni
 import org.hibernate.reactive.mutiny.Mutiny
 import org.hibernate.reactive.mutiny.Mutiny.Session
+import org.jboss.logging.Logger
 import java.time.Instant
 import java.util.*
 import javax.enterprise.context.ApplicationScoped
@@ -21,12 +22,18 @@ class OrderValidationsService(
     private val outboxEventsRepository: OutboxEventsRepository,
     private val processedEventsRepository: ProcessedEventsRepository,
     private val sessionFactory: Mutiny.SessionFactory,
-    private val objectMapper: ObjectMapper
+    private val objectMapper: ObjectMapper,
+    private val logger: Logger
 ) {
 
     fun handleOrderValidationEvents(eventId: UUID, orderValidation: OrderValidation): Uni<Void> {
         return when (orderValidation.status) {
             OrderValidationStatus.VALIDATED -> handleValidOrderValidation(eventId, orderValidation)
+                .onFailure()
+                .recoverWithUni { err ->
+                    logger.error("handleReduceStockError failed with error: ${err.localizedMessage}")
+                    null
+                }
             OrderValidationStatus.INVALID -> handleValidOrderInvalidation(eventId, orderValidation)
         }
     }

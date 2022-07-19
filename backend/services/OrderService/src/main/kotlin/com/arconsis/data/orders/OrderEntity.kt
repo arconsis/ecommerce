@@ -1,6 +1,9 @@
 package com.arconsis.data.orders
 
 import com.arconsis.data.PostgreSQLEnumType
+import com.arconsis.data.orderitems.OrderItemEntity
+import com.arconsis.data.orders.OrderEntity.Companion.UPDATE_ORDER_STATUS
+import com.arconsis.domain.orderitems.OrderItem
 import com.arconsis.domain.orders.CreateOrder
 import com.arconsis.domain.orders.Order
 import com.arconsis.domain.orders.OrderStatus
@@ -13,6 +16,16 @@ import java.time.Instant
 import java.util.*
 import javax.persistence.*
 
+@NamedQueries(
+    NamedQuery(
+        name = UPDATE_ORDER_STATUS,
+        query = """
+            update orders o
+            set o.status = :status
+            where o.orderId = :orderId
+        """
+    ),
+)
 @Entity(name = "orders")
 @TypeDef(
     name = "pgsql_enum",
@@ -38,12 +51,6 @@ class OrderEntity(
     @Column(nullable = false)
     var currency: String,
 
-    @Column(name = "product_id", nullable = false)
-    var productId: UUID,
-
-    @Column(nullable = false)
-    var quantity: Int,
-
     @CreationTimestamp
     @Column(name = "created_at")
     var createdAt: Instant? = null,
@@ -51,23 +58,36 @@ class OrderEntity(
     @UpdateTimestamp
     @Column(name = "updated_at")
     var updatedAt: Instant? = null,
-)
+
+    @OneToMany(mappedBy = "orderId", cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
+    var itemEntities: MutableList<OrderItemEntity> = mutableListOf()
+) {
+    companion object {
+        const val UPDATE_ORDER_STATUS = "OrderEntity.update_order_status"
+    }
+}
 
 fun OrderEntity.toOrder() = Order(
     userId = userId,
     orderId = orderId!!,
     amount = amount,
     currency = currency,
-    productId = productId,
-    quantity = quantity,
     status = status,
+    items = itemEntities.map {
+        OrderItem(
+            itemId = it.itemId!!,
+            productId = it.productId,
+            orderId = it.orderId,
+            price = it.price,
+            currency = it.currency,
+            quantity = it.quantity
+        )
+    }
 )
 
 fun CreateOrder.toOrderEntity(status: OrderStatus) = OrderEntity(
     userId = userId,
     amount = amount,
     currency = currency,
-    productId = productId,
-    quantity = quantity,
     status = status,
 )

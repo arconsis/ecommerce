@@ -1,14 +1,14 @@
 package com.arconsis.domain.ordersvalidations
 
+import com.arconsis.domain.orderitems.OrderItem
 import io.quarkus.kafka.client.serialization.ObjectMapperDeserializer
 import java.util.*
 
 data class OrderValidation(
-    val productId: UUID,
-    val quantity: Int,
     val orderId: UUID,
     val userId: UUID,
     val status: OrderValidationStatus,
+    val items: List<OrderItem>
 )
 
 enum class OrderValidationStatus {
