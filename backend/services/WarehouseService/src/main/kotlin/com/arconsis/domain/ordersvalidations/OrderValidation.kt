@@ -1,5 +1,6 @@
 package com.arconsis.domain.ordersvalidations
 
+import com.arconsis.domain.orderitems.OrderItem
 import com.arconsis.domain.outboxevents.AggregateType
 import com.arconsis.domain.outboxevents.CreateOutboxEvent
 import com.arconsis.domain.outboxevents.OutboxEventType
@@ -7,11 +8,10 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import java.util.*
 
 data class OrderValidation(
-    val productId: UUID,
-    val quantity: Int,
     val orderId: UUID,
     val userId: UUID,
     val status: OrderValidationStatus,
+    val items: List<OrderItem>
 )
 
 enum class OrderValidationStatus {

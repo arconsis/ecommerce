@@ -19,6 +19,7 @@ import java.time.Instant
 import java.util.*
 import javax.enterprise.context.ApplicationScoped
 
+
 @ApplicationScoped
 class OrdersService(
 	private val shipmentsRepository: ShipmentsRepository,
@@ -45,9 +46,15 @@ class OrdersService(
 				eventId = eventId,
 				processedAt = Instant.now()
 			)
+
 			processedEventsRepository.createEvent(proceedEvent, session)
 				.flatMap {
-					inventoryRepository.reserveProductStock(order.productId, order.quantity, session)
+					val unis: List<Uni<Boolean>> = order.items.map {
+						inventoryRepository.reserveProductStock(it.productId, it.quantity, session)
+					}
+					Uni.combine().all().unis<List<Uni<Boolean>>>(unis).combinedWith {
+						!it.contains(false)
+					}
 				}
 				.createOrderValidation(order)
 				.createOrderValidationEvent(session)
@@ -83,7 +90,12 @@ class OrdersService(
 			)
 			processedEventsRepository.createEvent(proceedEvent, session)
 				.flatMap {
-					inventoryRepository.increaseProductStock(order.productId, order.quantity, session)
+					val unis: List<Uni<Boolean>> = order.items.map {
+						inventoryRepository.increaseProductStock(it.productId, it.quantity, session)
+					}
+					Uni.combine().all().unis<List<Uni<Boolean>>>(unis).combinedWith {
+						!it.contains(false)
+					}
 				}
 				.flatMap {
 					Uni.createFrom().voidItem()
@@ -93,11 +105,10 @@ class OrdersService(
 
 	private fun Uni<Boolean>.createOrderValidation(order: Order) = map { stockUpdated ->
 		val orderValidation = OrderValidation(
-			productId = order.productId,
-			quantity = order.quantity,
 			orderId = order.orderId,
 			userId = order.userId,
-			status = if (stockUpdated) OrderValidationStatus.VALIDATED else OrderValidationStatus.INVALID
+			status = if (stockUpdated) OrderValidationStatus.VALIDATED else OrderValidationStatus.INVALID,
+			items = order.items
 		)
 		orderValidation
 	}

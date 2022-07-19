@@ -2,6 +2,7 @@ package com.arconsis.data.orders
 
 import com.arconsis.data.PostgreSQLEnumType
 import com.arconsis.data.orderitems.OrderItemEntity
+import com.arconsis.data.orders.OrderEntity.Companion.UPDATE_ORDER_STATUS
 import com.arconsis.domain.orderitems.OrderItem
 import com.arconsis.domain.orders.CreateOrder
 import com.arconsis.domain.orders.Order
@@ -15,6 +16,16 @@ import java.time.Instant
 import java.util.*
 import javax.persistence.*
 
+@NamedQueries(
+    NamedQuery(
+        name = UPDATE_ORDER_STATUS,
+        query = """
+            update orders o
+            set o.status = :status
+            where o.orderId = :orderId
+        """
+    ),
+)
 @Entity(name = "orders")
 @TypeDef(
     name = "pgsql_enum",
@@ -48,9 +59,13 @@ class OrderEntity(
     @Column(name = "updated_at")
     var updatedAt: Instant? = null,
 
-    @OneToMany(mappedBy = "orderId", cascade = [CascadeType.ALL], orphanRemoval = true)
+    @OneToMany(mappedBy = "orderId", cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
     var itemEntities: MutableList<OrderItemEntity> = mutableListOf()
-)
+) {
+    companion object {
+        const val UPDATE_ORDER_STATUS = "OrderEntity.update_order_status"
+    }
+}
 
 fun OrderEntity.toOrder() = Order(
     userId = userId,

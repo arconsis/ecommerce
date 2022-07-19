@@ -1,5 +1,6 @@
 package com.arconsis.domain.orders
 
+import com.arconsis.domain.orderitems.OrderItem
 import io.quarkus.kafka.client.serialization.ObjectMapperDeserializer
 import java.math.BigDecimal
 import java.util.*
@@ -9,9 +10,8 @@ data class Order(
     val userId: UUID,
     val amount: BigDecimal,
     val currency: String,
-    val quantity: Int,
     val status: OrderStatus,
-    val products: List<Product>
+    val items: List<OrderItem>
 )
 
 data class Product(
