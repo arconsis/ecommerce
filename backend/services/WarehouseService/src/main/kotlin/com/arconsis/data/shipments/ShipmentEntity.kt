@@ -12,6 +12,23 @@ import java.time.Instant
 import java.util.*
 import javax.persistence.*
 
+@NamedQueries(
+    NamedQuery(
+        name = ShipmentEntity.GET_BY_SHIPMENT_ID,
+        query = """
+            select s from shipments s
+			where s.shipmentId = :shipmentId
+        """
+    ),
+    NamedQuery(
+        name = ShipmentEntity.UPDATE_STATUS,
+        query = """
+            update shipments s
+			set s.status = :status
+			where s.shipmentId = :shipmentId
+        """
+    )
+)
 @Entity(name = "shipments")
 @TypeDef(
     name = "pgsql_enum",
@@ -20,7 +37,8 @@ import javax.persistence.*
 class ShipmentEntity(
     @Id
     @GeneratedValue
-    var id: UUID? = null,
+    @Column(name = "shipment_id")
+    var shipmentId: UUID? = null,
 
     @Column(name = "order_id", nullable = false)
     var orderId: UUID,
@@ -40,10 +58,15 @@ class ShipmentEntity(
     @UpdateTimestamp
     @Column(name = "updated_at")
     var updatedAt: Instant? = null,
-)
+) {
+    companion object {
+        const val GET_BY_SHIPMENT_ID = "ShipmentEntity.get_by_shipment_id"
+        const val UPDATE_STATUS = "ShipmentEntity.update_status"
+    }
+}
 
 fun ShipmentEntity.toShipment() = Shipment(
-    id = id!!,
+    shipmentId = shipmentId!!,
     orderId = orderId,
     status = status,
     userId = userId

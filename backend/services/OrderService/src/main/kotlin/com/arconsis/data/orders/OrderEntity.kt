@@ -8,6 +8,7 @@ import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.Type
 import org.hibernate.annotations.TypeDef
 import org.hibernate.annotations.UpdateTimestamp
+import java.math.BigDecimal
 import java.time.Instant
 import java.util.*
 import javax.persistence.*
@@ -20,7 +21,8 @@ import javax.persistence.*
 class OrderEntity(
     @Id
     @GeneratedValue
-    var id: UUID? = null,
+    @Column(name = "order_id")
+    var orderId: UUID? = null,
 
     @Column(name = "user_id", nullable = false)
     var userId: UUID,
@@ -31,13 +33,13 @@ class OrderEntity(
     var status: OrderStatus,
 
     @Column(nullable = false)
-    var amount: Double,
+    var amount: BigDecimal,
 
     @Column(nullable = false)
     var currency: String,
 
     @Column(name = "product_id", nullable = false)
-    var productId: String,
+    var productId: UUID,
 
     @Column(nullable = false)
     var quantity: Int,
@@ -53,7 +55,7 @@ class OrderEntity(
 
 fun OrderEntity.toOrder() = Order(
     userId = userId,
-    id = id!!,
+    orderId = orderId!!,
     amount = amount,
     currency = currency,
     productId = productId,

@@ -10,8 +10,6 @@ class PaymentsDataStore {
     fun createPayment(payment: Payment, session: Mutiny.Session): Uni<Payment> {
         val paymentEntity = payment.toPaymentEntity()
         return session.persist(paymentEntity)
-            .map {
-                paymentEntity.toPayment()
-            }
+            .map { paymentEntity.toPayment() }
     }
 }

@@ -4,22 +4,23 @@ import com.arconsis.domain.outboxevents.AggregateType
 import com.arconsis.domain.outboxevents.CreateOutboxEvent
 import com.arconsis.domain.outboxevents.OutboxEventType
 import com.fasterxml.jackson.databind.ObjectMapper
+import java.math.BigDecimal
 import java.util.*
 
 data class CreateOrder(
     val userId: UUID,
-    val amount: Double,
+    val amount: BigDecimal,
     val currency: String,
-    val productId: String,
+    val productId: UUID,
     val quantity: Int,
 )
 
 data class Order(
-    val id: UUID,
+    val orderId: UUID,
     val userId: UUID,
-    val amount: Double,
+    val amount: BigDecimal,
     val currency: String,
-    val productId: String,
+    val productId: UUID,
     val quantity: Int,
     val status: OrderStatus,
 )
@@ -38,7 +39,7 @@ enum class OrderStatus {
 
 fun Order.toCreateOutboxEvent(objectMapper: ObjectMapper): CreateOutboxEvent = CreateOutboxEvent(
     aggregateType = AggregateType.ORDER,
-    aggregateId = this.id,
+    aggregateId = this.orderId,
     type = this.status.toOutboxEventType(),
     payload = objectMapper.writeValueAsString(this)
 )

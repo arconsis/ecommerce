@@ -7,10 +7,10 @@ CREATE TYPE shipment_status AS ENUM (
 
 CREATE TABLE shipments
 (
-    id       UUID PRIMARY KEY,
-    order_id UUID            NOT NULL UNIQUE,
-    user_id UUID            NOT NULL,
-    status   shipment_status NOT NULL,
+    shipment_id UUID PRIMARY KEY,
+    order_id    UUID NOT NULL UNIQUE,
+    user_id     UUID NOT NULL,
+    status      shipment_status NOT NULL,
     created_at TIMESTAMP,
     updated_at TIMESTAMP
 )

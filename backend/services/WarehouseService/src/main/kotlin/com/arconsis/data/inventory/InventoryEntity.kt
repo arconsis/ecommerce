@@ -1,5 +1,7 @@
 package com.arconsis.data.inventory
 
+import com.arconsis.data.inventory.InventoryEntity.Companion.GET_BY_INVENTORY_ID
+import com.arconsis.data.inventory.InventoryEntity.Companion.GET_BY_PRODUCT_ID
 import com.arconsis.data.inventory.InventoryEntity.Companion.INCREASE_PRODUCT_STOCK
 import com.arconsis.data.inventory.InventoryEntity.Companion.PRODUCT_ID
 import com.arconsis.data.inventory.InventoryEntity.Companion.STOCK
@@ -28,16 +30,31 @@ import javax.persistence.*
             set i.stock = i.stock + :$STOCK
             where i.productId = :$PRODUCT_ID
         """
+    ),
+    NamedQuery(
+        name = GET_BY_PRODUCT_ID,
+        query = """
+            select i from inventory i
+			where i.productId = :productId
+        """
+    ),
+    NamedQuery(
+        name = GET_BY_INVENTORY_ID,
+        query = """
+            select i from inventory i
+			where i.inventoryId = :inventoryId
+        """
     )
 )
 @Entity(name = "inventory")
 class InventoryEntity(
     @Id
     @GeneratedValue
-    var id: UUID? = null,
+    @Column(name = "inventory_id")
+    var inventoryId: UUID? = null,
 
     @Column(name = "product_id", nullable = false)
-    var productId: String,
+    var productId: UUID,
 
     @Column(nullable = false)
     var stock: Int,
@@ -51,10 +68,13 @@ class InventoryEntity(
     var updatedAt: Instant? = null,
 ) {
     companion object {
+        const val GET_BY_INVENTORY_ID = "InventoryEntity.get_by_inventory_id"
+        const val GET_BY_PRODUCT_ID = "InventoryEntity.get_by_product_id"
         const val UPDATE_PRODUCT_STOCK = "InventoryEntity.update_product_stock"
         const val INCREASE_PRODUCT_STOCK = "InventoryEntity.increase_product_stock"
         const val PRODUCT_ID = "product_id"
         const val STOCK = "stock"
+        const val INVENTORY_ID = "inventory_id"
     }
 }
 
@@ -64,7 +84,7 @@ fun CreateInventory.toInventoryEntity() = InventoryEntity(
 )
 
 fun InventoryEntity.toInventory() = Inventory(
-    id = id!!,
+    inventoryId = inventoryId!!,
     productId = productId,
     stock = stock,
 )

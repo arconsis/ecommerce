@@ -1,24 +1,20 @@
 package com.arconsis.domain.shipments
 
-import com.arconsis.domain.orders.Order
-import com.arconsis.domain.outboxevents.AggregateType
-import com.arconsis.domain.outboxevents.CreateOutboxEvent
-import com.fasterxml.jackson.core.type.TypeReference
-import com.fasterxml.jackson.databind.ObjectMapper
 import io.quarkus.kafka.client.serialization.ObjectMapperDeserializer
 import java.util.*
 
 data class Shipment(
-    val id: UUID,
+    val shipmentId: UUID,
     val orderId: UUID,
     val userId: UUID,
     val status: ShipmentStatus,
 )
 
 enum class ShipmentStatus {
-    PREPARING,
+    PREPARING_SHIPMENT,
     SHIPPED,
-    DELIVERED
+    DELIVERED,
+    CANCELLED,
 }
 
 val Shipment.isOutForShipment

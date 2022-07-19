@@ -4,14 +4,15 @@ import com.arconsis.domain.outboxevents.AggregateType
 import com.arconsis.domain.outboxevents.CreateOutboxEvent
 import com.arconsis.domain.outboxevents.OutboxEventType
 import com.fasterxml.jackson.databind.ObjectMapper
+import java.math.BigDecimal
 import java.util.*
 
 data class Payment(
-    val id: UUID?,
+    val paymentId: UUID?,
     val transactionId: UUID?,
     val orderId: UUID,
     val userId: UUID,
-    val amount: Double,
+    val amount: BigDecimal,
     val currency: String,
     val status: PaymentStatus,
 )
@@ -24,13 +25,13 @@ enum class PaymentStatus {
 data class CreatePayment(
     val orderId: UUID,
     val userId: UUID,
-    val amount: Double,
+    val amount: BigDecimal,
     val currency: String
 )
 
 fun Payment.toCreateOutboxEvent(objectMapper: ObjectMapper): CreateOutboxEvent = CreateOutboxEvent(
     aggregateType = AggregateType.PAYMENT,
-    aggregateId = this.id!!,
+    aggregateId = this.paymentId!!,
     type = this.status.toOutboxEventType(),
     payload = objectMapper.writeValueAsString(this)
 )
@@ -41,7 +42,7 @@ private fun PaymentStatus.toOutboxEventType(): OutboxEventType = when (this) {
 }
 
 fun CreatePayment.toPayment(transactionId: UUID, status: PaymentStatus) = Payment(
-    id = null,
+    paymentId = null,
     transactionId = transactionId,
     orderId = orderId,
     userId = userId,

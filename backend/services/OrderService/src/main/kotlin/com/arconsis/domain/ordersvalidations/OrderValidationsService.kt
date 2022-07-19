@@ -10,6 +10,7 @@ import com.arconsis.domain.processedevents.ProcessedEvent
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.smallrye.mutiny.Uni
 import org.hibernate.reactive.mutiny.Mutiny
+import org.hibernate.reactive.mutiny.Mutiny.Session
 import java.time.Instant
 import java.util.*
 import javax.enterprise.context.ApplicationScoped
@@ -32,46 +33,45 @@ class OrderValidationsService(
 
     private fun handleValidOrderValidation(eventId: UUID, orderValidation: OrderValidation): Uni<Void> {
         return sessionFactory.withTransaction { session, _ ->
-            processedEventsRepository.getEvent(eventId, session)
-                .updateOrder(orderValidation, OrderStatus.VALIDATED, session)
-                .createOutboxEvent(session)
-                .createProceedEvent(eventId, session)
-                .map {
-                    null
-                }
-        }
-    }
-
-    private fun Uni<ProcessedEvent?>.updateOrder(
-        orderValidation: OrderValidation,
-        orderStatus: OrderStatus,
-        session: Mutiny.Session
-    ) = flatMap { event ->
-        if (event != null) Uni.createFrom().voidItem()
-        ordersRepository.updateOrder(orderValidation.orderId, orderStatus, session)
-    }
-
-    private fun Uni<Order>.createOutboxEvent(session: Mutiny.Session) = flatMap { order ->
-        val createOutboxEvent = order.toCreateOutboxEvent(objectMapper)
-        outboxEventsRepository.createEvent(createOutboxEvent, session)
-    }
-
-    private fun <T> Uni<T>.createProceedEvent(eventId: UUID, session: Mutiny.Session) =
-        flatMap {
             val proceedEvent = ProcessedEvent(
                 eventId = eventId,
                 processedAt = Instant.now()
             )
+            val orderStatus = OrderStatus.VALIDATED
             processedEventsRepository.createEvent(proceedEvent, session)
-        }
-
-    private fun handleValidOrderInvalidation(eventId: UUID, orderValidation: OrderValidation): Uni<Void> =
-        sessionFactory.withTransaction { session, _ ->
-            processedEventsRepository.getEvent(eventId, session)
-                .updateOrder(orderValidation, OrderStatus.OUT_OF_STOCK, session)
-                .createProceedEvent(eventId, session)
+                .updateOrderStatus(orderValidation, orderStatus, session)
+                .createOutboxEvent(session)
                 .map {
                     null
                 }
         }
+    }
+
+    private fun handleValidOrderInvalidation(eventId: UUID, orderValidation: OrderValidation): Uni<Void> {
+        return sessionFactory.withTransaction { session, _ ->
+            val proceedEvent = ProcessedEvent(
+                eventId = eventId,
+                processedAt = Instant.now()
+            )
+            val orderStatus = OrderStatus.OUT_OF_STOCK
+            processedEventsRepository.createEvent(proceedEvent, session)
+                .updateOrderStatus(orderValidation, orderStatus, session)
+                .map {
+                    null
+                }
+        }
+    }
+
+    private fun Uni<ProcessedEvent>.updateOrderStatus(
+        orderValidation: OrderValidation,
+        orderStatus: OrderStatus,
+        session: Session
+    ) = flatMap {
+        ordersRepository.updateOrderStatus(orderValidation.orderId, orderStatus, session)
+    }
+
+    private fun Uni<Order>.createOutboxEvent(session: Session) = flatMap { order ->
+        val createOutboxEvent = order.toCreateOutboxEvent(objectMapper)
+        outboxEventsRepository.createEvent(createOutboxEvent, session)
+    }
 }

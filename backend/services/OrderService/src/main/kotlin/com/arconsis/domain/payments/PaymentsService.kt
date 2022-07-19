@@ -10,6 +10,7 @@ import com.arconsis.domain.processedevents.ProcessedEvent
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.smallrye.mutiny.Uni
 import org.hibernate.reactive.mutiny.Mutiny
+import org.hibernate.reactive.mutiny.Mutiny.Session
 import java.time.Instant
 import java.util.*
 import javax.enterprise.context.ApplicationScoped
@@ -31,48 +32,47 @@ class PaymentsService(
 
     private fun handleSucceedPayment(eventId: UUID, payment: Payment): Uni<Void> {
         return sessionFactory.withTransaction { session, _ ->
-            processedEventsRepository.getEvent(eventId, session)
-                .updateOrder(payment, OrderStatus.PAID, session)
-                .createOutboxEvent(session)
-                .createProceedEvent(eventId, session)
-                .map {
-                    null
-                }
-        }
-    }
-
-    private fun handleFailedPayment(eventId: UUID, payment: Payment): Uni<Void> {
-        return sessionFactory.withTransaction { session, _ ->
-            processedEventsRepository.getEvent(eventId, session)
-                .updateOrder(payment, OrderStatus.PAYMENT_FAILED, session)
-                .createOutboxEvent(session)
-                .createProceedEvent(eventId, session)
-                .map {
-                    null
-                }
-        }
-    }
-
-    private fun Uni<ProcessedEvent?>.updateOrder(
-        payment: Payment,
-        orderStatus: OrderStatus,
-        session: Mutiny.Session
-    ) = flatMap { event ->
-        if (event != null) Uni.createFrom().voidItem()
-        ordersRepository.updateOrder(payment.orderId, orderStatus, session)
-    }
-
-    private fun Uni<Order>.createOutboxEvent(session: Mutiny.Session) = flatMap { order ->
-        val createOutboxEvent = order.toCreateOutboxEvent(objectMapper)
-        outboxEventsRepository.createEvent(createOutboxEvent, session)
-    }
-
-    private fun <T> Uni<T>.createProceedEvent(eventId: UUID, session: Mutiny.Session) =
-        flatMap {
             val proceedEvent = ProcessedEvent(
                 eventId = eventId,
                 processedAt = Instant.now()
             )
+            val orderStatus = OrderStatus.PAID
             processedEventsRepository.createEvent(proceedEvent, session)
+                .updateOrderStatus(payment, orderStatus, session)
+                .createOutboxEvent(session)
+                .map {
+                    null
+                }
         }
+
+    }
+
+    private fun handleFailedPayment(eventId: UUID, payment: Payment): Uni<Void> {
+        return sessionFactory.withTransaction { session, _ ->
+            val proceedEvent = ProcessedEvent(
+                eventId = eventId,
+                processedAt = Instant.now()
+            )
+            val orderStatus = OrderStatus.PAYMENT_FAILED
+            processedEventsRepository.createEvent(proceedEvent, session)
+                .updateOrderStatus(payment, orderStatus, session)
+                .createOutboxEvent(session)
+                .map {
+                    null
+                }
+        }
+    }
+
+    private fun Uni<ProcessedEvent>.updateOrderStatus(
+        payment: Payment,
+        orderStatus: OrderStatus,
+        session: Session
+    ) = flatMap { _ ->
+        ordersRepository.updateOrderStatus(payment.orderId, orderStatus, session)
+    }
+
+    private fun Uni<Order>.createOutboxEvent(session: Session) = flatMap { order ->
+        val createOutboxEvent = order.toCreateOutboxEvent(objectMapper)
+        outboxEventsRepository.createEvent(createOutboxEvent, session)
+    }
 }

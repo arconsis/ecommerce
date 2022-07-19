@@ -28,6 +28,8 @@ class OrdersService(
     }
 
     fun getOrder(orderId: UUID): Uni<Order> {
-        return ordersRepository.getOrder(orderId)
+        return sessionFactory.withTransaction { session, _ ->
+            ordersRepository.getOrder(orderId, session)
+        }
     }
 }

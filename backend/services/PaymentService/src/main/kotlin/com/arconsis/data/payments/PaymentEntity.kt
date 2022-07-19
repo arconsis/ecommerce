@@ -9,6 +9,7 @@ import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.Type
 import org.hibernate.annotations.TypeDef
 import org.hibernate.annotations.UpdateTimestamp
+import java.math.BigDecimal
 import java.time.Instant
 import java.util.*
 import javax.persistence.*
@@ -21,7 +22,8 @@ import javax.persistence.*
 class PaymentEntity(
     @Id
     @GeneratedValue
-    var id: UUID? = null,
+    @Column(name = "payment_id")
+    var paymentId: UUID? = null,
 
     @Column(name = "transaction_id", nullable = true)
     var transactionId: UUID?,
@@ -38,7 +40,7 @@ class PaymentEntity(
     var status: PaymentStatus,
 
     @Column(nullable = false)
-    var amount: Double,
+    var amount: BigDecimal,
 
     @Column(nullable = false)
     var currency: String,
@@ -53,7 +55,7 @@ class PaymentEntity(
 )
 
 fun PaymentEntity.toPayment() = Payment(
-    id = id!!,
+    paymentId = paymentId!!,
     transactionId = transactionId,
     orderId = orderId,
     userId = userId,
@@ -73,7 +75,7 @@ fun Payment.toPaymentEntity() = PaymentEntity(
 
 fun Order.toCreatePayment() = CreatePayment(
     userId = userId,
-    orderId = id,
+    orderId = orderId,
     amount = amount,
     currency = currency,
 )

@@ -7,13 +7,9 @@ import org.hibernate.reactive.mutiny.Mutiny
 import javax.enterprise.context.ApplicationScoped
 
 @ApplicationScoped
-class OutboxEventsRepository {
-    fun createEvent(createOutboxEvent: CreateOutboxEvent, session: Mutiny.Session): Uni<OutboxEvent> {
-        val outboxEventEntity = createOutboxEvent.toOutboxEventEntity()
-        return session.persist(outboxEventEntity)
-            .map {
-                outboxEventEntity.toOutboxEvent()
-            }
+class OutboxEventsRepository (val outboxEventsDataStore: OutboxEventsDataStore) {
 
+    fun createEvent(createOutboxEvent: CreateOutboxEvent, session: Mutiny.Session): Uni<OutboxEvent> {
+        return outboxEventsDataStore.createEvent(createOutboxEvent, session)
     }
 }

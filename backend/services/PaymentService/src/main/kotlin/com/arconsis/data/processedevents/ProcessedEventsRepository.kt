@@ -7,19 +7,9 @@ import java.util.*
 import javax.enterprise.context.ApplicationScoped
 
 @ApplicationScoped
-class ProcessedEventsRepository {
-    fun createEvent(event: ProcessedEvent, session: Mutiny.Session): Uni<ProcessedEvent> {
-        val eventEntity = event.toProcessedEventEntity()
-        return session.persist(event.toProcessedEventEntity())
-            .map {
-                eventEntity.toProcessedEvent()
-            }
-    }
+class ProcessedEventsRepository (val proceedEventsDataStore: ProceedEventsDataStore) {
 
-    fun getEvent(eventId: UUID, session: Mutiny.Session): Uni<ProcessedEvent?> {
-        return session.find(ProcessedEventEntity::class.java, eventId)
-            .map { eventEntity ->
-                eventEntity?.toProcessedEvent()
-            }
+    fun createEvent(event: ProcessedEvent, session: Mutiny.Session): Uni<ProcessedEvent> {
+        return proceedEventsDataStore.createEvent(event, session)
     }
 }

@@ -1,23 +1,25 @@
 package com.arconsis.domain.inventory
 
 import com.arconsis.data.inventory.InventoryRepository
+import io.smallrye.mutiny.Uni
+import org.hibernate.reactive.mutiny.Mutiny
 import java.util.*
 import javax.enterprise.context.ApplicationScoped
 
 @ApplicationScoped
 class InventoryService(
     private val inventoryRepository: InventoryRepository,
+    private val sessionFactory: Mutiny.SessionFactory,
 ) {
-
-    suspend fun getInventory(id: UUID): Inventory? {
-        return inventoryRepository.getInventory(id)
+    fun getInventory(id: UUID): Uni<Inventory?> {
+        return sessionFactory.withTransaction { session, _ ->
+            inventoryRepository.getInventory(id, session)
+        }
     }
 
-    suspend fun createInventory(createInventory: CreateInventory): Inventory {
-        return inventoryRepository.createInventory(createInventory)
-    }
-
-    suspend fun updateInventory(updateInventory: UpdateInventory): Inventory {
-        return inventoryRepository.updateInventory(updateInventory)
+    fun createInventory(createInventory: CreateInventory): Uni<Inventory> {
+        return sessionFactory.withTransaction { session, _ ->
+            inventoryRepository.createInventory(createInventory, session)
+        }
     }
 }

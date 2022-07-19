@@ -1,5 +1,6 @@
 package com.arconsis.domain.shipments
 
+import com.arconsis.data.common.asPair
 import com.arconsis.data.common.toUni
 import com.arconsis.data.outboxevents.OutboxEventsRepository
 import com.arconsis.data.shipments.ShipmentsRepository
@@ -12,19 +13,21 @@ import javax.enterprise.context.ApplicationScoped
 class ShipmentsService(
     private val shipmentsRepository: ShipmentsRepository,
     private val outboxEventsRepository: OutboxEventsRepository,
+    private val sessionFactory: Mutiny.SessionFactory,
     private val objectMapper: ObjectMapper,
-    private val sessionFactory: Mutiny.SessionFactory
 ) {
     fun updateShipment(updateShipment: UpdateShipment): Uni<Shipment> {
         return sessionFactory.withTransaction { session, _ ->
-            shipmentsRepository.updateShipment(updateShipment, session)
+            shipmentsRepository.updateShipmentStatus(updateShipment.shipmentId, updateShipment.status, session)
                 .flatMap { shipment ->
                     val createOutboxEvent = shipment.toCreateOutboxEvent(objectMapper)
-                    outboxEventsRepository.createEvent(createOutboxEvent, session)
-                    shipment.toUni()
+                    Uni.combine().all().unis(
+                        outboxEventsRepository.createEvent(createOutboxEvent, session),
+                        shipment.toUni(),
+                    ).asPair()
                 }
-                .map {
-                    it
+                .map { (_, shipment) ->
+                    shipment
                 }
         }
     }

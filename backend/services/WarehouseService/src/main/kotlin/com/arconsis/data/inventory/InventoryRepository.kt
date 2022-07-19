@@ -1,63 +1,32 @@
 package com.arconsis.data.inventory
 
-import com.arconsis.data.inventory.InventoryEntity.Companion.PRODUCT_ID
-import com.arconsis.data.inventory.InventoryEntity.Companion.STOCK
 import com.arconsis.domain.inventory.CreateInventory
 import com.arconsis.domain.inventory.Inventory
-import com.arconsis.domain.inventory.UpdateInventory
 import io.smallrye.mutiny.Uni
-import io.smallrye.mutiny.coroutines.awaitSuspending
-import org.hibernate.reactive.mutiny.Mutiny
+import org.hibernate.reactive.mutiny.Mutiny.Session
 import java.util.*
 import javax.enterprise.context.ApplicationScoped
 
 @ApplicationScoped
-class InventoryRepository(private val sessionFactory: Mutiny.SessionFactory) {
+class InventoryRepository(private val inventoryDataStore: InventoryDataStore) {
 
-    suspend fun getInventory(id: UUID): Inventory? {
-        val inventoryEntity = sessionFactory.withTransaction { s, _ ->
-            s.find(InventoryEntity::class.java, id)
-        }.awaitSuspending()
-        return inventoryEntity?.toInventory()
+    fun getInventory(id: UUID, session: Session): Uni<Inventory?> {
+        return inventoryDataStore.getInventory(id, session)
     }
 
-    suspend fun createInventory(createInventory: CreateInventory): Inventory {
-        val inventoryEntity = createInventory.toInventoryEntity()
-        sessionFactory.withTransaction { s, _ ->
-            s.persist(inventoryEntity)
-        }.awaitSuspending()
-
-        return inventoryEntity.toInventory()
+    fun getInventoryByProductId(productId: UUID, session: Session): Uni<Inventory?> {
+        return inventoryDataStore.getInventoryByProductId(productId, session)
     }
 
-    suspend fun updateInventory(updateInventory: UpdateInventory): Inventory {
-        val inventoryEntity = sessionFactory.withTransaction { s, _ ->
-            s.find(InventoryEntity::class.java, updateInventory.id)
-                .onItem().ifNotNull().invoke { entity -> entity.stock = updateInventory.stock ?: entity.stock }
-                .onItem().ifNotNull().transformToUni { entity -> s.merge(entity) }
-        }.awaitSuspending()
-        return inventoryEntity.toInventory()
+    fun createInventory(createInventory: CreateInventory, session: Session): Uni<Inventory> {
+        return inventoryDataStore.createInventory(createInventory, session)
     }
 
-    fun reserveProductStock(productId: String, stock: Int, session: Mutiny.Session): Uni<Boolean> {
-        return session.createNamedQuery<InventoryEntity>(InventoryEntity.UPDATE_PRODUCT_STOCK)
-            .setParameter(PRODUCT_ID, productId)
-            .setParameter(STOCK, stock)
-            .executeUpdate()
-            .map { updatedRows -> updatedRows == 1 }
-            // TODO: Check if we need to handle only the update stock constraint error here
-            .onFailure().recoverWithItem(false)
+    fun reserveProductStock(productId: UUID, stock: Int, session: Session): Uni<Boolean> {
+        return inventoryDataStore.reserveProductStock(productId, stock, session)
     }
 
-    fun increaseProductStock(productId: String, stock: Int): Uni<Boolean> {
-        return sessionFactory.withTransaction { s, _ ->
-            s.createNamedQuery<InventoryEntity>(InventoryEntity.UPDATE_PRODUCT_STOCK)
-                .setParameter(PRODUCT_ID, productId)
-                .setParameter(STOCK, stock)
-                .executeUpdate()
-                .map { updatedRows -> updatedRows == 1 }
-                // TODO: Check if we need to handle only the update stock constraint error here
-                .onFailure().recoverWithItem(false)
-        }
+    fun increaseProductStock(productId: UUID, stock: Int, session: Session): Uni<Boolean> {
+        return inventoryDataStore.increaseProductStock(productId, stock, session)
     }
 }

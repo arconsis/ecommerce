@@ -12,12 +12,12 @@ CREATE TYPE order_status AS ENUM (
 
 CREATE TABLE orders
 (
-    id         UUID PRIMARY KEY,
+    order_id   UUID PRIMARY KEY,
     user_id    UUID         NOT NULL,
     status     order_status NOT NULL,
     amount     NUMERIC      NOT NULL,
     currency   VARCHAR      NOT NULL,
-    product_id VARCHAR      NOT NULL,
+    product_id UUID      NOT NULL,
     quantity   INTEGER      NOT NULL,
     created_at TIMESTAMP,
     updated_at TIMESTAMP

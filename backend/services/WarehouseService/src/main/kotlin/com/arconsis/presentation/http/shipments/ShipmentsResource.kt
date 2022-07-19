@@ -18,7 +18,7 @@ class ShipmentsResource(private val shipmentsService: ShipmentsService) {
     @PUT
     @Path("/{id}")
     fun updateShipment(@PathParam("id") id: UUID, updateShipment: UpdateShipment): Uni<Shipment> {
-        if (id != updateShipment.id) {
+        if (id != updateShipment.shipmentId) {
             throw BadRequestException("Shipment id: $id is not correct")
         }
         return shipmentsService.updateShipment(updateShipment)

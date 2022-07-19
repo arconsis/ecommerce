@@ -5,10 +5,10 @@ import java.util.*
 
 data class Order(
     val userId: UUID,
-    val id: UUID,
-    val amount: String,
+    val orderId: UUID,
+    val amount: BigDecimal,
     val currency: String,
-    val productId: String,
+    val productId: UUID,
     val quantity: Int,
     val status: OrderStatus,
 )

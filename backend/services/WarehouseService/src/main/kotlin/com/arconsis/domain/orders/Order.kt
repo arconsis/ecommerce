@@ -1,14 +1,15 @@
 package com.arconsis.domain.orders
 
 import io.quarkus.kafka.client.serialization.ObjectMapperDeserializer
+import java.math.BigDecimal
 import java.util.*
 
 data class Order(
-    val id: UUID,
+    val orderId: UUID,
     val userId: UUID,
-    val amount: Double,
+    val amount: BigDecimal,
     val currency: String,
-    val productId: String,
+    val productId: UUID,
     val quantity: Int,
     val status: OrderStatus,
 )
