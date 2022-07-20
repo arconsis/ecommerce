@@ -19,7 +19,21 @@ spec:
                 name: order-service
                 port:
                   number: 8080
+          - path: /baskets
+            pathType: Prefix
+            backend:
+              service:
+                name: order-service
+                port:
+                  number: 8080
           - path: /inventory
+            pathType: Prefix
+            backend:
+              service:
+                name: warehouse-service
+                port:
+                  number: 8080
+          - path: /products
             pathType: Prefix
             backend:
               service:
