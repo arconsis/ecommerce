@@ -1,9 +1,7 @@
 package com.arconsis.data.orders
 
 import com.arconsis.data.PostgreSQLEnumType
-import com.arconsis.data.orderitems.OrderItemEntity
 import com.arconsis.data.orders.OrderEntity.Companion.UPDATE_ORDER_STATUS
-import com.arconsis.domain.orderitems.OrderItem
 import com.arconsis.domain.orders.CreateOrder
 import com.arconsis.domain.orders.Order
 import com.arconsis.domain.orders.OrderStatus
@@ -37,6 +35,10 @@ class OrderEntity(
     @Column(name = "order_id")
     var orderId: UUID? = null,
 
+    // FK
+    @Column(name = "basket_id")
+    var basketId: UUID,
+
     @Column(name = "user_id", nullable = false)
     var userId: UUID,
 
@@ -58,9 +60,6 @@ class OrderEntity(
     @UpdateTimestamp
     @Column(name = "updated_at")
     var updatedAt: Instant? = null,
-
-    @OneToMany(mappedBy = "orderId", cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
-    var itemEntities: MutableList<OrderItemEntity> = mutableListOf()
 ) {
     companion object {
         const val UPDATE_ORDER_STATUS = "OrderEntity.update_order_status"
@@ -68,24 +67,17 @@ class OrderEntity(
 }
 
 fun OrderEntity.toOrder() = Order(
-    userId = userId,
     orderId = orderId!!,
+    basketId = basketId,
+    userId = userId,
     amount = amount,
     currency = currency,
     status = status,
-    items = itemEntities.map {
-        OrderItem(
-            itemId = it.itemId!!,
-            productId = it.productId,
-            orderId = it.orderId,
-            price = it.price,
-            currency = it.currency,
-            quantity = it.quantity
-        )
-    }
+    items = emptyList()
 )
 
 fun CreateOrder.toOrderEntity(status: OrderStatus) = OrderEntity(
+    basketId = basketId,
     userId = userId,
     amount = amount,
     currency = currency,

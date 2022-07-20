@@ -5,6 +5,7 @@ import java.util.*
 
 data class Order(
     val orderId: UUID,
+    val basketId: UUID,
     val userId: UUID,
     val amount: BigDecimal,
     val currency: String,

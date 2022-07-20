@@ -1,6 +1,6 @@
 package com.arconsis.domain.ordersvalidations
 
-import com.arconsis.domain.orderitems.OrderItem
+import com.arconsis.domain.orders.OrderItem
 import com.arconsis.domain.outboxevents.AggregateType
 import com.arconsis.domain.outboxevents.CreateOutboxEvent
 import com.arconsis.domain.outboxevents.OutboxEventType
@@ -11,6 +11,7 @@ data class OrderValidation(
     val orderId: UUID,
     val userId: UUID,
     val status: OrderValidationStatus,
+    val basketId: UUID,
     val items: List<OrderItem>
 )
 
