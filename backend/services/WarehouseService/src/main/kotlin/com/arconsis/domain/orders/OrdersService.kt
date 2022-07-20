@@ -106,6 +106,7 @@ class OrdersService(
 	private fun Uni<Boolean>.createOrderValidation(order: Order) = map { stockUpdated ->
 		val orderValidation = OrderValidation(
 			orderId = order.orderId,
+			basketId = order.basketId,
 			userId = order.userId,
 			status = if (stockUpdated) OrderValidationStatus.VALIDATED else OrderValidationStatus.INVALID,
 			items = order.items

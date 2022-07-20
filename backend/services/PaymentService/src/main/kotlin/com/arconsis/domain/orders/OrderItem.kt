@@ -1,4 +1,4 @@
-package com.arconsis.domain.orderitems
+package com.arconsis.domain.orders
 
 import java.math.BigDecimal
 import java.util.*
