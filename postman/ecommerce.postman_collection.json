@@ -16,7 +16,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"userId\": \"b571ddc7-f9b8-41b5-bcec-82ae387bdbb5\",\n    \"amount\": \"100\",\n    \"currency\": \"EUR\",\n    \"items\": [\n        {\n            \"productId\": \"a75316f1-a20f-47a6-85c2-bab1b2475e78\",\n    \"quantity\": 1,\n            \"price\": \"25\",\n            \"currency\": \"EUR\"\n        },\n        {\n            \"productId\": \"60f7aa01-48ea-4516-a5c6-8f8a972f7fc0\",\n    \"quantity\": 300,\n            \"price\": \"75\",\n            \"currency\": \"EUR\"\n        }\n    ]\n    \n}",
+              "raw": "{\n    \"userId\": \"b571ddc7-f9b8-41b5-bcec-82ae387bdbb5\",\n    \"amount\": \"100\",\n    \"currency\": \"EUR\",\n    \"basketId\": \"e3588a09-9f1a-4105-8620-cff2663105b2\"\n    \n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -36,6 +36,32 @@
           "response": []
         },
         {
+          "name": "Create basket",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"userId\": \"b571ddc7-f9b8-41b5-bcec-82ae387bdbb5\",\n    \"amount\": \"100\",\n    \"currency\": \"EUR\",\n    \"items\": [\n        {\n            \"productId\": \"d6fbbf70-0fe6-4613-b69b-0a8ea862853e\",\n            \"quantity\": 1,\n            \"price\": \"25\",\n            \"currency\": \"EUR\",\n            \"thumbnail\": \"https://test.com\",\n            \"productName\": \"productName\",\n            \"description\": \"description\"\n        },\n        {\n            \"productId\": \"cad08f8d-428e-4559-af04-5b58bb8113ca\",\n            \"quantity\": 3,\n            \"price\": \"75\",\n            \"currency\": \"EUR\",\n            \"thumbnail\": \"https://test.com\",\n            \"productName\": \"productName\",\n            \"description\": \"description\"\n        }\n    ]\n    \n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{orders-host}}/baskets",
+              "host": [
+                "{{orders-host}}"
+              ],
+              "path": [
+                "baskets"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
           "name": "Get specific order",
           "request": {
             "method": "GET",
@@ -48,6 +74,24 @@
               "path": [
                 "orders",
                 "6f640b4c-6094-4567-afce-8fb0d63da9f3"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get specific basket",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{orders-host}}/baskets/f121da14-78dc-4efe-b4dd-75d020f0d9de",
+              "host": [
+                "{{orders-host}}"
+              ],
+              "path": [
+                "baskets",
+                "f121da14-78dc-4efe-b4dd-75d020f0d9de"
               ]
             }
           },
