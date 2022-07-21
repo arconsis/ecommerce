@@ -30,6 +30,7 @@ enum class OutboxEventType {
     ORDER_VALIDATED,
     ORDER_OUT_OF_STOCK,
     ORDER_PAID,
+    ORDER_PAYMENT_IN_PROGRESS,
     ORDER_SHIPPED,
     ORDER_COMPLETED,
     ORDER_PAYMENT_FAILED,
@@ -38,6 +39,7 @@ enum class OutboxEventType {
     // order-validation
     ORDER_INVALID,
     // payments
+    PAYMENT_IN_PROGRESS,
     PAYMENT_SUCCEED,
     PAYMENT_FAILED,
     // shipment

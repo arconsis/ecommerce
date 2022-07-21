@@ -1,8 +1,12 @@
 package com.arconsis.domain.shipments
 
+import com.arconsis.common.asPair
+import com.arconsis.common.toUni
+import com.arconsis.data.baskets.BasketsRepository
 import com.arconsis.data.orders.OrdersRepository
 import com.arconsis.data.outboxevents.OutboxEventsRepository
 import com.arconsis.data.processedevents.ProcessedEventsRepository
+import com.arconsis.domain.baskets.toOrderItem
 import com.arconsis.domain.orders.Order
 import com.arconsis.domain.orders.OrderStatus
 import com.arconsis.domain.orders.toCreateOutboxEvent
@@ -17,6 +21,7 @@ import javax.enterprise.context.ApplicationScoped
 
 @ApplicationScoped
 class ShipmentsService(
+	private val basketsRepository: BasketsRepository,
 	private val ordersRepository: OrdersRepository,
 	private val outboxEventsRepository: OutboxEventsRepository,
 	private val processedEventsRepository: ProcessedEventsRepository,
@@ -40,6 +45,16 @@ class ShipmentsService(
 			val orderStatus = OrderStatus.COMPLETED
 			processedEventsRepository.createEvent(proceedEvent, session)
 				.updateOrderStatus(shipment, orderStatus, session)
+				.flatMap { order ->
+					Uni.combine().all().unis(
+						basketsRepository.getBasket(order.basketId, session),
+						order.toUni(),
+					).asPair()
+				}
+				.map { (basket, order) ->
+					val enrichedOrder = order.copy(items = basket!!.items.map { it.toOrderItem(order.orderId) })
+					enrichedOrder
+				}
 				.createOutboxEvent(session)
 				.map {
 					null
@@ -56,6 +71,16 @@ class ShipmentsService(
 			val orderStatus = OrderStatus.SHIPPED
 			processedEventsRepository.createEvent(proceedEvent, session)
 				.updateOrderStatus(shipment, orderStatus, session)
+				.flatMap { order ->
+					Uni.combine().all().unis(
+						basketsRepository.getBasket(order.basketId, session),
+						order.toUni(),
+					).asPair()
+				}
+				.map { (basket, order) ->
+					val enrichedOrder = order.copy(items = basket!!.items.map { it.toOrderItem(order.orderId) })
+					enrichedOrder
+				}
 				.createOutboxEvent(session)
 				.map {
 					null

@@ -1,8 +1,8 @@
 package com.arconsis.domain.orders
 
+import com.arconsis.data.checkouts.CheckoutsRepository
 import com.arconsis.data.outboxevents.OutboxEventsRepository
 import com.arconsis.data.payments.PaymentsRepository
-import com.arconsis.data.payments.toCreatePayment
 import com.arconsis.data.processedevents.ProcessedEventsRepository
 import com.arconsis.domain.payments.toCreateOutboxEvent
 import com.arconsis.domain.processedevents.ProcessedEvent
@@ -15,6 +15,7 @@ import javax.enterprise.context.ApplicationScoped
 
 @ApplicationScoped
 class OrdersService(
+    private val checkoutsRepository: CheckoutsRepository,
     private val paymentsRepository: PaymentsRepository,
     private val processedEventsRepository: ProcessedEventsRepository,
     private val outboxEventsRepository: OutboxEventsRepository,
@@ -36,8 +37,11 @@ class OrdersService(
                 processedAt = Instant.now()
             )
             processedEventsRepository.createEvent(proceedEvent, session)
-                .flatMap {
-                    paymentsRepository.createPayment(eventId, order.toCreatePayment(), session)
+                .map {
+                    checkoutsRepository.createCheckoutSession(order.orderId, order.items)
+                }
+                .flatMap { checkoutSession ->
+                    paymentsRepository.createPayment(eventId, order.toCreatePayment(checkoutSession.id, checkoutSession.url), session)
                 }
                 .flatMap { payment ->
                     val createOutboxEvent = payment.toCreateOutboxEvent(objectMapper)

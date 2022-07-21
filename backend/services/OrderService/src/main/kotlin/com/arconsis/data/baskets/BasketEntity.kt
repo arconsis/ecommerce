@@ -2,6 +2,7 @@ package com.arconsis.data.baskets
 
 import com.arconsis.data.PostgreSQLEnumType
 import com.arconsis.data.basketitems.BasketItemEntity
+import com.arconsis.data.baskets.BasketEntity.Companion.GET_BY_BASKET_ID
 import com.arconsis.data.orders.OrderEntity
 import com.arconsis.domain.baskets.Basket
 import com.arconsis.domain.baskets.BasketItem
@@ -16,7 +17,7 @@ import javax.persistence.*
 
 @NamedQueries(
 	NamedQuery(
-		name = BasketEntity.GET_BY_BASKET_ID,
+		name = GET_BY_BASKET_ID,
 		query = """
             select p from baskets p
 			where p.basketId = :basketId
