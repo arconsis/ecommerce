@@ -10,13 +10,14 @@ data class Order(
     val amount: BigDecimal,
     val currency: String,
     val status: OrderStatus,
-    val items: List<OrderItem>
+    val items: List<OrderItem>,
 )
 
 enum class OrderStatus {
     REQUESTED,
     VALIDATED,
     OUT_OF_STOCK,
+    PAYMENT_IN_PROGRESS,
     PAID,
     SHIPPED,
     COMPLETED,

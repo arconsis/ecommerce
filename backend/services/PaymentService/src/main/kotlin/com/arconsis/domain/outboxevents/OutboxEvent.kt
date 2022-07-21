@@ -24,12 +24,14 @@ enum class AggregateType {
 
 enum class OutboxEventType {
     // payments
+    PAYMENT_IN_PROGRESS,
     PAYMENT_SUCCEED,
     PAYMENT_FAILED,
     // orders
     ORDER_REQUESTED,
     ORDER_VALIDATED,
     ORDER_OUT_OF_STOCK,
+    ORDER_PAYMENT_IN_PROGRESS,
     ORDER_PAID,
     ORDER_SHIPPED,
     ORDER_COMPLETED,

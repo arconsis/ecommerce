@@ -1,4 +1,5 @@
 CREATE TYPE payment_status AS ENUM (
+    'IN_PROGRESS',
     'SUCCEED',
     'FAILED'
 );

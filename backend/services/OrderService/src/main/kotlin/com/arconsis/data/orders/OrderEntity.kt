@@ -2,6 +2,7 @@ package com.arconsis.data.orders
 
 import com.arconsis.data.PostgreSQLEnumType
 import com.arconsis.data.orders.OrderEntity.Companion.UPDATE_ORDER_STATUS
+import com.arconsis.domain.checkout.Checkout
 import com.arconsis.domain.orders.CreateOrder
 import com.arconsis.domain.orders.Order
 import com.arconsis.domain.orders.OrderStatus
@@ -36,11 +37,20 @@ class OrderEntity(
     var orderId: UUID? = null,
 
     // FK
-    @Column(name = "basket_id")
+    @Column(name = "basket_id", unique = true)
     var basketId: UUID,
 
     @Column(name = "user_id", nullable = false)
     var userId: UUID,
+
+    // TODO: perhaps can be moved to another table 1:1
+    // checkout session from PSP
+    @Column(name = "checkout_session_id", nullable = true, unique = true)
+    var checkoutSessionId: String? = null,
+
+    // checkout session from PSP
+    @Column(name = "checkout_url", nullable = true, unique = true)
+    var checkoutUrl: String? = null,
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "order_status")
@@ -73,7 +83,10 @@ fun OrderEntity.toOrder() = Order(
     amount = amount,
     currency = currency,
     status = status,
-    items = emptyList()
+    items = emptyList(),
+    checkout = if (checkoutSessionId != null && checkoutUrl != null) {
+        Checkout(checkoutSessionId = checkoutSessionId!!, checkoutUrl = checkoutUrl!!)
+    } else null
 )
 
 fun CreateOrder.toOrderEntity(status: OrderStatus) = OrderEntity(

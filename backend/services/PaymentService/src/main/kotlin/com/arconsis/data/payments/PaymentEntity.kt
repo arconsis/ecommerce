@@ -1,6 +1,7 @@
 package com.arconsis.data.payments
 
 import com.arconsis.data.PostgreSQLEnumType
+import com.arconsis.domain.checkouts.Checkout
 import com.arconsis.domain.orders.Order
 import com.arconsis.domain.payments.CreatePayment
 import com.arconsis.domain.payments.Payment
@@ -26,13 +27,22 @@ class PaymentEntity(
     var paymentId: UUID? = null,
 
     @Column(name = "transaction_id", nullable = true)
-    var transactionId: UUID?,
+    var transactionId: UUID? = null,
 
     @Column(name = "user_id", nullable = false)
     var userId: UUID,
 
     @Column(name = "order_id", nullable = false)
     var orderId: UUID,
+
+    // TODO: perhaps can be moved to another table 1:1
+    // checkout session from PSP
+    @Column(name = "checkout_session_id", nullable = false, unique = true)
+    var checkoutSessionId: String,
+
+    // checkout session from PSP
+    @Column(name = "checkout_url", nullable = false, unique = true)
+    var checkoutUrl: String,
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "order_status")
@@ -62,20 +72,28 @@ fun PaymentEntity.toPayment() = Payment(
     amount = amount,
     currency = currency,
     status = status,
+    checkout = Checkout(
+        checkoutSessionId = checkoutSessionId,
+        checkoutUrl = checkoutUrl
+    )
 )
 
-fun Payment.toPaymentEntity() = PaymentEntity(
-    transactionId = transactionId,
+//fun Payment.toPaymentEntity() = PaymentEntity(
+//    transactionId = transactionId,
+//    userId = userId,
+//    orderId = orderId,
+//    amount = amount,
+//    currency = currency,
+//    status = status,
+//    checkoutSessionId = checkoutSessionId
+//)
+
+fun CreatePayment.toPaymentEntity(status: PaymentStatus) = PaymentEntity(
     userId = userId,
     orderId = orderId,
     amount = amount,
     currency = currency,
     status = status,
-)
-
-fun Order.toCreatePayment() = CreatePayment(
-    userId = userId,
-    orderId = orderId,
-    amount = amount,
-    currency = currency,
+    checkoutSessionId = checkoutSessionId,
+    checkoutUrl = checkoutUrl,
 )

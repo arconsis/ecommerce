@@ -1,5 +1,6 @@
 package com.arconsis.domain.payments
 
+import com.arconsis.domain.checkouts.Checkout
 import com.arconsis.domain.outboxevents.AggregateType
 import com.arconsis.domain.outboxevents.CreateOutboxEvent
 import com.arconsis.domain.outboxevents.OutboxEventType
@@ -15,9 +16,11 @@ data class Payment(
     val amount: BigDecimal,
     val currency: String,
     val status: PaymentStatus,
+    val checkout: Checkout
 )
 
 enum class PaymentStatus {
+    IN_PROGRESS,
     SUCCEED,
     FAILED,
 }
@@ -26,7 +29,9 @@ data class CreatePayment(
     val orderId: UUID,
     val userId: UUID,
     val amount: BigDecimal,
-    val currency: String
+    val currency: String,
+    val checkoutSessionId: String,
+    val checkoutUrl: String
 )
 
 fun Payment.toCreateOutboxEvent(objectMapper: ObjectMapper): CreateOutboxEvent = CreateOutboxEvent(
@@ -39,14 +44,5 @@ fun Payment.toCreateOutboxEvent(objectMapper: ObjectMapper): CreateOutboxEvent =
 private fun PaymentStatus.toOutboxEventType(): OutboxEventType = when (this) {
     PaymentStatus.SUCCEED -> OutboxEventType.PAYMENT_SUCCEED
     PaymentStatus.FAILED -> OutboxEventType.PAYMENT_FAILED
+    PaymentStatus.IN_PROGRESS -> OutboxEventType.PAYMENT_IN_PROGRESS
 }
-
-fun CreatePayment.toPayment(transactionId: UUID, status: PaymentStatus) = Payment(
-    paymentId = null,
-    transactionId = transactionId,
-    orderId = orderId,
-    userId = userId,
-    amount = amount,
-    currency = currency,
-    status = status,
-)
