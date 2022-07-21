@@ -30,24 +30,6 @@ class OrdersService(
         }
     }
 
-//    private fun handleValidOrder(eventId: UUID, order: Order): Uni<Void> {
-//        return sessionFactory.withTransaction { session, _ ->
-//            val proceedEvent = ProcessedEvent(
-//                eventId = eventId,
-//                processedAt = Instant.now()
-//            )
-//            processedEventsRepository.createEvent(proceedEvent, session)
-//                .flatMap {
-//                    paymentsRepository.createPayment(eventId, order.toCreatePayment(), session)
-//                }
-//                .flatMap { payment ->
-//                    val createOutboxEvent = payment.toCreateOutboxEvent(objectMapper)
-//                    outboxEventsRepository.createEvent(createOutboxEvent, session)
-//                }
-//                .map { null }
-//        }
-//    }
-
     private fun handleValidOrder(eventId: UUID, order: Order): Uni<Void> {
         return sessionFactory.withTransaction { session, _ ->
             val proceedEvent = ProcessedEvent(

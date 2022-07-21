@@ -40,6 +40,8 @@ class CheckoutsRemoteStore(
 					.build()
 				}
 			)
+			.putMetadata("order_id", orderId.toString())
+			.setPaymentIntentData(SessionCreateParams.PaymentIntentData.builder().putMetadata("order_id", orderId.toString()).build())
 			.build()
 		return Session.create(params)
 	}

@@ -2,7 +2,6 @@ package com.arconsis.data.payments
 
 import com.arconsis.data.PostgreSQLEnumType
 import com.arconsis.domain.checkouts.Checkout
-import com.arconsis.domain.orders.Order
 import com.arconsis.domain.payments.CreatePayment
 import com.arconsis.domain.payments.Payment
 import com.arconsis.domain.payments.PaymentStatus
@@ -15,11 +14,11 @@ import java.time.Instant
 import java.util.*
 import javax.persistence.*
 
-@Entity(name = "payments")
 @TypeDef(
     name = "pgsql_enum",
     typeClass = PostgreSQLEnumType::class
 )
+@Entity(name = "payments")
 class PaymentEntity(
     @Id
     @GeneratedValue
@@ -77,16 +76,6 @@ fun PaymentEntity.toPayment() = Payment(
         checkoutUrl = checkoutUrl
     )
 )
-
-//fun Payment.toPaymentEntity() = PaymentEntity(
-//    transactionId = transactionId,
-//    userId = userId,
-//    orderId = orderId,
-//    amount = amount,
-//    currency = currency,
-//    status = status,
-//    checkoutSessionId = checkoutSessionId
-//)
 
 fun CreatePayment.toPaymentEntity(status: PaymentStatus) = PaymentEntity(
     userId = userId,

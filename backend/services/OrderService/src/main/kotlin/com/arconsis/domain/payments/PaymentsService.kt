@@ -7,7 +7,6 @@ import com.arconsis.data.orders.OrdersRepository
 import com.arconsis.data.outboxevents.OutboxEventsRepository
 import com.arconsis.data.processedevents.ProcessedEventsRepository
 import com.arconsis.domain.baskets.toOrderItem
-import com.arconsis.domain.checkout.Checkout
 import com.arconsis.domain.orders.Order
 import com.arconsis.domain.orders.OrderStatus
 import com.arconsis.domain.orders.toCreateOutboxEvent
@@ -16,7 +15,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import io.smallrye.mutiny.Uni
 import org.hibernate.reactive.mutiny.Mutiny
 import org.hibernate.reactive.mutiny.Mutiny.Session
-import org.jboss.logging.Logger
 import java.time.Instant
 import java.util.*
 import javax.enterprise.context.ApplicationScoped
@@ -29,7 +27,6 @@ class PaymentsService(
     private val processedEventsRepository: ProcessedEventsRepository,
     private val sessionFactory: Mutiny.SessionFactory,
     private val objectMapper: ObjectMapper,
-    private val logger: Logger
 ) {
     fun handlePaymentEvents(eventId: UUID, payment: Payment): Uni<Void> {
         return when (payment.status) {
@@ -123,11 +120,7 @@ class PaymentsService(
         orderStatus: OrderStatus,
         session: Session
     ) = flatMap {
-        ordersRepository.updateOrderCheckout(payment.orderId, orderStatus, payment.checkout.checkoutSessionId, payment.checkout.checkoutUrl, session).onFailure()
-            .recoverWithUni { err ->
-                logger.error("updateOrderStatus failed with error: ${err.localizedMessage}")
-                null
-            }
+        ordersRepository.updateOrderCheckout(payment.orderId, orderStatus, payment.checkout.checkoutSessionId, payment.checkout.checkoutUrl, session)
     }
 
     private fun Uni<ProcessedEvent>.updateOrderStatus(
@@ -135,11 +128,7 @@ class PaymentsService(
         orderStatus: OrderStatus,
         session: Session
     ) = flatMap {
-        ordersRepository.updateOrderStatus(payment.orderId, orderStatus, session).onFailure()
-            .recoverWithUni { err ->
-                logger.error("updateOrderStatus failed with error: ${err.localizedMessage}")
-                null
-            }
+        ordersRepository.updateOrderStatus(payment.orderId, orderStatus, session)
     }
 
     private fun Uni<Order>.createOutboxEvent(session: Session) = flatMap { order ->

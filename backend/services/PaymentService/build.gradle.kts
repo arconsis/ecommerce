@@ -1,6 +1,7 @@
 plugins {
     kotlin("jvm") version "1.6.10"
     kotlin("plugin.allopen") version "1.6.10"
+    kotlin("plugin.jpa") version "1.6.10"
     id("org.jlleitschuh.gradle.ktlint") version "10.2.0"
     id("io.quarkus")
 }
@@ -29,6 +30,7 @@ dependencies {
     implementation("io.quarkus:quarkus-arc")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("com.stripe:stripe-java:20.134.0")
+    implementation("io.quarkus:quarkus-resteasy-reactive-jackson")
 
     testImplementation("io.quarkus:quarkus-junit5")
     testImplementation("io.rest-assured:rest-assured")
