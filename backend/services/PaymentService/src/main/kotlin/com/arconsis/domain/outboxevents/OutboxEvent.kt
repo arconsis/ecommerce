@@ -19,7 +19,7 @@ data class OutboxEvent(
 
 enum class AggregateType {
     ORDER,
-    PAYMENT,
+    CHECKOUT,
 }
 
 enum class OutboxEventType {

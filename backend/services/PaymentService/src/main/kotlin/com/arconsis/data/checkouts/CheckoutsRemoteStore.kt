@@ -45,6 +45,5 @@ class CheckoutsRemoteStore(
 			.build()
 		return Session.create(params)
 	}
-
 }
 

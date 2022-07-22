@@ -1,6 +1,5 @@
 package com.arconsis.domain.orders
 
-import com.arconsis.domain.checkout.Checkout
 import com.arconsis.domain.outboxevents.AggregateType
 import com.arconsis.domain.outboxevents.CreateOutboxEvent
 import com.arconsis.domain.outboxevents.OutboxEventType
@@ -16,7 +15,9 @@ data class Order(
     val currency: String,
     val status: OrderStatus,
     val items: List<OrderItem>,
-    val checkout: Checkout?
+    // psp ref
+    val checkoutSessionId: String?,
+    val checkoutUrl: String?,
 )
 
 data class OrderItem(

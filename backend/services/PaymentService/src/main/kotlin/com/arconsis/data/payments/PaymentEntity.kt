@@ -1,23 +1,13 @@
 package com.arconsis.data.payments
 
-import com.arconsis.data.PostgreSQLEnumType
-import com.arconsis.domain.checkouts.Checkout
 import com.arconsis.domain.payments.CreatePayment
 import com.arconsis.domain.payments.Payment
-import com.arconsis.domain.payments.PaymentStatus
 import org.hibernate.annotations.CreationTimestamp
-import org.hibernate.annotations.Type
-import org.hibernate.annotations.TypeDef
 import org.hibernate.annotations.UpdateTimestamp
-import java.math.BigDecimal
 import java.time.Instant
 import java.util.*
 import javax.persistence.*
 
-@TypeDef(
-    name = "pgsql_enum",
-    typeClass = PostgreSQLEnumType::class
-)
 @Entity(name = "payments")
 class PaymentEntity(
     @Id
@@ -25,34 +15,12 @@ class PaymentEntity(
     @Column(name = "payment_id")
     var paymentId: UUID? = null,
 
-    @Column(name = "transaction_id", nullable = true)
-    var transactionId: UUID? = null,
+    // FK
+    @Column(name = "checkout_id", nullable = false, unique = false)
+    var checkoutId: UUID,
 
-    @Column(name = "user_id", nullable = false)
-    var userId: UUID,
-
-    @Column(name = "order_id", nullable = false)
-    var orderId: UUID,
-
-    // TODO: perhaps can be moved to another table 1:1
-    // checkout session from PSP
-    @Column(name = "checkout_session_id", nullable = false, unique = true)
-    var checkoutSessionId: String,
-
-    // checkout session from PSP
-    @Column(name = "checkout_url", nullable = false, unique = true)
-    var checkoutUrl: String,
-
-    @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "order_status")
-    @Type(type = "pgsql_enum")
-    var status: PaymentStatus,
-
-    @Column(nullable = false)
-    var amount: BigDecimal,
-
-    @Column(nullable = false)
-    var currency: String,
+    @Column(name = "psp_reference_id", nullable = false, unique = true)
+    var pspReferenceId: String,
 
     @CreationTimestamp
     @Column(name = "created_at")
@@ -65,24 +33,11 @@ class PaymentEntity(
 
 fun PaymentEntity.toPayment() = Payment(
     paymentId = paymentId!!,
-    transactionId = transactionId,
-    orderId = orderId,
-    userId = userId,
-    amount = amount,
-    currency = currency,
-    status = status,
-    checkout = Checkout(
-        checkoutSessionId = checkoutSessionId,
-        checkoutUrl = checkoutUrl
-    )
+    pspReferenceId = pspReferenceId,
+    checkoutId = checkoutId
 )
 
-fun CreatePayment.toPaymentEntity(status: PaymentStatus) = PaymentEntity(
-    userId = userId,
-    orderId = orderId,
-    amount = amount,
-    currency = currency,
-    status = status,
-    checkoutSessionId = checkoutSessionId,
-    checkoutUrl = checkoutUrl,
+fun CreatePayment.toPaymentEntity() = PaymentEntity(
+    pspReferenceId = pspReferenceId,
+    checkoutId = checkoutId
 )

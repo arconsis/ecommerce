@@ -21,7 +21,7 @@ enum class AggregateType {
     ORDER,
     ORDER_VALIDATION,
     SHIPMENT,
-    PAYMENT,
+    CHECKOUT,
 }
 
 enum class OutboxEventType {
