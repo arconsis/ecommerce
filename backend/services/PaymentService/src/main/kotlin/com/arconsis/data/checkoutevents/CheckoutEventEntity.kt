@@ -25,8 +25,8 @@ class CheckoutEventEntity(
 	var eventId: UUID? = null,
 
 	// FK
-	@Column(name = "payment_id")
-	var paymentId: UUID,
+	@Column(name = "checkout_id")
+	var checkoutId: UUID,
 
 	// TODO: make better schema to handle events
 	@Column(name = "metadata")
@@ -45,14 +45,14 @@ class CheckoutEventEntity(
 )
 
 fun CreateCheckoutEvent.toCheckoutEntity() = CheckoutEventEntity(
-	paymentId = paymentId,
+	checkoutId = checkoutId,
 	metadata = metadata,
 	type = type
 )
 
 fun CheckoutEventEntity.toCheckoutEvent() = CheckoutEvent(
 	eventId = eventId!!,
-	paymentId = paymentId,
+	checkoutId = checkoutId,
 	metadata = metadata,
 	type = type
 )

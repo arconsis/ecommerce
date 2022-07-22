@@ -1,7 +1,8 @@
 package com.arconsis.domain.orders
 
 import com.arconsis.domain.checkouts.Checkout
-import com.arconsis.domain.payments.CreatePayment
+import com.arconsis.domain.checkouts.CheckoutStatus
+import com.arconsis.domain.checkouts.CreateCheckout
 import io.quarkus.kafka.client.serialization.ObjectMapperDeserializer
 import java.math.BigDecimal
 import java.util.*
@@ -30,11 +31,12 @@ enum class OrderStatus {
     REFUNDED
 }
 
-fun Order.toCreatePayment(checkoutSessionId: String, checkoutUrl: String) = CreatePayment(
+fun Order.toCreateCheckout(checkoutSessionId: String, checkoutUrl: String, status: CheckoutStatus) = CreateCheckout(
     userId = userId,
     orderId = orderId,
     amount = amount,
     currency = currency,
+    status = status,
     checkoutSessionId = checkoutSessionId,
     checkoutUrl = checkoutUrl
 )

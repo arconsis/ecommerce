@@ -1,4 +1,4 @@
-package com.arconsis.presentation.events.payments
+package com.arconsis.presentation.events.checkouts
 
 import com.arconsis.domain.outboxevents.AggregateType
 import com.arconsis.domain.outboxevents.OutboxEvent
@@ -7,16 +7,16 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import io.quarkus.kafka.client.serialization.ObjectMapperDeserializer
 import java.util.*
 
-data class PaymentEventDto(
-    @JsonProperty("payload") val payload: PaymentEventDtoPayload
+data class CheckoutEventDto(
+    @JsonProperty("payload") val payload: CheckoutEventDtoPayload
 )
 
-data class PaymentEventDtoPayload(
-    @JsonProperty("before") val previousValue: PaymentEventDtoValue? = null,
-    @JsonProperty("after") val currentValue: PaymentEventDtoValue,
+data class CheckoutEventDtoPayload(
+    @JsonProperty("before") val previousValue: CheckoutEventDtoValue? = null,
+    @JsonProperty("after") val currentValue: CheckoutEventDtoValue,
 )
 
-data class PaymentEventDtoValue(
+data class CheckoutEventDtoValue(
     @JsonProperty("id") var id: String,
     @JsonProperty("aggregate_type") var aggregateType: String,
     @JsonProperty("aggregate_id") var aggregateId: String,
@@ -24,7 +24,7 @@ data class PaymentEventDtoValue(
     @JsonProperty("type") val type: String,
 )
 
-fun PaymentEventDtoValue.toOutboxEvent() = OutboxEvent(
+fun CheckoutEventDtoValue.toOutboxEvent() = OutboxEvent(
     id = UUID.fromString(id),
     aggregateId = UUID.fromString(aggregateId),
     aggregateType = AggregateType.valueOf(aggregateType),
@@ -32,4 +32,4 @@ fun PaymentEventDtoValue.toOutboxEvent() = OutboxEvent(
     payload = payload
 )
 
-class PaymentEventsDtoDeserializer : ObjectMapperDeserializer<PaymentEventDto>(PaymentEventDto::class.java)
+class CheckoutEventsDtoDeserializer : ObjectMapperDeserializer<CheckoutEventDto>(CheckoutEventDto::class.java)

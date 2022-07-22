@@ -1,4 +1,4 @@
-package com.arconsis.domain.payments
+package com.arconsis.domain.checkout
 
 import com.arconsis.common.asPair
 import com.arconsis.common.toUni
@@ -20,7 +20,7 @@ import java.util.*
 import javax.enterprise.context.ApplicationScoped
 
 @ApplicationScoped
-class PaymentsService(
+class CheckoutsService(
     private val basketsRepository: BasketsRepository,
     private val ordersRepository: OrdersRepository,
     private val outboxEventsRepository: OutboxEventsRepository,
@@ -28,16 +28,16 @@ class PaymentsService(
     private val sessionFactory: Mutiny.SessionFactory,
     private val objectMapper: ObjectMapper,
 ) {
-    fun handlePaymentEvents(eventId: UUID, payment: Payment): Uni<Void> {
-        return when (payment.status) {
-            PaymentStatus.IN_PROGRESS -> handlePaymentInProgress(eventId, payment)
-            PaymentStatus.SUCCEED -> handleSucceedPayment(eventId, payment)
-            PaymentStatus.FAILED -> handleFailedPayment(eventId, payment)
+    fun handleCheckoutEvents(eventId: UUID, checkout: Checkout): Uni<Void> {
+        return when (checkout.status) {
+            CheckoutStatus.PAYMENT_IN_PROGRESS -> handlePaymentInProgress(eventId, checkout)
+            CheckoutStatus.PAYMENT_SUCCEED -> handleSucceedPayment(eventId, checkout)
+            CheckoutStatus.PAYMENT_FAILED -> handleFailedPayment(eventId, checkout)
         }
     }
 
     // Let's assume that client makes polling to GET /orders/:orderId to fetch order status -> here we set it to PAYMENT_IN_PROGRESS and client can fetch checkout url
-    private fun handlePaymentInProgress(eventId: UUID, payment: Payment): Uni<Void> {
+    private fun handlePaymentInProgress(eventId: UUID, checkout: Checkout): Uni<Void> {
         return sessionFactory.withTransaction { session, _ ->
             val proceedEvent = ProcessedEvent(
                 eventId = eventId,
@@ -45,7 +45,7 @@ class PaymentsService(
             )
             val orderStatus = OrderStatus.PAYMENT_IN_PROGRESS
             processedEventsRepository.createEvent(proceedEvent, session)
-                .updateOrderCheckout(payment, orderStatus, session)
+                .updateOrderCheckout(checkout, orderStatus, session)
                 .flatMap { order ->
                     Uni.combine().all().unis(
                         basketsRepository.getBasket(order.basketId, session),
@@ -63,7 +63,7 @@ class PaymentsService(
         }
     }
 
-    private fun handleSucceedPayment(eventId: UUID, payment: Payment): Uni<Void> {
+    private fun handleSucceedPayment(eventId: UUID, checkout: Checkout): Uni<Void> {
         return sessionFactory.withTransaction { session, _ ->
             val proceedEvent = ProcessedEvent(
                 eventId = eventId,
@@ -71,7 +71,7 @@ class PaymentsService(
             )
             val orderStatus = OrderStatus.PAID
             processedEventsRepository.createEvent(proceedEvent, session)
-                .updateOrderStatus(payment, orderStatus, session)
+                .updateOrderStatus(checkout, orderStatus, session)
                 .flatMap { order ->
                     Uni.combine().all().unis(
                         basketsRepository.getBasket(order.basketId, session),
@@ -89,7 +89,7 @@ class PaymentsService(
         }
     }
 
-    private fun handleFailedPayment(eventId: UUID, payment: Payment): Uni<Void> {
+    private fun handleFailedPayment(eventId: UUID, checkout: Checkout): Uni<Void> {
         return sessionFactory.withTransaction { session, _ ->
             val proceedEvent = ProcessedEvent(
                 eventId = eventId,
@@ -97,7 +97,7 @@ class PaymentsService(
             )
             val orderStatus = OrderStatus.PAYMENT_FAILED
             processedEventsRepository.createEvent(proceedEvent, session)
-                .updateOrderStatus(payment, orderStatus, session)
+                .updateOrderStatus(checkout, orderStatus, session)
                 .flatMap { order ->
                     Uni.combine().all().unis(
                         basketsRepository.getBasket(order.basketId, session),
@@ -116,19 +116,19 @@ class PaymentsService(
     }
 
     private fun Uni<ProcessedEvent>.updateOrderCheckout(
-        payment: Payment,
+        payment: Checkout,
         orderStatus: OrderStatus,
         session: Session
     ) = flatMap {
-        ordersRepository.updateOrderCheckout(payment.orderId, orderStatus, payment.checkout.checkoutSessionId, payment.checkout.checkoutUrl, session)
+        ordersRepository.updateOrderCheckout(payment.orderId, orderStatus, payment.checkoutSessionId, payment.checkoutUrl, session)
     }
 
     private fun Uni<ProcessedEvent>.updateOrderStatus(
-        payment: Payment,
+        checkout: Checkout,
         orderStatus: OrderStatus,
         session: Session
     ) = flatMap {
-        ordersRepository.updateOrderStatus(payment.orderId, orderStatus, session)
+        ordersRepository.updateOrderStatus(checkout.orderId, orderStatus, session)
     }
 
     private fun Uni<Order>.createOutboxEvent(session: Session) = flatMap { order ->

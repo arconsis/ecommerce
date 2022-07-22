@@ -1,11 +1,14 @@
 package com.arconsis.domain.checkoutevents
 
+import com.arconsis.common.asPair
 import com.arconsis.common.toUni
 import com.arconsis.data.checkoutevents.CheckoutEventsRepository
+import com.arconsis.data.checkouts.CheckoutsRepository
 import com.arconsis.data.outboxevents.OutboxEventsRepository
 import com.arconsis.data.payments.PaymentsRepository
-import com.arconsis.domain.payments.PaymentStatus
-import com.arconsis.domain.payments.toCreateOutboxEvent
+import com.arconsis.domain.checkouts.CheckoutStatus
+import com.arconsis.domain.checkouts.toCreateOutboxEvent
+import com.arconsis.domain.payments.CreatePayment
 import com.arconsis.presentation.http.payments.dto.CreateCheckoutEventDto
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.smallrye.mutiny.Uni
@@ -16,6 +19,7 @@ import javax.enterprise.context.ApplicationScoped
 @ApplicationScoped
 class CheckoutEventsService(
 	private val checkoutEventsRepository: CheckoutEventsRepository,
+	private val checkoutRepository: CheckoutsRepository,
 	private val outboxEventsRepository: OutboxEventsRepository,
 	private val paymentsRepository: PaymentsRepository,
 	private val sessionFactory: Mutiny.SessionFactory,
@@ -23,18 +27,18 @@ class CheckoutEventsService(
 ) {
 	fun createCheckoutEvent(checkoutEventDto: CreateCheckoutEventDto): Uni<CheckoutEvent?> {
 		return sessionFactory.withTransaction { session, _ ->
-			paymentsRepository.getPaymentByOrderId(
+			checkoutRepository.getCheckoutByOrderId(
 				UUID.fromString(checkoutEventDto.orderId),
 				session
 			)
-				.map { payment ->
-					if (payment == null) {
-						throw RuntimeException("No payment found")
+				.map { checkout ->
+					if (checkout == null) {
+						throw RuntimeException("No checkout found")
 					} else {
 						CreateCheckoutEvent(
 							type = checkoutEventDto.type,
 							metadata = checkoutEventDto.metadata,
-							paymentId = payment.paymentId!!,
+							checkoutId = checkout.checkoutId,
 						)
 					}
 				}
@@ -43,10 +47,17 @@ class CheckoutEventsService(
 				}
 				.flatMap { checkoutEvent ->
 					if (checkoutEvent.type == CHARGE_SUCCESS) {
-						paymentsRepository.updatePaymentStatus(checkoutEvent.paymentId, PaymentStatus.SUCCEED, session)
-							.flatMap { payment ->
-								val createOutboxEvent = payment.toCreateOutboxEvent(objectMapper)
-								outboxEventsRepository.createEvent(createOutboxEvent, session)
+						checkoutRepository.updateCheckoutStatus(checkoutEvent.checkoutId, CheckoutStatus.PAYMENT_SUCCEED, session)
+							.flatMap { checkout ->
+								val createOutboxEvent = checkout.toCreateOutboxEvent(objectMapper)
+								Uni.combine().all().unis(
+									outboxEventsRepository.createEvent(createOutboxEvent, session),
+									checkout.toUni(),
+								).asPair()
+							}
+							.flatMap { (_, checkout) ->
+								// TODO: find psp reference from stripe
+								paymentsRepository.createPayment(CreatePayment(checkoutId = checkout.checkoutId, UUID.randomUUID().toString()), session)
 							}
 							.map {
 								checkoutEvent

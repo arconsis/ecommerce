@@ -2,7 +2,6 @@ package com.arconsis.data.orders
 
 import com.arconsis.data.PostgreSQLEnumType
 import com.arconsis.data.orders.OrderEntity.Companion.UPDATE_ORDER_STATUS
-import com.arconsis.domain.checkout.Checkout
 import com.arconsis.domain.orders.CreateOrder
 import com.arconsis.domain.orders.Order
 import com.arconsis.domain.orders.OrderStatus
@@ -84,9 +83,8 @@ fun OrderEntity.toOrder() = Order(
     currency = currency,
     status = status,
     items = emptyList(),
-    checkout = if (checkoutSessionId != null && checkoutUrl != null) {
-        Checkout(checkoutSessionId = checkoutSessionId!!, checkoutUrl = checkoutUrl!!)
-    } else null
+    checkoutSessionId = checkoutSessionId,
+    checkoutUrl = checkoutUrl
 )
 
 fun CreateOrder.toOrderEntity(status: OrderStatus) = OrderEntity(
