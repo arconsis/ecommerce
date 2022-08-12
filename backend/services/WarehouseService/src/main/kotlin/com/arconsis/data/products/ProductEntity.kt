@@ -36,6 +36,9 @@ class ProductEntity(
 	var description: String,
 	var price: BigDecimal,
 	var currency: String,
+	var size: String,
+
+	var category: String,
 
 	@CreationTimestamp
 	@Column(name = "created_at")
@@ -57,7 +60,9 @@ fun ProductEntity.toProduct() = Product(
 	description = description,
 	price = price,
 	isOrderable = null,
-	currency = currency
+	currency = currency,
+	size = size,
+	category = category
 )
 
 fun CreateProduct.toProductEntity() = ProductEntity(
@@ -65,5 +70,7 @@ fun CreateProduct.toProductEntity() = ProductEntity(
 	productName = productName,
 	description = description,
 	price = price,
-	currency = currency
+	currency = currency,
+	size = size,
+	category = category
 )

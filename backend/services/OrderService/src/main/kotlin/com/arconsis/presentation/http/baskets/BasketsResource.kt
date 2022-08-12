@@ -18,7 +18,7 @@ class BasketsResource(val basketsService: BasketsService) {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	fun createBasket(newBasketRequest: CreateBasketDto, uriInfo: UriInfo): Uni<Basket> {
-		return basketsService.createBasket(newBasketRequest.toCreateBasket())
+		return basketsService.createBasket(newBasketRequest)
 	}
 
 	@GET

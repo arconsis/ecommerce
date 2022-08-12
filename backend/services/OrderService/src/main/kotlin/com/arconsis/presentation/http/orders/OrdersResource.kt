@@ -21,7 +21,7 @@ class OrdersResource(
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     fun createOrder(createOrder: CreateOrderDto, uriInfo: UriInfo): Uni<Order> {
-        return ordersService.createOrder(createOrder.toCreateOrder())
+        return ordersService.createOrder(createOrder)
     }
 
     @GET

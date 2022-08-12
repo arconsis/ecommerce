@@ -6,6 +6,8 @@ import com.arconsis.data.baskets.BasketsRepository
 import com.arconsis.data.orders.OrdersRepository
 import com.arconsis.data.outboxevents.OutboxEventsRepository
 import com.arconsis.domain.baskets.toOrderItem
+import com.arconsis.presentation.http.orders.dto.CreateOrderDto
+import com.arconsis.presentation.http.orders.dto.toCreateOrder
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.smallrye.mutiny.Uni
 import org.hibernate.reactive.mutiny.Mutiny
@@ -21,19 +23,19 @@ class OrdersService(
 	private val sessionFactory: Mutiny.SessionFactory,
 	private val objectMapper: ObjectMapper,
 ) {
-	fun createOrder(createOrder: CreateOrder): Uni<Order> {
+	fun createOrder(createOrder: CreateOrderDto): Uni<Order> {
 		return sessionFactory.withTransaction { session, _ ->
-			ordersRepository.createOrder(createOrder, session)
-				.flatMap { order ->
-					Uni.combine().all().unis(
-						basketsRepository.getBasket(order.basketId, session),
-						order.toUni(),
-					).asPair()
-				}
-				.flatMap { (basket, order) ->
+			basketsRepository.getBasket(createOrder.basketId, session)
+				.flatMap { basket ->
 					if (basket == null) {
 						throw NotFoundException("basket not found")
 					}
+					Uni.combine().all().unis(
+						ordersRepository.createOrder(createOrder.toCreateOrder(basket.totalPrice, basket.priceBeforeTax, basket.tax, basket.currency), session),
+						basket.toUni(),
+					).asPair()
+				}
+				.flatMap { (order, basket) ->
 					val enrichedOrder = order.copy(items = basket.items.map { it.toOrderItem(order.orderId) })
 					val createOutboxEvent = enrichedOrder.toCreateOutboxEvent(objectMapper)
 					outboxEventsRepository.createEvent(createOutboxEvent, session).map {

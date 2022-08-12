@@ -8,7 +8,9 @@ data class CreateProductDto(
 	val productName: String,
 	val description: String,
 	val price: BigDecimal,
-	val currency: String
+	val currency: String,
+	val size: String,
+	val category: String,
 )
 
 fun CreateProductDto.toCreateProduct() = CreateProduct(
@@ -16,5 +18,7 @@ fun CreateProductDto.toCreateProduct() = CreateProduct(
 	productName = productName,
 	description = description,
 	price = price,
-	currency = currency
+	currency = currency,
+	size = size,
+	category = category
 )
