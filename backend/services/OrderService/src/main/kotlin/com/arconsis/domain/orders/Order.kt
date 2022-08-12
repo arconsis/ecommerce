@@ -11,7 +11,9 @@ data class Order(
     val orderId: UUID,
     val basketId: UUID,
     val userId: UUID,
-    val amount: BigDecimal,
+    val totalPrice: BigDecimal,
+    val tax: String,
+    val priceBeforeTax: BigDecimal,
     val currency: String,
     val status: OrderStatus,
     val items: List<OrderItem>,
@@ -27,12 +29,15 @@ data class OrderItem(
     val price: BigDecimal,
     val currency: String,
     val quantity: Int,
-    val productName: String
+    val productName: String,
+    val thumbnail: String,
 )
 
 data class CreateOrder(
     val userId: UUID,
-    val amount: BigDecimal,
+    val totalPrice: BigDecimal,
+    val priceBeforeTax: BigDecimal,
+    val tax: String,
     val currency: String,
     val basketId: UUID,
 )

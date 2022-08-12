@@ -1,5 +1,6 @@
 package com.arconsis.presentation.http.baskets.dto
 
+import com.arconsis.common.TAX_RATE
 import com.arconsis.domain.baskets.CreateBasket
 import com.arconsis.domain.baskets.CreateBasketItem
 import com.fasterxml.jackson.annotation.JsonProperty
@@ -10,10 +11,6 @@ import javax.validation.constraints.NotBlank
 data class CreateBasketDto(
 	@field:NotBlank
 	@JsonProperty("userId") val userId: UUID,
-	@field:NotBlank
-	@JsonProperty("amount") val amount: BigDecimal,
-	@field:NotBlank
-	@JsonProperty("currency") val currency: String,
 	@field:NotBlank
 	@JsonProperty("items") val items: List<CreateBasketItemDto>,
 )
@@ -37,8 +34,10 @@ data class CreateBasketItemDto(
 
 fun CreateBasketDto.toCreateBasket() = CreateBasket(
 	userId = userId,
-	amount = amount,
-	currency = currency,
+	totalPrice = calculateBasketTotalPriceAfterTax(),
+	priceBeforeTax = calculateBasketTotalPrice(),
+	tax = TAX_RATE,
+	currency = items[0].currency,
 	items = items.map {
 		CreateBasketItem(
 			productId = it.productId,
@@ -51,3 +50,14 @@ fun CreateBasketDto.toCreateBasket() = CreateBasket(
 		)
 	}
 )
+
+private fun CreateBasketDto.calculateBasketTotalPrice(): BigDecimal {
+	return items.fold(BigDecimal(0)) { acc, item ->
+		acc + (item.price * BigDecimal(item.quantity))
+	}.setScale(2)
+}
+
+private fun CreateBasketDto.calculateBasketTotalPriceAfterTax(): BigDecimal {
+	val price = this.calculateBasketTotalPrice()
+	return price.multiply(BigDecimal(1) + BigDecimal(TAX_RATE)).setScale(2)
+}

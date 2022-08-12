@@ -38,8 +38,14 @@ class BasketEntity(
 	@Column(name = "user_id")
 	var userId: UUID,
 
+	@Column(name = "total_price", nullable = false)
+	var totalPrice: BigDecimal,
+
+	@Column(name = "price_before_tax", nullable = false)
+	var priceBeforeTax: BigDecimal,
+
 	@Column(nullable = false)
-	var amount: BigDecimal,
+	var tax: String,
 
 	@Column(nullable = false)
 	var currency: String,
@@ -67,7 +73,9 @@ class BasketEntity(
 fun BasketEntity.toBasket() = Basket(
 	basketId = basketId!!,
 	userId = userId,
-	amount = amount,
+	totalPrice = totalPrice,
+	tax = tax,
+	priceBeforeTax = priceBeforeTax,
 	currency = currency,
 	items = itemEntities.map {
 		BasketItem(
@@ -86,7 +94,9 @@ fun BasketEntity.toBasket() = Basket(
 
 fun CreateBasket.toBasketEntity() = BasketEntity(
 	userId = userId,
-	amount = amount,
+	totalPrice = totalPrice,
+	priceBeforeTax = priceBeforeTax,
+	tax = tax,
 	currency = currency
 )
 

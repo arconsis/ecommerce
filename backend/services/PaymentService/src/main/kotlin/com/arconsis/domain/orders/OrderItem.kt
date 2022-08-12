@@ -10,5 +10,6 @@ data class OrderItem(
 	val price: BigDecimal,
 	val currency: String,
 	val quantity: Int,
-	val productName: String
+	val productName: String,
+	val thumbnail: String,
 )

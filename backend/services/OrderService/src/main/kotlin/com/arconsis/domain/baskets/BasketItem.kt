@@ -33,5 +33,6 @@ fun BasketItem.toOrderItem(orderId: UUID) = OrderItem(
 	price = price,
 	currency = currency,
 	quantity = quantity,
-	productName = productName
+	productName = productName,
+	thumbnail = thumbnail
 )

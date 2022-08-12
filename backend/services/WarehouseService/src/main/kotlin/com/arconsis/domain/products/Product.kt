@@ -10,7 +10,9 @@ data class Product(
 	val description: String,
 	val price: BigDecimal,
 	val currency: String,
-	val isOrderable: Boolean?
+	val size: String,
+	val category: String,
+	val isOrderable: Boolean?,
 )
 
 data class CreateProduct(
@@ -18,5 +20,7 @@ data class CreateProduct(
 	val productName: String,
 	val description: String,
 	val price: BigDecimal,
-	val currency: String
+	val currency: String,
+	val size: String,
+	val category: String,
 )

@@ -10,16 +10,14 @@ data class CreateOrderDto(
     @field:NotBlank
     @JsonProperty("userId") val userId: UUID,
     @field:NotBlank
-    @JsonProperty("amount") val amount: BigDecimal,
-    @field:NotBlank
-    @JsonProperty("currency") val currency: String,
-    @field:NotBlank
     @JsonProperty("basketId") val basketId: UUID,
 )
 
-fun CreateOrderDto.toCreateOrder() = CreateOrder(
+fun CreateOrderDto.toCreateOrder(totalPrice: BigDecimal, priceBeforeTax: BigDecimal, tax: String, currency: String) = CreateOrder(
     userId = userId,
-    amount = amount,
+    totalPrice = totalPrice,
+    priceBeforeTax = priceBeforeTax,
+    tax = tax,
     currency = currency,
     basketId = basketId
 )

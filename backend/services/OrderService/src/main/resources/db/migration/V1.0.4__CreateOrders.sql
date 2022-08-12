@@ -9,7 +9,7 @@ CREATE TYPE order_status AS ENUM (
     'PAYMENT_FAILED',
     'CANCELLED',
     'REFUNDED'
-);
+    );
 
 CREATE TABLE orders
 (
@@ -18,14 +18,17 @@ CREATE TABLE orders
 --     we set it unique to avoid duplicated orders from same basket
     basket_id           UUID         NOT NULL UNIQUE REFERENCES baskets (basket_id) ON DELETE CASCADE,
     status              order_status NOT NULL,
-    amount              NUMERIC      NOT NULL,
+    total_price         NUMERIC      NOT NULL,
+    price_before_tax    NUMERIC      NOT NULL,
+    tax                 VARCHAR      NOT NULL,
     currency            VARCHAR      NOT NULL,
-    checkout_session_id TEXT         UNIQUE,
-    checkout_url        TEXT         UNIQUE,
+    checkout_session_id TEXT UNIQUE,
+    checkout_url        TEXT UNIQUE,
     created_at          TIMESTAMP,
     updated_at          TIMESTAMP
 );
 
 ALTER TABLE orders
     ADD CONSTRAINT checkout_not_null_payment_in_progress
-        CHECK ( status != 'PAYMENT_IN_PROGRESS'::order_status OR checkout_session_id IS NOT NULL OR checkout_url IS NOT NULL);
+        CHECK ( status != 'PAYMENT_IN_PROGRESS'::order_status OR checkout_session_id IS NOT NULL OR
+                checkout_url IS NOT NULL);
