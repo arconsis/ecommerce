@@ -60,3 +60,8 @@ spec:
               secretKeyRef:
                 name: eda-secrets
                 key: POSTGRES_PASSWORD
+          - name: POSTGRES_PASSWORD
+            valueFrom:
+              configMapKeyRef:
+                name: eda-configmap
+                key: POSTGRES_PASSWORD

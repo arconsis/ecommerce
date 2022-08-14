@@ -9,6 +9,7 @@ data:
   KAFKA_BROKERS_PLAINTEXT: ""
   DEBEZIUM_HOST: "http://debezium-service:8083/connectors"
   USERS_SERVICE_URL: "http://user-service:8080"
+  WAREHOUSE_SERVICE_URL: "http://warehouse-service:8082"
   QUARKUS_MAILGUN_DOMAIN_NAME: ""
   POSTGRES_PORT: "5432"
   POSTGRES_HOST: ""
