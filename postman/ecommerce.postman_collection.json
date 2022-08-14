@@ -42,7 +42,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"userId\": \"777d032b-617e-406f-ae8a-6a16688d9853\",\n    \"items\": [\n        {\n            \"productId\": \"06ef4bab-0ea9-4cf0-9c2a-c1aaedd09ef4\",\n            \"quantity\": 3,\n            \"price\": \"100\",\n            \"currency\": \"EUR\",\n            \"thumbnail\": \"https://images.unsplash.com/photo-1505740420928-5e560c06d30e?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8M3x8cHJvZHVjdHxlbnwwfHwwfHw%3D&w=1000&q=80\",\n            \"productName\": \"productName\",\n            \"description\": \"description\"\n        }\n    ]\n    \n}",
+              "raw": "{\n    \"userId\": \"777d032b-617e-406f-ae8a-6a16688d9853\",\n    \"items\": [\n        {\n            \"productId\": \"33f159dc-0298-4440-9ad3-a8fe2fcb9c97\",\n            \"quantity\": 3\n        },\n        {\n            \"productId\": \"9801844e-ba98-4243-8d30-f2426cff60f2\",\n            \"quantity\": 1\n        },\n        {\n            \"productId\": \"f1b0dbed-a0e0-4d58-b610-d2d769657e89\",\n            \"quantity\": 1\n        }\n    ]\n    \n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -130,7 +130,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"firstName\": \"dimos\",\n    \"lastName\": \"botsaris\",\n    \"email\": \"test@gmail.com\",\n    \"password\": \"secret\",\n    \"username\": \"tester\"\n}",
+              "raw": "{\n    \"firstName\": \"dimos1\",\n    \"lastName\": \"botsaris\",\n    \"email\": \"test@gmail.com\",\n    \"password\": \"secret\",\n    \"username\": \"tester\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -144,6 +144,94 @@
               ],
               "path": [
                 "users"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get user",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"firstName\": \"dimos\",\n    \"lastName\": \"botsaris\",\n    \"email\": \"test@gmail.com\",\n    \"password\": \"secret\",\n    \"username\": \"tester\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{users-host}}/users/2f8aeae0-f998-4f4c-99a2-da607391bcc4",
+              "host": [
+                "{{users-host}}"
+              ],
+              "path": [
+                "users",
+                "2f8aeae0-f998-4f4c-99a2-da607391bcc4"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create user address",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"my home 6\",\n    \"address\": \"Leros\",\n    \"houseNumber\": \"9\",\n    \"countryCode\": \"GR\",\n    \"postalCode\": \"85400\",\n    \"city\": \"Leros\",\n    \"phone\": \"+306991001001\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{users-host}}/users/2f8aeae0-f998-4f4c-99a2-da607391bcc4/addresses",
+              "host": [
+                "{{users-host}}"
+              ],
+              "path": [
+                "users",
+                "2f8aeae0-f998-4f4c-99a2-da607391bcc4",
+                "addresses"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Set user address billing",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"my home\",\n    \"address\": \"Leros\",\n    \"houseNumber\": \"9\",\n    \"countryCode\": \"GR\",\n    \"postalCode\": \"85400\",\n    \"city\": \"Leros\",\n    \"phone\": \"+306991001001\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{users-host}}/users/2f8aeae0-f998-4f4c-99a2-da607391bcc4/addresses/f501971e-58f0-4fe1-a474-65c7d30c9f9e/billing",
+              "host": [
+                "{{users-host}}"
+              ],
+              "path": [
+                "users",
+                "2f8aeae0-f998-4f4c-99a2-da607391bcc4",
+                "addresses",
+                "f501971e-58f0-4fe1-a474-65c7d30c9f9e",
+                "billing"
               ]
             }
           },

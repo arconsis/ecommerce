@@ -60,3 +60,8 @@ spec:
               secretKeyRef:
                 name: eda-secrets
                 key: POSTGRES_PASSWORD
+          - name: WAREHOUSE_SERVICE_URL
+            valueFrom:
+              configMapKeyRef:
+                name: eda-configmap
+                key: WAREHOUSE_SERVICE_URL
