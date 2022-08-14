@@ -1,7 +1,10 @@
 package com.arconsis.presentation.http
 
+import com.arconsis.domain.addresses.Address
+import com.arconsis.domain.addresses.AddressesService
 import com.arconsis.domain.users.User
 import com.arconsis.domain.users.UsersService
+import com.arconsis.presentation.http.dto.CreateAddressDto
 import com.arconsis.presentation.http.dto.UserCreate
 import io.smallrye.mutiny.Uni
 import java.util.*
@@ -13,7 +16,7 @@ import javax.ws.rs.core.UriInfo
 
 @ApplicationScoped
 @Path("/users")
-class UserResource(private val usersService: UsersService) {
+class UserResource(private val usersService: UsersService, private val addressesService: AddressesService) {
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)
@@ -28,5 +31,37 @@ class UserResource(private val usersService: UsersService) {
     @Consumes(MediaType.APPLICATION_JSON)
     fun getUser(@PathParam("userId") userId: UUID): Uni<User> {
         return usersService.getUser(userId)
+    }
+
+    @GET
+    @Path("/{userId}/addresses")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    fun getAddresses(@PathParam("userId") userId: UUID): Uni<List<Address>> {
+        return addressesService.getAddresses(userId)
+    }
+
+    @POST
+    @Path("/{userId}/addresses")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    fun createAddress(@PathParam("userId") userId: UUID, @Valid createAddress: CreateAddressDto): Uni<Address> {
+        return addressesService.createAddress(createAddress, userId)
+    }
+
+    @GET
+    @Path("/{userId}/addresses/billing")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    fun getBillingAddress(@PathParam("userId") userId: UUID): Uni<Address?> {
+        return addressesService.getBillingAddress(userId)
+    }
+
+    @POST
+    @Path("/{userId}/addresses/{addressId}/billing")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    fun createBillingAddress(@PathParam("userId") userId: UUID, @PathParam("addressId") addressId: UUID): Uni<Address> {
+        return addressesService.createBillingAddress(userId, addressId)
     }
 }

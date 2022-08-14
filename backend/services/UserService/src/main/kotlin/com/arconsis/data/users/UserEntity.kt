@@ -1,18 +1,18 @@
 package com.arconsis.data.users
 
+import com.arconsis.data.addresses.AddressEntity
 import io.quarkus.security.jpa.Password
 import java.time.Instant
 import java.util.*
-import javax.persistence.Column
-import javax.persistence.Entity
-import javax.persistence.GeneratedValue
-import javax.persistence.Id
+import javax.persistence.*
 
 @Entity(name = "users")
 class UserEntity(
     @Id
     @GeneratedValue
-    var id: UUID? = null,
+    @Column(name = "user_id")
+    var userId: UUID? = null,
+
     @Column(name = "first_name")
     var firstName: String,
 
@@ -34,4 +34,7 @@ class UserEntity(
 
     @Column(name = "updated_at")
     var updatedAt: Instant? = null,
+
+    @OneToMany(mappedBy = "userId", cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
+    var addressEntities: MutableList<AddressEntity> = mutableListOf()
 )
