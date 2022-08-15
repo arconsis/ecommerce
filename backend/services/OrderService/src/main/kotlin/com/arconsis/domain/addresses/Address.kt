@@ -11,6 +11,7 @@ data class Address(
     val postalCode: String,
     val city: String,
     val phone: String,
+    val isBilling: Boolean,
     val isSelected: Boolean,
 )
 
@@ -22,6 +23,7 @@ data class CreateAddress(
     val postalCode: String,
     val city: String,
     val phone: String,
+    val isBilling: Boolean,
     val isSelected: Boolean,
 )
 

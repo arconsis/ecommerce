@@ -1,6 +1,7 @@
 package com.arconsis.domain.orders
 
 import com.arconsis.common.asPair
+import com.arconsis.common.errors.abort
 import com.arconsis.common.toUni
 import com.arconsis.data.baskets.BasketsRepository
 import com.arconsis.data.orders.OrdersRepository
@@ -13,7 +14,6 @@ import io.smallrye.mutiny.Uni
 import org.hibernate.reactive.mutiny.Mutiny
 import java.util.*
 import javax.enterprise.context.ApplicationScoped
-import javax.ws.rs.NotFoundException
 
 @ApplicationScoped
 class OrdersService(
@@ -28,7 +28,10 @@ class OrdersService(
 			basketsRepository.getBasket(createOrder.basketId, session)
 				.flatMap { basket ->
 					if (basket == null) {
-						throw NotFoundException("basket not found")
+						abort(OrdersFailureReason.BasketNotFound)
+					}
+					if (!basket.isOrderable) {
+						abort(OrdersFailureReason.BasketNotOrderable)
 					}
 					Uni.combine().all().unis(
 						ordersRepository.createOrder(createOrder.toCreateOrder(basket.totalPrice, basket.priceBeforeTax, basket.tax, basket.currency), session),

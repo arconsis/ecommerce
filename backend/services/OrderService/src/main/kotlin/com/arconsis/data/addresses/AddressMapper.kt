@@ -12,6 +12,7 @@ fun AddressEntity.toAddress(): Address {
         postalCode = postalCode,
         city = city,
         phone = phone,
+        isBilling = isBilling,
         isSelected = isSelected
     )
 }

@@ -1,4 +1,4 @@
-package com.arconsis.presentation.http.dto
+package com.arconsis.presentation.http.baskets.dto
 
 import com.arconsis.domain.addresses.CreateAddress
 import com.arconsis.domain.addresses.SupportedCountryCode
@@ -19,10 +19,10 @@ data class CreateAddressDto(
     @field:NotBlank
     val city: String,
     @field:NotBlank
-    val phone: String,
+    val phone: String
 )
 
-fun CreateAddressDto.toCreateAddress(isSelected: Boolean) = CreateAddress(
+fun CreateAddressDto.toCreateAddress(isSelected: Boolean, isBilling: Boolean) = CreateAddress(
     name = name,
     address = address,
     houseNumber = houseNumber,
@@ -30,5 +30,6 @@ fun CreateAddressDto.toCreateAddress(isSelected: Boolean) = CreateAddress(
     postalCode = postalCode,
     city = city,
     phone = phone,
+    isBilling = isBilling,
     isSelected = isSelected
 )

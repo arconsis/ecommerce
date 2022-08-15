@@ -10,441 +10,469 @@
       "name": "ecommerce",
       "item": [
         {
-          "name": "Create order",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"userId\": \"b571ddc7-f9b8-41b5-bcec-82ae387bdbb5\",\n    \"basketId\": \"7d12f69c-70fe-4a98-91d5-81f89d888ae2\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{orders-host}}/orders",
-              "host": [
-                "{{orders-host}}"
-              ],
-              "path": [
-                "orders"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Create basket",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"userId\": \"777d032b-617e-406f-ae8a-6a16688d9853\",\n    \"items\": [\n        {\n            \"productId\": \"33f159dc-0298-4440-9ad3-a8fe2fcb9c97\",\n            \"quantity\": 3\n        },\n        {\n            \"productId\": \"9801844e-ba98-4243-8d30-f2426cff60f2\",\n            \"quantity\": 1\n        },\n        {\n            \"productId\": \"f1b0dbed-a0e0-4d58-b610-d2d769657e89\",\n            \"quantity\": 1\n        }\n    ]\n    \n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{orders-host}}/baskets",
-              "host": [
-                "{{orders-host}}"
-              ],
-              "path": [
-                "baskets"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Get specific order",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{orders-host}}/orders/6f640b4c-6094-4567-afce-8fb0d63da9f3",
-              "host": [
-                "{{orders-host}}"
-              ],
-              "path": [
-                "orders",
-                "6f640b4c-6094-4567-afce-8fb0d63da9f3"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Get specific basket",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{orders-host}}/baskets/f121da14-78dc-4efe-b4dd-75d020f0d9de",
-              "host": [
-                "{{orders-host}}"
-              ],
-              "path": [
-                "baskets",
-                "f121da14-78dc-4efe-b4dd-75d020f0d9de"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Add product with stock",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"productId\": \"06ef4bab-0ea9-4cf0-9c2a-c1aaedd09ef4\",\n    \"stock\": 100\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{warehouse-host}}/inventory",
-              "host": [
-                "{{warehouse-host}}"
-              ],
-              "path": [
-                "inventory"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Create user",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"firstName\": \"dimos1\",\n    \"lastName\": \"botsaris\",\n    \"email\": \"test@gmail.com\",\n    \"password\": \"secret\",\n    \"username\": \"tester\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{users-host}}/users",
-              "host": [
-                "{{users-host}}"
-              ],
-              "path": [
-                "users"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Get user",
-          "protocolProfileBehavior": {
-            "disableBodyPruning": true
-          },
-          "request": {
-            "method": "GET",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"firstName\": \"dimos\",\n    \"lastName\": \"botsaris\",\n    \"email\": \"test@gmail.com\",\n    \"password\": \"secret\",\n    \"username\": \"tester\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{users-host}}/users/2f8aeae0-f998-4f4c-99a2-da607391bcc4",
-              "host": [
-                "{{users-host}}"
-              ],
-              "path": [
-                "users",
-                "2f8aeae0-f998-4f4c-99a2-da607391bcc4"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Create user address",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"name\": \"my home 6\",\n    \"address\": \"Leros\",\n    \"houseNumber\": \"9\",\n    \"countryCode\": \"GR\",\n    \"postalCode\": \"85400\",\n    \"city\": \"Leros\",\n    \"phone\": \"+306991001001\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{users-host}}/users/2f8aeae0-f998-4f4c-99a2-da607391bcc4/addresses",
-              "host": [
-                "{{users-host}}"
-              ],
-              "path": [
-                "users",
-                "2f8aeae0-f998-4f4c-99a2-da607391bcc4",
-                "addresses"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Set user address billing",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"name\": \"my home\",\n    \"address\": \"Leros\",\n    \"houseNumber\": \"9\",\n    \"countryCode\": \"GR\",\n    \"postalCode\": \"85400\",\n    \"city\": \"Leros\",\n    \"phone\": \"+306991001001\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{users-host}}/users/2f8aeae0-f998-4f4c-99a2-da607391bcc4/addresses/f501971e-58f0-4fe1-a474-65c7d30c9f9e/billing",
-              "host": [
-                "{{users-host}}"
-              ],
-              "path": [
-                "users",
-                "2f8aeae0-f998-4f4c-99a2-da607391bcc4",
-                "addresses",
-                "f501971e-58f0-4fe1-a474-65c7d30c9f9e",
-                "billing"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Create Databases",
-          "request": {
-            "auth": {
-              "type": "basic",
-              "basic": [
-                {
-                  "key": "username",
-                  "value": "bastion",
-                  "type": "string"
+          "name": "Baskets",
+          "item": [
+            {
+              "name": "Create basket",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"userId\": \"777d032b-617e-406f-ae8a-6a16688d9853\",\n    \"items\": [\n        {\n            \"productId\": \"c4e563f1-4931-4c6f-a827-0cae427c780c\",\n            \"quantity\": 3\n        },\n        {\n            \"productId\": \"4c98abe3-e6e7-443d-82a1-0d3e8068c14d\",\n            \"quantity\": 1\n        },\n        {\n            \"productId\": \"12534d05-9296-445e-a701-f03740dba4d3\",\n            \"quantity\": 1\n        }\n    ]\n    \n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
                 },
-                {
-                  "key": "password",
-                  "value": "YmFzdGlvbjouQWFxU0NyaHZ6MQ",
-                  "type": "string"
+                "url": {
+                  "raw": "{{orders-host}}/baskets",
+                  "host": [
+                    "{{orders-host}}"
+                  ],
+                  "path": [
+                    "baskets"
+                  ]
                 }
-              ]
+              },
+              "response": []
             },
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "[\n    {\n        \"name\": \"orders-db\",\n        \"owner\": \"postgres\"\n    },\n    {\n        \"name\": \"warehouse-db\",\n        \"owner\": \"postgres\"\n    },\n    {\n        \"name\": \"payments-db\",\n        \"owner\": \"postgres\"\n    },\n    {\n        \"name\": \"users-db\",\n        \"owner\": \"postgres\"\n    }\n]",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{bastion-host}}/bastion/databases",
-              "host": [
-                "{{bastion-host}}"
-              ],
-              "path": [
-                "bastion",
-                "databases"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Create Connectors",
-          "request": {
-            "auth": {
-              "type": "basic",
-              "basic": [
-                {
-                  "key": "username",
-                  "value": "bastion",
-                  "type": "string"
+            {
+              "name": "Add basket shipping address",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"name\": \"my home 3\",\n    \"address\": \"Leros 3\",\n    \"houseNumber\": \"9\",\n    \"countryCode\": \"GR\",\n    \"postalCode\": \"85400\",\n    \"city\": \"Leros\",\n    \"phone\": \"+306991001001\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
                 },
-                {
-                  "key": "password",
-                  "value": "YmFzdGlvbjouQWFxU0NyaHZ6MQ",
-                  "type": "string"
+                "url": {
+                  "raw": "{{orders-host}}/baskets/85e53ab5-5eb5-43d0-92ad-737b200f0888f/shipping_address",
+                  "host": [
+                    "{{orders-host}}"
+                  ],
+                  "path": [
+                    "baskets",
+                    "85e53ab5-5eb5-43d0-92ad-737b200f0888f",
+                    "shipping_address"
+                  ]
                 }
-              ]
+              },
+              "response": []
             },
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "[\n    {\n        \"name\": \"orders-connector\",\n        \"config\": {\n            \"connector.class\": \"io.debezium.connector.postgresql.PostgresConnector\",\n            \"plugin.name\": \"pgoutput\",\n            \"database.hostname\": \"postgres\",\n            \"database.port\": \"5432\",\n            \"database.user\": \"postgres\",\n            \"database.password\": \"secret\",\n            \"database.dbname\": \"orders-db\",\n            \"database.server.name\": \"orders-db\",\n            \"table.include.list\": \"public.orders_outbox_events\",\n            \"database.history.kafka.bootstrap.servers\": \"kafka1:39092,kafka2:49092,kafka3:59092\",\n            \"database.history.kafka.topic\": \"schema-changes.orders\",\n            \"slot.name\": \"orders_slot\",\n            \"topic.creation.default.replication.factor\": 3,\n            \"topic.creation.default.partitions\": -1\n        }\n    },\n    {\n        \"name\": \"warehouse-connector\",\n        \"config\": {\n            \"connector.class\": \"io.debezium.connector.postgresql.PostgresConnector\",\n            \"plugin.name\": \"pgoutput\",\n            \"database.hostname\": \"postgres\",\n            \"database.port\": \"5432\",\n            \"database.user\": \"postgres\",\n            \"database.password\": \"secret\",\n            \"database.dbname\": \"warehouse-db\",\n            \"database.server.name\": \"warehouse-db\",\n            \"table.include.list\": \"public.warehouse_outbox_events\",\n            \"database.history.kafka.bootstrap.servers\": \"kafka1:39092,kafka2:49092,kafka3:59092\",\n            \"database.history.kafka.topic\": \"schema-changes.warehouse\",\n            \"slot.name\": \"warehouse_slot\",\n            \"topic.creation.default.replication.factor\": 3,\n            \"topic.creation.default.partitions\": -1\n        }\n    },\n    {\n        \"name\": \"payments-connector\",\n        \"config\": {\n            \"connector.class\": \"io.debezium.connector.postgresql.PostgresConnector\",\n            \"plugin.name\": \"pgoutput\",\n            \"database.hostname\": \"postgres\",\n            \"database.port\": \"5432\",\n            \"database.user\": \"postgres\",\n            \"database.password\": \"secret\",\n            \"database.dbname\": \"payments-db\",\n            \"database.server.name\": \"payments-db\",\n            \"table.include.list\": \"public.payments_outbox_events\",\n            \"database.history.kafka.bootstrap.servers\": \"kafka1:39092,kafka2:49092,kafka3:59092\",\n            \"database.history.kafka.topic\": \"schema-changes.payments\",\n            \"slot.name\": \"payments_slot\",\n            \"topic.creation.default.replication.factor\": 3,\n            \"topic.creation.default.partitions\": -1\n        }\n    },\n    {\n        \"name\": \"users-connector\",\n        \"config\": {\n            \"connector.class\": \"io.debezium.connector.postgresql.PostgresConnector\",\n            \"plugin.name\": \"pgoutput\",\n            \"database.hostname\": \"postgres\",\n            \"database.port\": \"5432\",\n            \"database.user\": \"postgres\",\n            \"database.password\": \"secret\",\n            \"database.dbname\": \"users-db\",\n            \"database.server.name\": \"users-db\",\n            \"table.include.list\": \"public.users_outbox_events\",\n            \"database.history.kafka.bootstrap.servers\": \"kafka1:39092,kafka2:49092,kafka3:59092\",\n            \"database.history.kafka.topic\": \"schema-changes.users\",\n            \"slot.name\": \"users_slot\",\n            \"topic.creation.default.replication.factor\": 3,\n            \"topic.creation.default.partitions\": -1\n        }\n    }\n]",
-              "options": {
-                "raw": {
-                  "language": "json"
+            {
+              "name": "Get specific basket",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{orders-host}}/baskets/64bffed5-cee4-4cd1-90cb-e31b8b6ce92d",
+                  "host": [
+                    "{{orders-host}}"
+                  ],
+                  "path": [
+                    "baskets",
+                    "64bffed5-cee4-4cd1-90cb-e31b8b6ce92d"
+                  ]
                 }
-              }
-            },
-            "url": {
-              "raw": "{{bastion-host}}/bastion/connectors",
-              "host": [
-                "{{bastion-host}}"
-              ],
-              "path": [
-                "bastion",
-                "connectors"
-              ]
+              },
+              "response": []
             }
-          },
-          "response": []
+          ]
         },
         {
-          "name": "Create Topics",
-          "request": {
-            "auth": {
-              "type": "basic",
-              "basic": [
-                {
-                  "key": "password",
-                  "value": "YmFzdGlvbjouQWFxU0NyaHZ6MQ",
-                  "type": "string"
+          "name": "Orders",
+          "item": [
+            {
+              "name": "Create order",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"userId\": \"b571ddc7-f9b8-41b5-bcec-82ae387bdbb5\",\n    \"basketId\": \"1413fe96-4e11-456f-bb22-cf26e9c106e0\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
                 },
-                {
-                  "key": "username",
-                  "value": "bastion",
-                  "type": "string"
+                "url": {
+                  "raw": "{{orders-host}}/orders",
+                  "host": [
+                    "{{orders-host}}"
+                  ],
+                  "path": [
+                    "orders"
+                  ]
                 }
-              ]
+              },
+              "response": []
             },
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "[\n  {\n    \"name\": \"Orders\",\n    \"partitions\": 3,\n    \"replicationFactor\": 3,\n    \"config\": {\n      \"min.insync.replicas\": \"2\"\n    }\n  },\n  {\n    \"name\": \"Payments\",\n    \"partitions\": 3,\n    \"replicationFactor\": 3,\n    \"config\": {\n      \"min.insync.replicas\": \"2\"\n    }\n  },\n  {\n    \"name\": \"OrdersValidations\",\n    \"partitions\": 3,\n    \"replicationFactor\": 3,\n    \"config\": {\n      \"min.insync.replicas\": \"2\"\n    }\n  },\n  {\n    \"name\": \"Shipments\",\n    \"partitions\": 3,\n    \"replicationFactor\": 3,\n    \"config\": {\n      \"min.insync.replicas\": \"2\"\n    }\n  },\n  {\n    \"name\": \"Users\",\n    \"partitions\": 3,\n    \"replicationFactor\": 3,\n    \"config\": {\n      \"min.insync.replicas\": \"2\"\n    }\n  },\n  {\n    \"name\": \"orders-db.public.orders_outbox_events\",\n    \"partitions\": 3,\n    \"replicationFactor\": 3,\n    \"config\": {\n      \"min.insync.replicas\": \"2\"\n    }\n  },\n  {\n    \"name\": \"warehouse-db.public.warehouse_outbox_events\",\n    \"partitions\": 3,\n    \"replicationFactor\": 3,\n    \"config\": {\n      \"min.insync.replicas\": \"2\"\n    }\n  },\n  {\n    \"name\": \"payments-db.public.payments_outbox_events\",\n    \"partitions\": 3,\n    \"replicationFactor\": 3,\n    \"config\": {\n      \"min.insync.replicas\": \"2\"\n    }\n  },\n  {\n    \"name\": \"users-db.public.users_outbox_events\",\n    \"partitions\": 3,\n    \"replicationFactor\": 3,\n    \"config\": {\n      \"min.insync.replicas\": \"2\"\n    }\n  }\n]",
-              "options": {
-                "raw": {
-                  "language": "json"
+            {
+              "name": "Get specific order",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{orders-host}}/orders/6f640b4c-6094-4567-afce-8fb0d63da9f3",
+                  "host": [
+                    "{{orders-host}}"
+                  ],
+                  "path": [
+                    "orders",
+                    "6f640b4c-6094-4567-afce-8fb0d63da9f3"
+                  ]
                 }
-              }
-            },
-            "url": {
-              "raw": "{{bastion-host}}/bastion/topics",
-              "host": [
-                "{{bastion-host}}"
-              ],
-              "path": [
-                "bastion",
-                "topics"
-              ]
+              },
+              "response": []
             }
-          },
-          "response": []
+          ]
         },
         {
-          "name": "Update shipment",
-          "request": {
-            "method": "PUT",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"id\": \"7a007416-56e0-489c-88b0-fb1952d5b346\",\n    \"status\": \"SHIPPED\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
+          "name": "Products",
+          "item": [
+            {
+              "name": "Add product with stock",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"productId\": \"9801844e-ba98-4243-8d30-f2426cff60f2\",\n    \"stock\": 100\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{warehouse-host}}/inventory",
+                  "host": [
+                    "{{warehouse-host}}"
+                  ],
+                  "path": [
+                    "inventory"
+                  ]
                 }
-              }
+              },
+              "response": []
             },
-            "url": {
-              "raw": "{{warehouse-host}}/shipments/7a007416-56e0-489c-88b0-fb1952d5b346",
-              "host": [
-                "{{warehouse-host}}"
-              ],
-              "path": [
-                "shipments",
-                "7a007416-56e0-489c-88b0-fb1952d5b346"
-              ]
+            {
+              "name": "Create product",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"thumbnail\": \"https://images.unsplash.com/photo-1505740420928-5e560c06d30e?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8M3x8cHJvZHVjdHxlbnwwfHwwfHw%3D&w=1000&q=80\",\n    \"productName\": \"productName3\",\n    \"description\": \"description3\",\n    \"price\": \"100\",\n    \"currency\": \"EUR\",\n    \"size\": \"32\",\n    \"category\": \"shoes\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{warehouse-host}}/products",
+                  "host": [
+                    "{{warehouse-host}}"
+                  ],
+                  "path": [
+                    "products"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get product",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"productId\": \"d7a54f59-7a79-4844-bbc9-d3fa6ca02823\",\n    \"stock\": 100\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{warehouse-host}}/products/9801844e-ba98-4243-8d30-f2426cff60f2",
+                  "host": [
+                    "{{warehouse-host}}"
+                  ],
+                  "path": [
+                    "products",
+                    "9801844e-ba98-4243-8d30-f2426cff60f2"
+                  ]
+                }
+              },
+              "response": []
             }
-          },
-          "response": []
+          ]
         },
         {
-          "name": "Create product",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"thumbnail\": \"https://images.unsplash.com/photo-1505740420928-5e560c06d30e?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8M3x8cHJvZHVjdHxlbnwwfHwwfHw%3D&w=1000&q=80\",\n    \"productName\": \"productName\",\n    \"description\": \"description\",\n    \"price\": \"100\",\n    \"currency\": \"EUR\",\n    \"size\": \"32\",\n    \"category\": \"shoes\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
+          "name": "Shipments",
+          "item": [
+            {
+              "name": "Update shipment",
+              "request": {
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"id\": \"7a007416-56e0-489c-88b0-fb1952d5b346\",\n    \"status\": \"SHIPPED\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{warehouse-host}}/shipments/7a007416-56e0-489c-88b0-fb1952d5b346",
+                  "host": [
+                    "{{warehouse-host}}"
+                  ],
+                  "path": [
+                    "shipments",
+                    "7a007416-56e0-489c-88b0-fb1952d5b346"
+                  ]
                 }
-              }
-            },
-            "url": {
-              "raw": "{{warehouse-host}}/products",
-              "host": [
-                "{{warehouse-host}}"
-              ],
-              "path": [
-                "products"
-              ]
+              },
+              "response": []
             }
-          },
-          "response": []
+          ]
         },
         {
-          "name": "Get product",
-          "protocolProfileBehavior": {
-            "disableBodyPruning": true
-          },
-          "request": {
-            "method": "GET",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"productId\": \"d7a54f59-7a79-4844-bbc9-d3fa6ca02823\",\n    \"stock\": 100\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
+          "name": "Users",
+          "item": [
+            {
+              "name": "Create user",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"firstName\": \"dimos\",\n    \"lastName\": \"botsaris\",\n    \"email\": \"test@gmail.com\",\n    \"password\": \"secret\",\n    \"username\": \"tester\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{users-host}}/users",
+                  "host": [
+                    "{{users-host}}"
+                  ],
+                  "path": [
+                    "users"
+                  ]
                 }
-              }
+              },
+              "response": []
             },
-            "url": {
-              "raw": "{{warehouse-host}}/products/5c1a4d4f-9f1f-4c34-961c-f3380c879bc9",
-              "host": [
-                "{{warehouse-host}}"
-              ],
-              "path": [
-                "products",
-                "5c1a4d4f-9f1f-4c34-961c-f3380c879bc9"
-              ]
+            {
+              "name": "Get user",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"firstName\": \"dimos\",\n    \"lastName\": \"botsaris\",\n    \"email\": \"test@gmail.com\",\n    \"password\": \"secret\",\n    \"username\": \"tester\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{users-host}}/users/c3f3c674-91be-4ab6-8afe-32423a51da23",
+                  "host": [
+                    "{{users-host}}"
+                  ],
+                  "path": [
+                    "users",
+                    "c3f3c674-91be-4ab6-8afe-32423a51da23"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Create user address",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"name\": \"my home 36\",\n    \"address\": \"Leros\",\n    \"houseNumber\": \"9\",\n    \"countryCode\": \"GR\",\n    \"postalCode\": \"85400\",\n    \"city\": \"Leros\",\n    \"phone\": \"+306991001001\",\n    \"isBilling\": true\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{users-host}}/users/c3f3c674-91be-4ab6-8afe-32423a51da23/addresses",
+                  "host": [
+                    "{{users-host}}"
+                  ],
+                  "path": [
+                    "users",
+                    "c3f3c674-91be-4ab6-8afe-32423a51da23",
+                    "addresses"
+                  ]
+                }
+              },
+              "response": []
             }
-          },
-          "response": []
+          ]
+        },
+        {
+          "name": "Config",
+          "item": [
+            {
+              "name": "Create Databases",
+              "request": {
+                "auth": {
+                  "type": "basic",
+                  "basic": [
+                    {
+                      "key": "username",
+                      "value": "bastion",
+                      "type": "string"
+                    },
+                    {
+                      "key": "password",
+                      "value": "YmFzdGlvbjouQWFxU0NyaHZ6MQ",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "[\n    {\n        \"name\": \"orders-db\",\n        \"owner\": \"postgres\"\n    },\n    {\n        \"name\": \"warehouse-db\",\n        \"owner\": \"postgres\"\n    },\n    {\n        \"name\": \"payments-db\",\n        \"owner\": \"postgres\"\n    },\n    {\n        \"name\": \"users-db\",\n        \"owner\": \"postgres\"\n    }\n]",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{bastion-host}}/bastion/databases",
+                  "host": [
+                    "{{bastion-host}}"
+                  ],
+                  "path": [
+                    "bastion",
+                    "databases"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Create Connectors",
+              "request": {
+                "auth": {
+                  "type": "basic",
+                  "basic": [
+                    {
+                      "key": "username",
+                      "value": "bastion",
+                      "type": "string"
+                    },
+                    {
+                      "key": "password",
+                      "value": "YmFzdGlvbjouQWFxU0NyaHZ6MQ",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "[\n    {\n        \"name\": \"orders-connector\",\n        \"config\": {\n            \"connector.class\": \"io.debezium.connector.postgresql.PostgresConnector\",\n            \"plugin.name\": \"pgoutput\",\n            \"database.hostname\": \"postgres\",\n            \"database.port\": \"5432\",\n            \"database.user\": \"postgres\",\n            \"database.password\": \"secret\",\n            \"database.dbname\": \"orders-db\",\n            \"database.server.name\": \"orders-db\",\n            \"table.include.list\": \"public.orders_outbox_events\",\n            \"database.history.kafka.bootstrap.servers\": \"kafka1:39092,kafka2:49092,kafka3:59092\",\n            \"database.history.kafka.topic\": \"schema-changes.orders\",\n            \"slot.name\": \"orders_slot\",\n            \"topic.creation.default.replication.factor\": 3,\n            \"topic.creation.default.partitions\": -1\n        }\n    },\n    {\n        \"name\": \"warehouse-connector\",\n        \"config\": {\n            \"connector.class\": \"io.debezium.connector.postgresql.PostgresConnector\",\n            \"plugin.name\": \"pgoutput\",\n            \"database.hostname\": \"postgres\",\n            \"database.port\": \"5432\",\n            \"database.user\": \"postgres\",\n            \"database.password\": \"secret\",\n            \"database.dbname\": \"warehouse-db\",\n            \"database.server.name\": \"warehouse-db\",\n            \"table.include.list\": \"public.warehouse_outbox_events\",\n            \"database.history.kafka.bootstrap.servers\": \"kafka1:39092,kafka2:49092,kafka3:59092\",\n            \"database.history.kafka.topic\": \"schema-changes.warehouse\",\n            \"slot.name\": \"warehouse_slot\",\n            \"topic.creation.default.replication.factor\": 3,\n            \"topic.creation.default.partitions\": -1\n        }\n    },\n    {\n        \"name\": \"payments-connector\",\n        \"config\": {\n            \"connector.class\": \"io.debezium.connector.postgresql.PostgresConnector\",\n            \"plugin.name\": \"pgoutput\",\n            \"database.hostname\": \"postgres\",\n            \"database.port\": \"5432\",\n            \"database.user\": \"postgres\",\n            \"database.password\": \"secret\",\n            \"database.dbname\": \"payments-db\",\n            \"database.server.name\": \"payments-db\",\n            \"table.include.list\": \"public.payments_outbox_events\",\n            \"database.history.kafka.bootstrap.servers\": \"kafka1:39092,kafka2:49092,kafka3:59092\",\n            \"database.history.kafka.topic\": \"schema-changes.payments\",\n            \"slot.name\": \"payments_slot\",\n            \"topic.creation.default.replication.factor\": 3,\n            \"topic.creation.default.partitions\": -1\n        }\n    },\n    {\n        \"name\": \"users-connector\",\n        \"config\": {\n            \"connector.class\": \"io.debezium.connector.postgresql.PostgresConnector\",\n            \"plugin.name\": \"pgoutput\",\n            \"database.hostname\": \"postgres\",\n            \"database.port\": \"5432\",\n            \"database.user\": \"postgres\",\n            \"database.password\": \"secret\",\n            \"database.dbname\": \"users-db\",\n            \"database.server.name\": \"users-db\",\n            \"table.include.list\": \"public.users_outbox_events\",\n            \"database.history.kafka.bootstrap.servers\": \"kafka1:39092,kafka2:49092,kafka3:59092\",\n            \"database.history.kafka.topic\": \"schema-changes.users\",\n            \"slot.name\": \"users_slot\",\n            \"topic.creation.default.replication.factor\": 3,\n            \"topic.creation.default.partitions\": -1\n        }\n    }\n]",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{bastion-host}}/bastion/connectors",
+                  "host": [
+                    "{{bastion-host}}"
+                  ],
+                  "path": [
+                    "bastion",
+                    "connectors"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Create Topics",
+              "request": {
+                "auth": {
+                  "type": "basic",
+                  "basic": [
+                    {
+                      "key": "password",
+                      "value": "YmFzdGlvbjouQWFxU0NyaHZ6MQ",
+                      "type": "string"
+                    },
+                    {
+                      "key": "username",
+                      "value": "bastion",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "[\n  {\n    \"name\": \"Orders\",\n    \"partitions\": 3,\n    \"replicationFactor\": 3,\n    \"config\": {\n      \"min.insync.replicas\": \"2\"\n    }\n  },\n  {\n    \"name\": \"Payments\",\n    \"partitions\": 3,\n    \"replicationFactor\": 3,\n    \"config\": {\n      \"min.insync.replicas\": \"2\"\n    }\n  },\n  {\n    \"name\": \"OrdersValidations\",\n    \"partitions\": 3,\n    \"replicationFactor\": 3,\n    \"config\": {\n      \"min.insync.replicas\": \"2\"\n    }\n  },\n  {\n    \"name\": \"Shipments\",\n    \"partitions\": 3,\n    \"replicationFactor\": 3,\n    \"config\": {\n      \"min.insync.replicas\": \"2\"\n    }\n  },\n  {\n    \"name\": \"Users\",\n    \"partitions\": 3,\n    \"replicationFactor\": 3,\n    \"config\": {\n      \"min.insync.replicas\": \"2\"\n    }\n  },\n  {\n    \"name\": \"orders-db.public.orders_outbox_events\",\n    \"partitions\": 3,\n    \"replicationFactor\": 3,\n    \"config\": {\n      \"min.insync.replicas\": \"2\"\n    }\n  },\n  {\n    \"name\": \"warehouse-db.public.warehouse_outbox_events\",\n    \"partitions\": 3,\n    \"replicationFactor\": 3,\n    \"config\": {\n      \"min.insync.replicas\": \"2\"\n    }\n  },\n  {\n    \"name\": \"payments-db.public.payments_outbox_events\",\n    \"partitions\": 3,\n    \"replicationFactor\": 3,\n    \"config\": {\n      \"min.insync.replicas\": \"2\"\n    }\n  },\n  {\n    \"name\": \"users-db.public.users_outbox_events\",\n    \"partitions\": 3,\n    \"replicationFactor\": 3,\n    \"config\": {\n      \"min.insync.replicas\": \"2\"\n    }\n  }\n]",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{bastion-host}}/bastion/topics",
+                  "host": [
+                    "{{bastion-host}}"
+                  ],
+                  "path": [
+                    "bastion",
+                    "topics"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
         }
       ]
     }
