@@ -1,9 +1,12 @@
 package com.arconsis.domain.baskets
 
+import com.arconsis.data.addresses.AddressesRepository
 import com.arconsis.data.baskets.BasketsRepository
 import com.arconsis.data.products.ProductsRepository
 import com.arconsis.domain.products.Product
+import com.arconsis.presentation.http.baskets.dto.CreateAddressDto
 import com.arconsis.presentation.http.baskets.dto.CreateBasketDto
+import com.arconsis.presentation.http.baskets.dto.toCreateAddress
 import com.arconsis.presentation.http.baskets.dto.toCreateBasket
 import io.smallrye.mutiny.Uni
 import org.hibernate.reactive.mutiny.Mutiny
@@ -13,6 +16,7 @@ import javax.ws.rs.BadRequestException
 
 @ApplicationScoped
 class BasketsService(
+	private val addressesRepository: AddressesRepository,
 	private val basketsRepository: BasketsRepository,
 	private val productsRepository: ProductsRepository,
 	private val sessionFactory: Mutiny.SessionFactory,
@@ -58,6 +62,18 @@ class BasketsService(
 		return sessionFactory.withTransaction { session, _ ->
 			basketsRepository.getBasket(basketId, session)
 				.map { it }
+		}
+	}
+
+	fun createBasketShippingAddress(basketId: UUID, address: CreateAddressDto): Uni<Basket> {
+		val newAddress = address.toCreateAddress(isSelected = true, isBilling = true)
+		return sessionFactory.withTransaction { session, _ ->
+			addressesRepository.createShippingAddress(newAddress, basketId, session)
+		}.flatMap {
+			sessionFactory.withTransaction { session, _ ->
+				basketsRepository.getBasket(basketId, session)
+			}
+			.map { it }
 		}
 	}
 }

@@ -1,19 +1,23 @@
 package com.arconsis.data.baskets
 
 import com.arconsis.data.PostgreSQLEnumType
+import com.arconsis.data.addresses.AddressEntity
+import com.arconsis.data.addresses.toAddress
 import com.arconsis.data.basketitems.BasketItemEntity
 import com.arconsis.data.baskets.BasketEntity.Companion.GET_BY_BASKET_ID
 import com.arconsis.data.orders.OrderEntity
 import com.arconsis.domain.baskets.Basket
 import com.arconsis.domain.baskets.BasketItem
 import com.arconsis.domain.baskets.CreateBasket
-import org.hibernate.annotations.CreationTimestamp
-import org.hibernate.annotations.TypeDef
-import org.hibernate.annotations.UpdateTimestamp
+import org.hibernate.annotations.*
 import java.math.BigDecimal
 import java.time.Instant
 import java.util.*
 import javax.persistence.*
+import javax.persistence.CascadeType
+import javax.persistence.Entity
+import javax.persistence.NamedQueries
+import javax.persistence.NamedQuery
 
 @NamedQueries(
 	NamedQuery(
@@ -58,12 +62,17 @@ class BasketEntity(
 	@Column(name = "updated_at")
 	var updatedAt: Instant? = null,
 
-	@OneToMany(mappedBy = "basketId", cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
+	@LazyCollection(LazyCollectionOption.FALSE)
+	@OneToMany(mappedBy = "basketId", cascade = [CascadeType.ALL])
 	var itemEntities: MutableList<BasketItemEntity> = mutableListOf(),
 
 	@OneToOne(cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
 	@PrimaryKeyJoinColumn
-	var order: OrderEntity? = null
+	var order: OrderEntity? = null,
+
+	@LazyCollection(LazyCollectionOption.FALSE)
+	@OneToMany(mappedBy = "basketId", cascade = [CascadeType.ALL])
+	var addressEntities: MutableList<AddressEntity> = mutableListOf()
 ) {
 	companion object {
 		const val GET_BY_BASKET_ID = "BasketEntity.get_by_basket_id"
@@ -90,6 +99,9 @@ fun BasketEntity.toBasket() = Basket(
 			quantity = it.quantity
 		)
 	},
+	shippingAddress = addressEntities.find { it.isSelected }?.toAddress(),
+	billingAddress = addressEntities.find { it.isBilling }?.toAddress(),
+	isOrderable = addressEntities.find { it.isSelected } != null && addressEntities.find { it.isBilling } != null
 )
 
 fun CreateBasket.toBasketEntity() = BasketEntity(

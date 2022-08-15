@@ -18,12 +18,4 @@ class AddressesService(private val addressesRepository: AddressesRepository) {
         val newAddress = createAddress.toCreateAddress(isSelected = true)
         return addressesRepository.createAddress(newAddress, userId)
     }
-
-    fun getBillingAddress(userId: UUID): Uni<Address?> {
-        return addressesRepository.getBillingAddress(userId)
-    }
-
-    fun createBillingAddress(userId: UUID, addressId: UUID): Uni<Address> {
-        return addressesRepository.createBillingAddress(userId, addressId)
-    }
 }
