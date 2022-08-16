@@ -1,5 +1,6 @@
 package com.arconsis.domain.orders
 
+import com.arconsis.domain.addresses.Address
 import io.quarkus.kafka.client.serialization.ObjectMapperDeserializer
 import java.math.BigDecimal
 import java.util.*
@@ -14,6 +15,9 @@ data class Order(
     val currency: String,
     val status: OrderStatus,
     val items: List<OrderItem>,
+    // addresses
+    val shippingAddress: Address? = null,
+    val billingAddress: Address? = null,
 )
 
 data class Product(

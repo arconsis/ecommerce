@@ -1,5 +1,6 @@
 package com.arconsis.domain.orders
 
+import com.arconsis.domain.addresses.Address
 import com.arconsis.domain.checkouts.Checkout
 import com.arconsis.domain.checkouts.CheckoutStatus
 import com.arconsis.domain.checkouts.CreateCheckout
@@ -17,7 +18,10 @@ data class Order(
     val currency: String,
     val status: OrderStatus,
     val items: List<OrderItem>,
-    val checkout: Checkout?
+    val checkout: Checkout?,
+    // addresses
+    val shippingAddress: Address? = null,
+    val billingAddress: Address? = null,
 )
 
 enum class OrderStatus {

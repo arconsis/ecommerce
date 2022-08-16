@@ -1,6 +1,7 @@
 package com.arconsis.domain.orders
 
 import io.quarkus.kafka.client.serialization.ObjectMapperDeserializer
+import com.arconsis.domain.addresses
 import java.util.*
 
 data class Order(
@@ -13,6 +14,9 @@ data class Order(
     val currency: String,
     val status: OrderStatus,
     val items: List<OrderItem>,
+    // addresses
+    val shippingAddress: Address? = null,
+    val billingAddress: Address? = null,
 )
 
 enum class OrderStatus {
