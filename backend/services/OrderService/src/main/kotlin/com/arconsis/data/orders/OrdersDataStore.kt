@@ -1,8 +1,11 @@
 package com.arconsis.data.orders
 
+import com.arconsis.common.errors.abort
+import com.arconsis.data.baskets.BasketEntity
 import com.arconsis.domain.orders.CreateOrder
 import com.arconsis.domain.orders.Order
 import com.arconsis.domain.orders.OrderStatus
+import com.arconsis.domain.orders.OrdersFailureReason
 import io.smallrye.mutiny.Uni
 import org.hibernate.reactive.mutiny.Mutiny
 import java.util.*
@@ -43,7 +46,8 @@ class OrdersDataStore {
 	}
 
 	fun createOrder(createOrder: CreateOrder, session: Mutiny.Session): Uni<Order> {
-		val orderEntity = createOrder.toOrderEntity(OrderStatus.REQUESTED)
+		val basket = session.getReference(BasketEntity::class.java, createOrder.basketId) ?: abort(OrdersFailureReason.BasketNotFound)
+		val orderEntity = createOrder.toOrderEntity(OrderStatus.REQUESTED, basket)
 		return session.persist(orderEntity)
 			.map { orderEntity.toOrder() }
 	}

@@ -1,7 +1,12 @@
 package com.arconsis.data.orders
 
 import com.arconsis.data.PostgreSQLEnumType
+import com.arconsis.data.addresses.toAddress
+import com.arconsis.data.basketitems.toBasketItem
+import com.arconsis.data.baskets.BasketEntity
 import com.arconsis.data.orders.OrderEntity.Companion.UPDATE_ORDER_STATUS
+import com.arconsis.domain.baskets.Basket
+import com.arconsis.domain.baskets.toOrderItem
 import com.arconsis.domain.orders.CreateOrder
 import com.arconsis.domain.orders.Order
 import com.arconsis.domain.orders.OrderStatus
@@ -36,7 +41,7 @@ class OrderEntity(
     var orderId: UUID? = null,
 
     // FK
-    @Column(name = "basket_id", unique = true)
+    @Column(name = "basket_id", unique = true, insertable = false, updatable = false)
     var basketId: UUID,
 
     @Column(name = "user_id", nullable = false)
@@ -75,6 +80,10 @@ class OrderEntity(
     @UpdateTimestamp
     @Column(name = "updated_at")
     var updatedAt: Instant? = null,
+
+    @OneToOne(cascade = [CascadeType.ALL])
+    @JoinColumn(name = "basket_id", referencedColumnName = "basket_id")
+    val basket: BasketEntity
 ) {
     companion object {
         const val UPDATE_ORDER_STATUS = "OrderEntity.update_order_status"
@@ -90,12 +99,14 @@ fun OrderEntity.toOrder() = Order(
     priceBeforeTax = priceBeforeTax,
     currency = currency,
     status = status,
-    items = emptyList(),
+    items = basket.itemEntities.map { it.toBasketItem().toOrderItem(orderId!!) },
     checkoutSessionId = checkoutSessionId,
-    checkoutUrl = checkoutUrl
+    checkoutUrl = checkoutUrl,
+    shippingAddress = basket.addressEntities.find { it.isSelected }?.toAddress(),
+    billingAddress = basket.addressEntities.find { it.isBilling }?.toAddress(),
 )
 
-fun CreateOrder.toOrderEntity(status: OrderStatus) = OrderEntity(
+fun CreateOrder.toOrderEntity(status: OrderStatus, basket: BasketEntity) = OrderEntity(
     basketId = basketId,
     userId = userId,
     totalPrice = totalPrice,
@@ -103,4 +114,5 @@ fun CreateOrder.toOrderEntity(status: OrderStatus) = OrderEntity(
     tax = tax,
     currency = currency,
     status = status,
+    basket = basket
 )

@@ -1,6 +1,7 @@
 package com.arconsis.data.basketitems
 
 import com.arconsis.data.PostgreSQLEnumType
+import com.arconsis.domain.baskets.BasketItem
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.TypeDef
 import org.hibernate.annotations.UpdateTimestamp
@@ -52,6 +53,18 @@ class BasketItemEntity(
 	@UpdateTimestamp
 	@Column(name = "updated_at")
 	var updatedAt: Instant? = null,
+)
+
+fun BasketItemEntity.toBasketItem() = BasketItem(
+	itemId = itemId!!,
+	basketId = basketId,
+	productId = productId,
+	thumbnail =thumbnail,
+	productName = productName,
+	description = description,
+	currency = currency,
+	price = price,
+	quantity = quantity
 )
 
 
