@@ -1,14 +1,14 @@
 package com.arconsis.domain.checkoutevents
 
 import com.arconsis.common.asPair
+import com.arconsis.common.errors.abort
 import com.arconsis.common.toUni
 import com.arconsis.data.checkoutevents.CheckoutEventsRepository
+import com.arconsis.data.checkouts.CheckoutsFailureReason
 import com.arconsis.data.checkouts.CheckoutsRepository
 import com.arconsis.data.outboxevents.OutboxEventsRepository
-import com.arconsis.data.payments.PaymentsRepository
 import com.arconsis.domain.checkouts.CheckoutStatus
 import com.arconsis.domain.checkouts.toCreateOutboxEvent
-import com.arconsis.domain.payments.CreatePayment
 import com.arconsis.presentation.http.payments.dto.CreateCheckoutEventDto
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.smallrye.mutiny.Uni
@@ -21,7 +21,6 @@ class CheckoutEventsService(
 	private val checkoutEventsRepository: CheckoutEventsRepository,
 	private val checkoutRepository: CheckoutsRepository,
 	private val outboxEventsRepository: OutboxEventsRepository,
-	private val paymentsRepository: PaymentsRepository,
 	private val sessionFactory: Mutiny.SessionFactory,
 	private val objectMapper: ObjectMapper,
 ) {
@@ -33,11 +32,12 @@ class CheckoutEventsService(
 			)
 				.map { checkout ->
 					if (checkout == null) {
-						throw RuntimeException("No checkout found")
+						abort(CheckoutsFailureReason.CheckoutNotFound)
 					} else {
 						CreateCheckoutEvent(
 							type = checkoutEventDto.type,
-							metadata = checkoutEventDto.metadata,
+							pspData = checkoutEventDto.pspData,
+							pspReferenceId = checkoutEventDto.pspReferenceId,
 							checkoutId = checkout.checkoutId,
 						)
 					}
@@ -54,10 +54,6 @@ class CheckoutEventsService(
 									outboxEventsRepository.createEvent(createOutboxEvent, session),
 									checkout.toUni(),
 								).asPair()
-							}
-							.flatMap { (_, checkout) ->
-								// TODO: find psp reference from stripe
-								paymentsRepository.createPayment(CreatePayment(checkoutId = checkout.checkoutId, UUID.randomUUID().toString()), session)
 							}
 							.map {
 								checkoutEvent

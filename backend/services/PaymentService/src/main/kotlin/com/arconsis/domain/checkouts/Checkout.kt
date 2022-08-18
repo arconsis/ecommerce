@@ -15,8 +15,7 @@ data class Checkout(
     val currency: String,
     val status: CheckoutStatus,
     // psp ref
-    val checkoutSessionId: String,
-    val checkoutUrl: String,
+    val pspToken: String
 )
 
 data class CreateCheckout(
@@ -26,8 +25,7 @@ data class CreateCheckout(
     val currency: String,
     val status: CheckoutStatus,
     // psp ref
-    val checkoutSessionId: String,
-    val checkoutUrl: String,
+    val pspToken: String,
 )
 
 enum class CheckoutStatus {

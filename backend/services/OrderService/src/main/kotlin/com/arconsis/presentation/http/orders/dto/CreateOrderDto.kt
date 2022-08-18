@@ -1,6 +1,7 @@
 package com.arconsis.presentation.http.orders.dto
 
 import com.arconsis.domain.orders.CreateOrder
+import com.arconsis.domain.orders.OrderPaymentMethodType
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.math.BigDecimal
 import java.util.*
@@ -13,11 +14,20 @@ data class CreateOrderDto(
     @JsonProperty("basketId") val basketId: UUID,
 )
 
-fun CreateOrderDto.toCreateOrder(totalPrice: BigDecimal, priceBeforeTax: BigDecimal, tax: String, currency: String) = CreateOrder(
+fun CreateOrderDto.toCreateOrder(
+    totalPrice: BigDecimal,
+    priceBeforeTax: BigDecimal,
+    tax: String,
+    currency: String,
+    pspToken: String,
+    paymentMethodType: OrderPaymentMethodType,
+) = CreateOrder(
     userId = userId,
     totalPrice = totalPrice,
     priceBeforeTax = priceBeforeTax,
     tax = tax,
     currency = currency,
-    basketId = basketId
+    basketId = basketId,
+    pspToken = pspToken,
+    paymentMethodType = paymentMethodType
 )

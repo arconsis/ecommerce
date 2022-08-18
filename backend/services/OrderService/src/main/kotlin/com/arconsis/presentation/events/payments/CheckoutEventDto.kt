@@ -1,4 +1,4 @@
-package com.arconsis.presentation.events.checkouts
+package com.arconsis.presentation.events.payments
 
 import com.arconsis.domain.outboxevents.AggregateType
 import com.arconsis.domain.outboxevents.OutboxEvent

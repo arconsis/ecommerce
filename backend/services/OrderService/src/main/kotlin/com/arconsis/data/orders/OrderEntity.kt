@@ -5,11 +5,8 @@ import com.arconsis.data.addresses.toAddress
 import com.arconsis.data.basketitems.toBasketItem
 import com.arconsis.data.baskets.BasketEntity
 import com.arconsis.data.orders.OrderEntity.Companion.UPDATE_ORDER_STATUS
-import com.arconsis.domain.baskets.Basket
 import com.arconsis.domain.baskets.toOrderItem
-import com.arconsis.domain.orders.CreateOrder
-import com.arconsis.domain.orders.Order
-import com.arconsis.domain.orders.OrderStatus
+import com.arconsis.domain.orders.*
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.Type
 import org.hibernate.annotations.TypeDef
@@ -49,12 +46,12 @@ class OrderEntity(
 
     // TODO: perhaps can be moved to another table 1:1
     // checkout session from PSP
-    @Column(name = "checkout_session_id", nullable = true, unique = true)
-    var checkoutSessionId: String? = null,
-
-    // checkout session from PSP
-    @Column(name = "checkout_url", nullable = true, unique = true)
-    var checkoutUrl: String? = null,
+//    @Column(name = "checkout_session_id", nullable = true, unique = true)
+//    var checkoutSessionId: String? = null,
+//
+//    // checkout session from PSP
+//    @Column(name = "checkout_url", nullable = true, unique = true)
+//    var checkoutUrl: String? = null,
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "order_status")
@@ -72,6 +69,14 @@ class OrderEntity(
 
     @Column(nullable = false)
     var currency: String,
+
+    @Column(name = "psp_token", nullable = false, unique = true)
+    var pspToken: String,
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "payment_method_type", nullable = false)
+    @Type(type = "pgsql_enum")
+    var paymentMethodType: OrderPaymentMethodType,
 
     @CreationTimestamp
     @Column(name = "created_at")
@@ -94,14 +99,17 @@ fun OrderEntity.toOrder() = Order(
     orderId = orderId!!,
     basketId = basketId,
     userId = userId,
-    totalPrice = totalPrice,
-    tax = tax,
-    priceBeforeTax = priceBeforeTax,
-    currency = currency,
+    prices = OrderPrices(
+        totalPrice = totalPrice,
+        tax = tax,
+        priceBeforeTax = priceBeforeTax,
+        currency = currency,
+    ),
     status = status,
     items = basket.itemEntities.map { it.toBasketItem().toOrderItem(orderId!!) },
-    checkoutSessionId = checkoutSessionId,
-    checkoutUrl = checkoutUrl,
+//    checkoutSessionId = checkoutSessionId,
+//    checkoutUrl = checkoutUrl,
+    paymentMethod = OrderPaymentMethod(pspToken = pspToken, paymentMethodType = paymentMethodType),
     shippingAddress = basket.addressEntities.find { it.isSelected }?.toAddress(),
     billingAddress = basket.addressEntities.find { it.isBilling }?.toAddress(),
 )
@@ -114,5 +122,7 @@ fun CreateOrder.toOrderEntity(status: OrderStatus, basket: BasketEntity) = Order
     tax = tax,
     currency = currency,
     status = status,
-    basket = basket
+    basket = basket,
+    paymentMethodType = paymentMethodType,
+    pspToken = pspToken
 )

@@ -34,7 +34,7 @@ class OrdersService(
 						abort(OrdersFailureReason.BasketNotOrderable)
 					}
 					Uni.combine().all().unis(
-						ordersRepository.createOrder(createOrder.toCreateOrder(basket.totalPrice, basket.priceBeforeTax, basket.tax, basket.currency), session),
+						ordersRepository.createOrder(createOrder.toCreateOrder(basket.prices.totalPrice, basket.prices.priceBeforeTax, basket.prices.tax, basket.prices.currency, basket.paymentMethod!!.pspToken, basket.paymentMethod.paymentMethodType), session),
 						basket.toUni(),
 					).asPair()
 				}

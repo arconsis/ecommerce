@@ -12,6 +12,7 @@ data class CheckoutEventDataDto (
 )
 
 data class CheckoutEventObjectDto (
+	@JsonProperty("id") val pspReferenceId: String,
 	@JsonProperty("metadata") val metadata: CheckoutEventMetadataDto,
 )
 
@@ -22,5 +23,6 @@ data class CheckoutEventMetadataDto(
 data class CreateCheckoutEventDto(
 	@JsonProperty("type") val type: String,
 	@JsonProperty("orderId") val orderId: String,
-	@JsonProperty("metadata") val metadata: String,
+	@JsonProperty("pspData") val pspData: String,
+	@JsonProperty("pspReferenceId") val pspReferenceId: String
 )

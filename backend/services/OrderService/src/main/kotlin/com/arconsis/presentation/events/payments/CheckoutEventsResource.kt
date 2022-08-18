@@ -1,4 +1,4 @@
-package com.arconsis.presentation.events.checkouts
+package com.arconsis.presentation.events.payments
 
 import com.arconsis.domain.checkout.Checkout
 import com.arconsis.domain.checkout.CheckoutsService
@@ -22,7 +22,7 @@ class CheckoutEventsResource(
             checkoutEventDto.payload.currentValue.toOutboxEvent().payload,
             Checkout::class.java
         )
-        return checkoutsService.handleCheckoutEvents(eventId, checkout)
+        return checkoutsService.handlePaymentEvents(eventId, checkout)
             .onFailure()
             .recoverWithNull()
     }

@@ -8,10 +8,7 @@ data class Order(
     val orderId: UUID,
     val basketId: UUID,
     val userId: UUID,
-    val totalPrice: BigDecimal,
-    val tax: String,
-    val priceBeforeTax: BigDecimal,
-    val currency: String,
+    val prices: OrderPrices,
     val status: OrderStatus,
     val items: List<OrderItem>,
     // addresses
@@ -31,5 +28,12 @@ enum class OrderStatus {
     CANCELLED,
     REFUNDED
 }
+
+data class OrderPrices (
+    val totalPrice: BigDecimal,
+    val tax: String,
+    val priceBeforeTax: BigDecimal,
+    val currency: String,
+)
 
 class OrdersDeserializer : ObjectMapperDeserializer<Order>(Order::class.java)

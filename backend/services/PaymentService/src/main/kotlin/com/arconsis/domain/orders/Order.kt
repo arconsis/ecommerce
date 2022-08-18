@@ -12,12 +12,11 @@ data class Order(
     val orderId: UUID,
     val basketId: UUID,
     val userId: UUID,
-    val totalPrice: BigDecimal,
-    val tax: String,
-    val priceBeforeTax: BigDecimal,
-    val currency: String,
+    val prices: OrderPrices,
     val status: OrderStatus,
     val items: List<OrderItem>,
+    // psp ref
+    val paymentMethod: OrderPaymentMethod,
     val checkout: Checkout?,
     // addresses
     val shippingAddress: Address? = null,
@@ -37,14 +36,30 @@ enum class OrderStatus {
     REFUNDED
 }
 
-fun Order.toCreateCheckout(checkoutSessionId: String, checkoutUrl: String, status: CheckoutStatus) = CreateCheckout(
+data class OrderPaymentMethod (
+    val pspToken: String,
+    val paymentMethodType: OrderPaymentMethodType
+)
+
+data class OrderPrices (
+    val totalPrice: BigDecimal,
+    val tax: String,
+    val priceBeforeTax: BigDecimal,
+    val currency: String,
+)
+
+enum class OrderPaymentMethodType {
+    STRIPE,
+    CASH_ON_DELIVERY
+}
+
+fun Order.toCreateCheckout(pspToken: String, status: CheckoutStatus) = CreateCheckout(
     userId = userId,
     orderId = orderId,
-    amount = totalPrice,
-    currency = currency,
+    amount = prices.totalPrice,
+    currency = prices.currency,
     status = status,
-    checkoutSessionId = checkoutSessionId,
-    checkoutUrl = checkoutUrl
+    pspToken = pspToken,
 )
 
 class OrdersDeserializer : ObjectMapperDeserializer<Order>(Order::class.java)

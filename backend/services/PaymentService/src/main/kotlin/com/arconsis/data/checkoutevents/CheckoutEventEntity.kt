@@ -29,8 +29,11 @@ class CheckoutEventEntity(
 	var checkoutId: UUID,
 
 	// TODO: make better schema to handle events
-	@Column(name = "metadata")
-	var metadata: String,
+	@Column(name = "psp_data", nullable = false)
+	var pspData: String,
+
+	@Column(name = "psp_reference_id", nullable = false)
+	var pspReferenceId: String,
 
 	@Column(name = "type")
 	var type: String,
@@ -46,13 +49,15 @@ class CheckoutEventEntity(
 
 fun CreateCheckoutEvent.toCheckoutEntity() = CheckoutEventEntity(
 	checkoutId = checkoutId,
-	metadata = metadata,
-	type = type
+	pspData = pspData,
+	type = type,
+	pspReferenceId = pspReferenceId
 )
 
 fun CheckoutEventEntity.toCheckoutEvent() = CheckoutEvent(
 	eventId = eventId!!,
 	checkoutId = checkoutId,
-	metadata = metadata,
-	type = type
+	pspData = pspData,
+	type = type,
+	pspReferenceId = pspReferenceId
 )

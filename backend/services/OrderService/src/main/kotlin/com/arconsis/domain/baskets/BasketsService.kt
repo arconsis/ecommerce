@@ -1,13 +1,12 @@
 package com.arconsis.domain.baskets
 
+import com.arconsis.common.errors.abort
 import com.arconsis.data.addresses.AddressesRepository
 import com.arconsis.data.baskets.BasketsRepository
 import com.arconsis.data.products.ProductsRepository
+import com.arconsis.domain.orders.OrdersFailureReason
 import com.arconsis.domain.products.Product
-import com.arconsis.presentation.http.baskets.dto.CreateAddressDto
-import com.arconsis.presentation.http.baskets.dto.CreateBasketDto
-import com.arconsis.presentation.http.baskets.dto.toCreateAddress
-import com.arconsis.presentation.http.baskets.dto.toCreateBasket
+import com.arconsis.presentation.http.baskets.dto.*
 import io.smallrye.mutiny.Uni
 import org.hibernate.reactive.mutiny.Mutiny
 import java.util.*
@@ -73,7 +72,18 @@ class BasketsService(
 			sessionFactory.withTransaction { session, _ ->
 				basketsRepository.getBasket(basketId, session)
 			}
-			.map { it }
+				.map { it }
+		}
+	}
+
+	fun updateBasketPaymentMethod(basketId: UUID, newPaymentMethod: AddPaymentMethodDto): Uni<Basket> {
+		return sessionFactory.withTransaction { session, _ ->
+			basketsRepository.updateBasketPaymentMethod(basketId, newPaymentMethod, session)
+				.flatMap { isUpdated ->
+					if (!isUpdated) abort(OrdersFailureReason.BasketNotFound)
+					basketsRepository.getBasket(basketId, session)
+				}
+				.map { it }
 		}
 	}
 }

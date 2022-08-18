@@ -1,12 +1,9 @@
 package com.arconsis.data.checkouts
 
 import com.arconsis.data.PostgreSQLEnumType
-import com.arconsis.data.payments.PaymentEntity
 import com.arconsis.domain.checkouts.Checkout
 import com.arconsis.domain.checkouts.CheckoutStatus
 import com.arconsis.domain.checkouts.CreateCheckout
-import com.arconsis.domain.payments.CreatePayment
-import com.arconsis.domain.payments.Payment
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.Type
 import org.hibernate.annotations.TypeDef
@@ -34,12 +31,8 @@ class CheckoutEntity(
     var orderId: UUID,
 
     // checkout session from PSP
-    @Column(name = "checkout_session_id", nullable = false, unique = true)
-    var checkoutSessionId: String,
-
-    // checkout session from PSP
-    @Column(name = "checkout_url", nullable = false, unique = true)
-    var checkoutUrl: String,
+    @Column(name = "psp_token", nullable = false, unique = true)
+    var pspToken: String,
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "order_status")
@@ -59,10 +52,6 @@ class CheckoutEntity(
     @UpdateTimestamp
     @Column(name = "updated_at")
     var updatedAt: Instant? = null,
-
-    @OneToOne(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
-    @PrimaryKeyJoinColumn
-    var payment: PaymentEntity? = null
 )
 
 fun CheckoutEntity.toCheckout() = Checkout(
@@ -72,8 +61,7 @@ fun CheckoutEntity.toCheckout() = Checkout(
     amount = amount,
     currency = currency,
     status = status,
-    checkoutSessionId = checkoutSessionId,
-    checkoutUrl = checkoutUrl
+    pspToken = pspToken,
 )
 
 fun CreateCheckout.toCheckoutEntity(status: CheckoutStatus) = CheckoutEntity(
@@ -82,6 +70,5 @@ fun CreateCheckout.toCheckoutEntity(status: CheckoutStatus) = CheckoutEntity(
     amount = amount,
     currency = currency,
     status = status,
-    checkoutSessionId = checkoutSessionId,
-    checkoutUrl = checkoutUrl,
+    pspToken = pspToken,
 )

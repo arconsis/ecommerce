@@ -1,13 +1,14 @@
 package com.arconsis.data.payments
 
-import com.arconsis.domain.payments.*
+import com.arconsis.domain.orders.Order
+import com.stripe.model.Charge
 import io.smallrye.mutiny.Uni
-import org.hibernate.reactive.mutiny.Mutiny.Session
 import javax.enterprise.context.ApplicationScoped
 
 @ApplicationScoped
-class PaymentsRepository(private val paymentsDataStore: PaymentsDataStore) {
-    fun createPayment(createPayment: CreatePayment, session: Session): Uni<Payment> {
-        return paymentsDataStore.createPayment(createPayment, session)
-    }
+class PaymentsRepository(
+    private val paymentsRemoteStore: PaymentsRemoteStore,
+) {
+    // TODO: map Charge to our model
+    fun charge(order: Order): Uni<Charge?> = paymentsRemoteStore.charge(order)
 }
