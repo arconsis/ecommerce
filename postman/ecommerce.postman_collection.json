@@ -19,7 +19,7 @@
                 "header": [],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n    \"userId\": \"777d032b-617e-406f-ae8a-6a16688d9853\",\n    \"items\": [\n        {\n            \"productId\": \"c4e563f1-4931-4c6f-a827-0cae427c780c\",\n            \"quantity\": 3\n        },\n        {\n            \"productId\": \"4c98abe3-e6e7-443d-82a1-0d3e8068c14d\",\n            \"quantity\": 1\n        },\n        {\n            \"productId\": \"12534d05-9296-445e-a701-f03740dba4d3\",\n            \"quantity\": 1\n        }\n    ]\n    \n}",
+                  "raw": "{\n    \"userId\": \"777d032b-617e-406f-ae8a-6a16688d9853\",\n    \"items\": [\n        {\n            \"productId\": \"30e47918-ed89-4ff5-9787-71da5fa9b592\",\n            \"quantity\": 3\n        }\n    ]\n    \n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -53,14 +53,42 @@
                   }
                 },
                 "url": {
-                  "raw": "{{orders-host}}/baskets/85e53ab5-5eb5-43d0-92ad-737b200f0888f/shipping_address",
+                  "raw": "{{orders-host}}/baskets/d5de04d8-f562-4122-9566-94d76fb302e8/shipping_address",
                   "host": [
                     "{{orders-host}}"
                   ],
                   "path": [
                     "baskets",
-                    "85e53ab5-5eb5-43d0-92ad-737b200f0888f",
+                    "d5de04d8-f562-4122-9566-94d76fb302e8",
                     "shipping_address"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Add basket payment method",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"paymentMethodType\": \"STRIPE\",\n    \"pspToken\": \"tok_1LY2grCKS1dvr6EdxwrWzgVz\"\n}\n",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{orders-host}}/baskets/f9391217-f5c7-427f-8696-8425f34eeb22/payment_method",
+                  "host": [
+                    "{{orders-host}}"
+                  ],
+                  "path": [
+                    "baskets",
+                    "f9391217-f5c7-427f-8696-8425f34eeb22",
+                    "payment_method"
                   ]
                 }
               },
