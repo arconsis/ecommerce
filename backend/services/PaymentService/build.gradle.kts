@@ -32,6 +32,7 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("com.stripe:stripe-java:20.134.0")
     implementation("io.quarkus:quarkus-resteasy-reactive-jackson")
+    implementation("com.google.code.gson:gson:2.9.1")
 
     testImplementation("io.quarkus:quarkus-junit5")
     testImplementation("io.rest-assured:rest-assured")

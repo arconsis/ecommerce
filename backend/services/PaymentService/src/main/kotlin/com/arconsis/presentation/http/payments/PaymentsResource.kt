@@ -5,6 +5,8 @@ import com.arconsis.domain.checkoutevents.CheckoutEventsService
 import com.arconsis.presentation.http.payments.dto.CheckoutEventDto
 import com.arconsis.presentation.http.payments.dto.CreateCheckoutEventDto
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.stripe.model.*
+import com.stripe.net.ApiResource
 import com.stripe.net.Webhook
 import io.smallrye.mutiny.Uni
 import org.eclipse.microprofile.config.inject.ConfigProperty
@@ -22,7 +24,6 @@ class PaymentsResource(
 	private val objectMapper: ObjectMapper,
 	private val logger: Logger
 ) {
-
 	@POST
 	@Path("/webhooks")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -34,19 +35,28 @@ class PaymentsResource(
 	): Uni<CheckoutEvent?> {
 		logger.info("Got webhook event $payload")
 		try {
-			val checkoutEventDto = objectMapper.readValue(
-				payload,
-				CheckoutEventDto::class.java
-			)
-			val enrichedCheckoutEventDto = CreateCheckoutEventDto(
-				type = checkoutEventDto.type,
-				orderId = checkoutEventDto.data.entity.metadata.orderId,
-				pspData = payload,
-				pspReferenceId = checkoutEventDto.data.entity.pspReferenceId,
-			)
 			Webhook.constructEvent(payload, stripeSignature, endpointSecret)
-			return checkoutEventsService.createCheckoutEvent(enrichedCheckoutEventDto)
+			val event = ApiResource.GSON.fromJson(payload, Event::class.java)
+			val dataObjectDeserializer: EventDataObjectDeserializer = event.dataObjectDeserializer
+			if (dataObjectDeserializer.getObject().isPresent) {
+				val checkoutEventDto = objectMapper.readValue(
+					payload,
+					CheckoutEventDto::class.java
+				)
+				val enrichedCheckoutEventDto = CreateCheckoutEventDto(
+					type = checkoutEventDto.type,
+					orderId = checkoutEventDto.data.entity.metadata.orderId,
+					pspData = payload,
+					pspReferenceId = checkoutEventDto.data.entity.pspReferenceId,
+				)
+				return checkoutEventsService.createCheckoutEvent(enrichedCheckoutEventDto)
+			} else {
+				// Deserialization failed, probably due to an API version mismatch.
+				// Refer to the Javadoc documentation on `EventDataObjectDeserializer`
+				throw BadRequestException("Event is not correct")
+			}
 		} catch (e: Exception) {
+			// Invalid payload
 			throw BadRequestException("Event is not correct")
 		}
 	}
