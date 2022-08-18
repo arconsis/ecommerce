@@ -11,12 +11,10 @@ import javax.enterprise.context.ApplicationScoped
 
 @ApplicationScoped
 class CheckoutsRepository(
-	private val checkoutsRemoteStore: CheckoutsRemoteStore,
 	private val checkoutsDataStore: CheckoutsDataStore
 ) {
 	fun createCheckout(order: Order, session: Mutiny.Session): Uni<Checkout> {
-		val pspSession = checkoutsRemoteStore.createCheckoutSession(order.orderId, order)
-		val newCheckout = order.toCreateCheckout(checkoutUrl = pspSession.url, checkoutSessionId = pspSession.id, status = CheckoutStatus.PAYMENT_IN_PROGRESS)
+		val newCheckout = order.toCreateCheckout(order.paymentMethod.pspToken, status = CheckoutStatus.PAYMENT_IN_PROGRESS)
 		return checkoutsDataStore.createCheckout(newCheckout, session)
 	}
 

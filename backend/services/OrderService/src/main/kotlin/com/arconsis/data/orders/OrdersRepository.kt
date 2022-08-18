@@ -15,16 +15,6 @@ class OrdersRepository(private val ordersDataStore: OrdersDataStore) {
         return ordersDataStore.updateOrderStatus(orderId, status, session)
     }
 
-    fun updateOrderCheckout(
-        orderId: UUID,
-        status: OrderStatus,
-        checkoutSessionId: String,
-        checkoutUrl: String,
-        session: Mutiny.Session
-    ): Uni<Order> {
-        return ordersDataStore.updateOrderCheckout(orderId, status, checkoutSessionId, checkoutUrl, session)
-    }
-
     fun createOrder(createOrder: CreateOrder, session: Mutiny.Session): Uni<Order> {
         return ordersDataStore.createOrder(createOrder, session)
     }

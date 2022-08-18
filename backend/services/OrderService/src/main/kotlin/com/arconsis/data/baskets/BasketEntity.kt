@@ -6,10 +6,13 @@ import com.arconsis.data.addresses.toAddress
 import com.arconsis.data.basketitems.BasketItemEntity
 import com.arconsis.data.basketitems.toBasketItem
 import com.arconsis.data.baskets.BasketEntity.Companion.GET_BY_BASKET_ID
+import com.arconsis.data.baskets.BasketEntity.Companion.UPDATE_BASKET_PAYMENT_METHOD
 import com.arconsis.data.orders.OrderEntity
 import com.arconsis.domain.baskets.Basket
-import com.arconsis.domain.baskets.BasketItem
 import com.arconsis.domain.baskets.CreateBasket
+import com.arconsis.domain.orders.OrderPaymentMethod
+import com.arconsis.domain.orders.OrderPaymentMethodType
+import com.arconsis.domain.orders.OrderPrices
 import org.hibernate.annotations.*
 import java.math.BigDecimal
 import java.time.Instant
@@ -27,7 +30,15 @@ import javax.persistence.NamedQuery
             select p from baskets p
 			where p.basketId = :basketId
         """
-	)
+	),
+	NamedQuery(
+		name = UPDATE_BASKET_PAYMENT_METHOD,
+		query = """
+            update baskets b
+            set b.pspToken = :pspToken, b.paymentMethodType = :paymentMethodType
+            where b.basketId = :basketId
+        """
+	),
 )
 @Entity(name = "baskets")
 @TypeDef(
@@ -55,6 +66,14 @@ class BasketEntity(
 	@Column(nullable = false)
 	var currency: String,
 
+	@Column(name = "psp_token", nullable = true, unique = true)
+	var pspToken: String? = null,
+
+	@Enumerated(EnumType.STRING)
+	@Column(name = "payment_method_type", nullable = true)
+	@Type(type = "pgsql_enum")
+	var paymentMethodType: OrderPaymentMethodType? = null,
+
 	@CreationTimestamp
 	@Column(name = "created_at")
 	var createdAt: Instant? = null,
@@ -79,21 +98,32 @@ class BasketEntity(
 ) {
 	companion object {
 		const val GET_BY_BASKET_ID = "BasketEntity.get_by_basket_id"
+		const val UPDATE_BASKET_PAYMENT_METHOD = "BasketEntity.update_basket_payment_method"
 	}
 }
 
 fun BasketEntity.toBasket() = Basket(
 	basketId = basketId!!,
 	userId = userId,
-	totalPrice = totalPrice,
-	tax = tax,
-	priceBeforeTax = priceBeforeTax,
-	currency = currency,
+	prices = OrderPrices(
+		totalPrice = totalPrice,
+		tax = tax,
+		priceBeforeTax = priceBeforeTax,
+		currency = currency,
+	),
 	items = itemEntities.map { it.toBasketItem() },
+	paymentMethod = if (paymentMethodType != null && pspToken != null) {
+		OrderPaymentMethod(paymentMethodType = paymentMethodType!!, pspToken = pspToken!!)
+	} else null,
 	shippingAddress = addressEntities.find { it.isSelected }?.toAddress(),
 	billingAddress = addressEntities.find { it.isBilling }?.toAddress(),
-	isOrderable = addressEntities.find { it.isSelected } != null && addressEntities.find { it.isBilling } != null
+	isOrderable = isBasketOrderable(),
 )
+
+fun BasketEntity.isBasketOrderable(): Boolean = addressEntities.find { it.isSelected } != null
+		&& addressEntities.find { it.isBilling } != null
+		&& pspToken != null
+		&& paymentMethodType != null
 
 fun CreateBasket.toBasketEntity() = BasketEntity(
 	userId = userId,

@@ -1,11 +1,12 @@
 CREATE TABLE checkout_events
 (
-    event_id    UUID PRIMARY KEY,
-    checkout_id UUID    NOT NULL REFERENCES checkouts (checkout_id) on delete cascade,
-    metadata    TEXT    NOT NULL,
-    type        VARCHAR NOT NULL,
-    created_at  TIMESTAMP,
-    updated_at  TIMESTAMP
+    event_id         UUID PRIMARY KEY,
+    checkout_id      UUID    NOT NULL REFERENCES checkouts (checkout_id) on delete cascade,
+    psp_reference_id VARCHAR NOT NULL,
+    psp_data         TEXT    NOT NULL,
+    type             VARCHAR NOT NULL,
+    created_at       TIMESTAMP,
+    updated_at       TIMESTAMP
 );
 
 ALTER TABLE checkout_events

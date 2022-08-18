@@ -28,7 +28,7 @@ class CheckoutsService(
     private val sessionFactory: Mutiny.SessionFactory,
     private val objectMapper: ObjectMapper,
 ) {
-    fun handleCheckoutEvents(eventId: UUID, checkout: Checkout): Uni<Void> {
+    fun handlePaymentEvents(eventId: UUID, checkout: Checkout): Uni<Void> {
         return when (checkout.status) {
             CheckoutStatus.PAYMENT_IN_PROGRESS -> handlePaymentInProgress(eventId, checkout)
             CheckoutStatus.PAYMENT_SUCCEED -> handleSucceedPayment(eventId, checkout)
@@ -45,7 +45,7 @@ class CheckoutsService(
             )
             val orderStatus = OrderStatus.PAYMENT_IN_PROGRESS
             processedEventsRepository.createEvent(proceedEvent, session)
-                .updateOrderCheckout(checkout, orderStatus, session)
+                .updateOrderStatus(checkout, orderStatus, session)
                 .flatMap { order ->
                     Uni.combine().all().unis(
                         basketsRepository.getBasket(order.basketId, session),
@@ -113,14 +113,6 @@ class CheckoutsService(
                     null
                 }
         }
-    }
-
-    private fun Uni<ProcessedEvent>.updateOrderCheckout(
-        payment: Checkout,
-        orderStatus: OrderStatus,
-        session: Session
-    ) = flatMap {
-        ordersRepository.updateOrderCheckout(payment.orderId, orderStatus, payment.checkoutSessionId, payment.checkoutUrl, session)
     }
 
     private fun Uni<ProcessedEvent>.updateOrderStatus(

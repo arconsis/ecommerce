@@ -25,7 +25,7 @@ class CheckoutsRemoteStore(
 			// A unique string to reference the Checkout Session. This can be a customer ID, a cart ID, or similar, and can be used to reconcile the Session with your internal systems.
 			.setClientReferenceId(orderId.toString())
 			.addAllLineItem(order.items.map { item ->
-				val totalProductPrice = item.price.multiply(BigDecimal(1) + BigDecimal(order.tax)).setScale(2)
+				val totalProductPrice = item.price.multiply(BigDecimal(1) + BigDecimal(order.prices.tax)).setScale(2)
 				SessionCreateParams.LineItem.builder()
 					.setQuantity(item.quantity.toLong())
 					.setPriceData(

@@ -12,15 +12,11 @@ data class Order(
     val orderId: UUID,
     val basketId: UUID,
     val userId: UUID,
-    val totalPrice: BigDecimal,
-    val tax: String,
-    val priceBeforeTax: BigDecimal,
-    val currency: String,
+    val prices: OrderPrices,
     val status: OrderStatus,
     val items: List<OrderItem>,
     // psp ref
-    val checkoutSessionId: String?,
-    val checkoutUrl: String?,
+    val paymentMethod: OrderPaymentMethod,
     // addresses
     val shippingAddress: Address? = null,
     val billingAddress: Address? = null,
@@ -44,6 +40,8 @@ data class CreateOrder(
     val tax: String,
     val currency: String,
     val basketId: UUID,
+    val pspToken: String,
+    val paymentMethodType: OrderPaymentMethodType
 )
 
 enum class OrderStatus {
@@ -57,6 +55,23 @@ enum class OrderStatus {
     PAYMENT_FAILED,
     CANCELLED,
     REFUNDED
+}
+
+data class OrderPaymentMethod (
+    val pspToken: String,
+    val paymentMethodType: OrderPaymentMethodType
+)
+
+data class OrderPrices (
+    val totalPrice: BigDecimal,
+    val tax: String,
+    val priceBeforeTax: BigDecimal,
+    val currency: String,
+)
+
+enum class OrderPaymentMethodType {
+    STRIPE,
+    CASH_ON_DELIVERY
 }
 
 fun Order.toCreateOutboxEvent(objectMapper: ObjectMapper): CreateOutboxEvent = CreateOutboxEvent(

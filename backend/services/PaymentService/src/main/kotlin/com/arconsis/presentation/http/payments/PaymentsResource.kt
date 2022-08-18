@@ -41,7 +41,8 @@ class PaymentsResource(
 			val enrichedCheckoutEventDto = CreateCheckoutEventDto(
 				type = checkoutEventDto.type,
 				orderId = checkoutEventDto.data.entity.metadata.orderId,
-				metadata = payload
+				pspData = payload,
+				pspReferenceId = checkoutEventDto.data.entity.pspReferenceId,
 			)
 			Webhook.constructEvent(payload, stripeSignature, endpointSecret)
 			return checkoutEventsService.createCheckoutEvent(enrichedCheckoutEventDto)
