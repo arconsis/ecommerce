@@ -16,10 +16,30 @@ class CheckoutsDataStore {
 			.map { entity.toCheckout() }
 	}
 
-	fun updateCheckoutStatus(checkoutId: UUID, status: CheckoutStatus, session: Mutiny.Session): Uni<Checkout> {
+	fun updateCheckout(checkoutId: UUID, paymentStatus: CheckoutStatus, session: Mutiny.Session): Uni<Checkout> {
 		return session.find(CheckoutEntity::class.java, checkoutId)
 			.map { entity ->
-				entity.status = status
+				entity.paymentStatus = paymentStatus
+				entity
+			}
+			.onItem().ifNotNull().transformToUni { entity ->
+				session.merge(entity)
+			}
+			.map { updatedEntity -> updatedEntity.toCheckout() }
+	}
+
+	fun updateCheckout(
+		checkoutId: UUID,
+		paymentStatus: CheckoutStatus,
+		paymentErrorMessage: String?,
+		paymentErrorCode: String?,
+		session: Mutiny.Session
+	): Uni<Checkout> {
+		return session.find(CheckoutEntity::class.java, checkoutId)
+			.map { entity ->
+				entity.paymentStatus = paymentStatus
+				entity.paymentErrorMessage = paymentErrorMessage
+				entity.paymentErrorCode = paymentErrorCode
 				entity
 			}
 			.onItem().ifNotNull().transformToUni { entity ->

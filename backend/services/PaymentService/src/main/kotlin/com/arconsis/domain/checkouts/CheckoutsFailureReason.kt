@@ -1,4 +1,4 @@
-package com.arconsis.data.checkouts
+package com.arconsis.domain.checkouts
 
 import com.arconsis.common.errors.FailureReason
 

@@ -53,12 +53,14 @@ enum class OrderPaymentMethodType {
     CASH_ON_DELIVERY
 }
 
-fun Order.toCreateCheckout(pspToken: String, status: CheckoutStatus) = CreateCheckout(
+fun Order.toCreateCheckout(pspToken: String, paymentStatus: CheckoutStatus) = CreateCheckout(
     userId = userId,
     orderId = orderId,
     amount = prices.totalPrice,
     currency = prices.currency,
-    status = status,
+    paymentStatus = paymentStatus,
+    paymentErrorMessage = null,
+    paymentErrorCode = null,
     pspToken = pspToken,
 )
 

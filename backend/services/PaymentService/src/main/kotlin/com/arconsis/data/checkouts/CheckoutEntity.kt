@@ -35,9 +35,15 @@ class CheckoutEntity(
     var pspToken: String,
 
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "order_status")
+    @Column(name = "payment_status", columnDefinition = "order_status")
     @Type(type = "pgsql_enum")
-    var status: CheckoutStatus,
+    var paymentStatus: CheckoutStatus,
+
+    @Column(name = "payment_error_message", nullable = true)
+    var paymentErrorMessage: String?,
+
+    @Column(name = "payment_error_code", nullable = true)
+    var paymentErrorCode: String?,
 
     @Column(nullable = false)
     var amount: BigDecimal,
@@ -60,15 +66,19 @@ fun CheckoutEntity.toCheckout() = Checkout(
     userId = userId,
     amount = amount,
     currency = currency,
-    status = status,
+    paymentStatus = paymentStatus,
+    paymentErrorMessage = paymentErrorMessage,
+    paymentErrorCode = paymentErrorCode,
     pspToken = pspToken,
 )
 
-fun CreateCheckout.toCheckoutEntity(status: CheckoutStatus) = CheckoutEntity(
+fun CreateCheckout.toCheckoutEntity(paymentStatus: CheckoutStatus) = CheckoutEntity(
     userId = userId,
     orderId = orderId,
     amount = amount,
     currency = currency,
-    status = status,
+    paymentStatus = paymentStatus,
+    paymentErrorMessage = paymentErrorMessage,
+    paymentErrorCode = paymentErrorCode,
     pspToken = pspToken,
 )

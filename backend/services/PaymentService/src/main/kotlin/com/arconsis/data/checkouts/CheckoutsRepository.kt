@@ -13,13 +13,23 @@ import javax.enterprise.context.ApplicationScoped
 class CheckoutsRepository(
 	private val checkoutsDataStore: CheckoutsDataStore
 ) {
-	fun createCheckout(order: Order, session: Mutiny.Session): Uni<Checkout> {
-		val newCheckout = order.toCreateCheckout(order.paymentMethod.pspToken, status = CheckoutStatus.PAYMENT_IN_PROGRESS)
+	fun createCheckout(order: Order, paymentStatus: CheckoutStatus, session: Mutiny.Session): Uni<Checkout> {
+		val newCheckout = order.toCreateCheckout(order.paymentMethod.pspToken, paymentStatus)
 		return checkoutsDataStore.createCheckout(newCheckout, session)
 	}
 
-	fun updateCheckoutStatus(checkoutId: UUID, status: CheckoutStatus, session: Mutiny.Session): Uni<Checkout> {
-		return checkoutsDataStore.updateCheckoutStatus(checkoutId, status, session)
+	fun updateCheckout(checkoutId: UUID, paymentStatus: CheckoutStatus, session: Mutiny.Session): Uni<Checkout> {
+		return checkoutsDataStore.updateCheckout(checkoutId, paymentStatus, session)
+	}
+
+	fun updateCheckout(
+		checkoutId: UUID,
+		paymentStatus: CheckoutStatus,
+		paymentErrorMessage: String?,
+		paymentErrorCode: String?,
+		session: Mutiny.Session
+	): Uni<Checkout> {
+		return checkoutsDataStore.updateCheckout(checkoutId, paymentStatus, paymentErrorMessage, paymentErrorCode, session)
 	}
 
 	fun getCheckoutByOrderId(orderId: UUID, session: Mutiny.Session): Uni<Checkout?> {

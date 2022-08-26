@@ -9,7 +9,9 @@ data class Checkout(
 	val userId: UUID,
 	val amount: BigDecimal,
 	val currency: String,
-	val status: CheckoutStatus,
+	val paymentStatus: CheckoutStatus,
+	val paymentErrorMessage: String?,
+	val paymentErrorCode: String?,
 	// psp ref
 	val pspToken: String
 )

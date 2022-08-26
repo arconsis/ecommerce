@@ -14,6 +14,8 @@ data class CheckoutEventDataDto (
 data class CheckoutEventObjectDto (
 	@JsonProperty("id") val pspReferenceId: String,
 	@JsonProperty("metadata") val metadata: CheckoutEventMetadataDto,
+	@JsonProperty("failure_code") val paymentErrorCode: String?,
+	@JsonProperty("failure_message") val paymentErrorMessage: String?,
 )
 
 data class CheckoutEventMetadataDto(
@@ -24,5 +26,7 @@ data class CreateCheckoutEventDto(
 	@JsonProperty("type") val type: String,
 	@JsonProperty("orderId") val orderId: String,
 	@JsonProperty("pspData") val pspData: String,
-	@JsonProperty("pspReferenceId") val pspReferenceId: String
+	@JsonProperty("pspReferenceId") val pspReferenceId: String,
+	@JsonProperty("paymentErrorCode") val paymentErrorCode: String?,
+	@JsonProperty("paymentErrorMessage") val paymentErrorMessage: String?,
 )

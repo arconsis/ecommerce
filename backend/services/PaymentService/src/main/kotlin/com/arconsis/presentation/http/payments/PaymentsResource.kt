@@ -48,6 +48,8 @@ class PaymentsResource(
 					orderId = checkoutEventDto.data.entity.metadata.orderId,
 					pspData = payload,
 					pspReferenceId = checkoutEventDto.data.entity.pspReferenceId,
+					paymentErrorCode = checkoutEventDto.data.entity.paymentErrorCode,
+					paymentErrorMessage = checkoutEventDto.data.entity.paymentErrorMessage,
 				)
 				return checkoutEventsService.createCheckoutEvent(enrichedCheckoutEventDto)
 			} else {

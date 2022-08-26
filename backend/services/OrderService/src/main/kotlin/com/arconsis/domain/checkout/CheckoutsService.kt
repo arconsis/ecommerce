@@ -29,7 +29,7 @@ class CheckoutsService(
     private val objectMapper: ObjectMapper,
 ) {
     fun handlePaymentEvents(eventId: UUID, checkout: Checkout): Uni<Void> {
-        return when (checkout.status) {
+        return when (checkout.paymentStatus) {
             CheckoutStatus.PAYMENT_IN_PROGRESS -> handlePaymentInProgress(eventId, checkout)
             CheckoutStatus.PAYMENT_SUCCEED -> handleSucceedPayment(eventId, checkout)
             CheckoutStatus.PAYMENT_FAILED -> handleFailedPayment(eventId, checkout)

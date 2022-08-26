@@ -22,10 +22,7 @@ class OrderEventsResource(
         val eventId = UUID.fromString(orderEventDto.payload.currentValue.id)
         val order = objectMapper.readValue(orderEventDto.payload.currentValue.toOutboxEvent().payload, Order::class.java)
         return ordersService.handleOrderEvents(eventId, order)
-            .onFailure {
-                logger.error("Error on consumeOrderEvents", it)
-                false
-            }
+            .onFailure()
             .recoverWithNull()
     }
 }
