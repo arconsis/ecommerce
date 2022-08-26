@@ -31,6 +31,8 @@ dependencies {
     implementation("io.quarkus:quarkus-hibernate-reactive")
     implementation("io.quarkus:quarkus-arc")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    implementation("io.quarkus:quarkus-resteasy-reactive-jackson")
+    implementation("io.quarkus:quarkus-rest-client-reactive-jackson")
 
     testImplementation("io.quarkus:quarkus-junit5")
     testImplementation("io.rest-assured:rest-assured:4.4.0")
