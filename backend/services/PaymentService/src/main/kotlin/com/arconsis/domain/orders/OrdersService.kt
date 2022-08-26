@@ -4,11 +4,13 @@ import com.arconsis.data.checkouts.CheckoutsRepository
 import com.arconsis.data.outboxevents.OutboxEventsRepository
 import com.arconsis.data.payments.PaymentsRepository
 import com.arconsis.data.processedevents.ProcessedEventsRepository
+import com.arconsis.domain.checkouts.CheckoutStatus
 import com.arconsis.domain.checkouts.toCreateOutboxEvent
 import com.arconsis.domain.processedevents.ProcessedEvent
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.smallrye.mutiny.Uni
 import org.hibernate.reactive.mutiny.Mutiny
+import org.jboss.logging.Logger
 import java.time.Instant
 import java.util.*
 import javax.enterprise.context.ApplicationScoped
@@ -21,18 +23,17 @@ class OrdersService(
 	private val outboxEventsRepository: OutboxEventsRepository,
 	private val sessionFactory: Mutiny.SessionFactory,
 	private val objectMapper: ObjectMapper,
+	private val logger: Logger
 ) {
 
 	fun handleOrderEvents(eventId: UUID, order: Order): Uni<Void> {
 		return when (order.status) {
-			OrderStatus.VALIDATED -> handleValidOrder(eventId, order)
+			OrderStatus.VALIDATED -> startCheckout(eventId, order).flatMap {
+				paymentsRepository.charge(order)
+			}.map { null }
 			else -> Uni.createFrom().voidItem()
 		}
 	}
-
-	private fun handleValidOrder(eventId: UUID, order: Order): Uni<Void> =
-		startCheckout(eventId, order)
-			.charge(order)
 
 	private fun startCheckout(eventId: UUID, order: Order): Uni<Void> =
 		sessionFactory.withTransaction { session, _ ->
@@ -41,8 +42,8 @@ class OrdersService(
 				processedAt = Instant.now()
 			)
 			processedEventsRepository.createEvent(proceedEvent, session)
-				.flatMap { _ ->
-					checkoutsRepository.createCheckout(order, session)
+				.flatMap {
+					checkoutsRepository.createCheckout(order, CheckoutStatus.PAYMENT_IN_PROGRESS, session)
 				}
 				.flatMap { checkout ->
 					val createOutboxEvent = checkout.toCreateOutboxEvent(objectMapper)
@@ -50,11 +51,4 @@ class OrdersService(
 				}
 				.map { null }
 		}
-
-	private fun Uni<Void>.charge(order: Order): Uni<Void> = flatMap {
-		paymentsRepository.charge(order)
-	}.map {
-		null
-	}
-
 }

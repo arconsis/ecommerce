@@ -13,7 +13,9 @@ data class Checkout(
     val userId: UUID,
     val amount: BigDecimal,
     val currency: String,
-    val status: CheckoutStatus,
+    val paymentStatus: CheckoutStatus,
+    val paymentErrorMessage: String?,
+    val paymentErrorCode: String?,
     // psp ref
     val pspToken: String
 )
@@ -23,7 +25,9 @@ data class CreateCheckout(
     val userId: UUID,
     val amount: BigDecimal,
     val currency: String,
-    val status: CheckoutStatus,
+    val paymentStatus: CheckoutStatus,
+    val paymentErrorMessage: String? = null,
+    val paymentErrorCode: String? = null,
     // psp ref
     val pspToken: String,
 )
@@ -37,7 +41,7 @@ enum class CheckoutStatus {
 fun Checkout.toCreateOutboxEvent(objectMapper: ObjectMapper): CreateOutboxEvent = CreateOutboxEvent(
     aggregateType = AggregateType.CHECKOUT,
     aggregateId = this.checkoutId,
-    type = this.status.toOutboxEventType(),
+    type = this.paymentStatus.toOutboxEventType(),
     payload = objectMapper.writeValueAsString(this)
 )
 
