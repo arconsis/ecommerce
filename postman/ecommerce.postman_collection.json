@@ -279,6 +279,33 @@
                 }
               },
               "response": []
+            },
+            {
+              "name": "List shipment providers",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"name\": \"dimos\",\n    \"address\": \"berlin\",\n    \"houseNumber\": \"9\",\n    \"countryCode\": \"DE\",\n    \"postalCode\": \"10115\",\n    \"city\": \"berlin\",\n    \"phone\": \"342\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{warehouse-host}}/shipments/providers",
+                  "host": [
+                    "{{warehouse-host}}"
+                  ],
+                  "path": [
+                    "shipments",
+                    "providers"
+                  ]
+                }
+              },
+              "response": []
             }
           ]
         },
