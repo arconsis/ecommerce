@@ -1,5 +1,6 @@
 package com.arconsis.data.orders
 
+import com.arconsis.common.TAX_RATE
 import com.arconsis.data.PostgreSQLEnumType
 import com.arconsis.data.addresses.toAddress
 import com.arconsis.data.basketitems.toBasketItem
@@ -44,15 +45,6 @@ class OrderEntity(
     @Column(name = "user_id", nullable = false)
     var userId: UUID,
 
-    // TODO: perhaps can be moved to another table 1:1
-    // checkout session from PSP
-//    @Column(name = "checkout_session_id", nullable = true, unique = true)
-//    var checkoutSessionId: String? = null,
-//
-//    // checkout session from PSP
-//    @Column(name = "checkout_url", nullable = true, unique = true)
-//    var checkoutUrl: String? = null,
-
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "order_status")
     @Type(type = "pgsql_enum")
@@ -64,11 +56,23 @@ class OrderEntity(
     @Column(name = "price_before_tax", nullable = false)
     var priceBeforeTax: BigDecimal,
 
+    @Column(name = "shipping_price", nullable = false)
+    var shippingPrice: BigDecimal,
+
+    @Column(name = "product_price", nullable = false)
+    var productPrice: BigDecimal,
+
     @Column(nullable = false)
     var tax: String,
 
     @Column(nullable = false)
     var currency: String,
+
+    @Column(name = "shipment_provider_name", nullable = false)
+    var shipmentProviderName: String,
+
+    @Column(name = "external_shipment_provider_id", nullable = false)
+    var externalShipmentProviderId: String,
 
     @Column(name = "psp_token", nullable = false, unique = true)
     var pspToken: String,
@@ -103,7 +107,10 @@ fun OrderEntity.toOrder() = Order(
         totalPrice = totalPrice,
         tax = tax,
         priceBeforeTax = priceBeforeTax,
+        priceAfterTax = priceBeforeTax.multiply(BigDecimal(1) + BigDecimal(TAX_RATE)).setScale(2),
         currency = currency,
+        shippingPrice = shippingPrice,
+        productPrice = productPrice
     ),
     status = status,
     items = basket.itemEntities.map { it.toBasketItem().toOrderItem(orderId!!) },
@@ -112,6 +119,11 @@ fun OrderEntity.toOrder() = Order(
     paymentMethod = OrderPaymentMethod(pspToken = pspToken, paymentMethodType = paymentMethodType),
     shippingAddress = basket.addressEntities.find { it.isSelected }?.toAddress(),
     billingAddress = basket.addressEntities.find { it.isBilling }?.toAddress(),
+    shipmentProvider = OrderShipmentProvider(
+        name = shipmentProviderName,
+        externalShipmentProviderId = externalShipmentProviderId,
+        price = shippingPrice
+    )
 )
 
 fun CreateOrder.toOrderEntity(status: OrderStatus, basket: BasketEntity) = OrderEntity(
@@ -119,10 +131,14 @@ fun CreateOrder.toOrderEntity(status: OrderStatus, basket: BasketEntity) = Order
     userId = userId,
     totalPrice = totalPrice,
     priceBeforeTax = priceBeforeTax,
+    productPrice = priceBeforeTax,
+    shippingPrice = basket.shippingPrice,
     tax = tax,
     currency = currency,
     status = status,
     basket = basket,
     paymentMethodType = paymentMethodType,
-    pspToken = pspToken
+    pspToken = pspToken,
+    externalShipmentProviderId = basket.externalShipmentProviderId!!,
+    shipmentProviderName = basket.shipmentProviderName!!
 )

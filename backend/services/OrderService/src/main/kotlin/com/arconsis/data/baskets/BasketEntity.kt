@@ -1,5 +1,6 @@
 package com.arconsis.data.baskets
 
+import com.arconsis.common.TAX_RATE
 import com.arconsis.data.PostgreSQLEnumType
 import com.arconsis.data.addresses.AddressEntity
 import com.arconsis.data.addresses.toAddress
@@ -7,12 +8,14 @@ import com.arconsis.data.basketitems.BasketItemEntity
 import com.arconsis.data.basketitems.toBasketItem
 import com.arconsis.data.baskets.BasketEntity.Companion.GET_BY_BASKET_ID
 import com.arconsis.data.baskets.BasketEntity.Companion.UPDATE_BASKET_PAYMENT_METHOD
+import com.arconsis.data.baskets.BasketEntity.Companion.UPDATE_BASKET_SHIPMENT_PROVIDER
 import com.arconsis.data.orders.OrderEntity
 import com.arconsis.domain.baskets.Basket
 import com.arconsis.domain.baskets.CreateBasket
 import com.arconsis.domain.orders.OrderPaymentMethod
 import com.arconsis.domain.orders.OrderPaymentMethodType
 import com.arconsis.domain.orders.OrderPrices
+import com.arconsis.domain.orders.OrderShipmentProvider
 import org.hibernate.annotations.*
 import java.math.BigDecimal
 import java.time.Instant
@@ -39,6 +42,14 @@ import javax.persistence.NamedQuery
             where b.basketId = :basketId
         """
 	),
+	NamedQuery(
+		name = UPDATE_BASKET_SHIPMENT_PROVIDER,
+		query = """
+            update baskets b
+            set b.shipmentProviderName = :shipmentProviderName, b.externalShipmentProviderId = :externalShipmentProviderId, b.shippingPrice = :shippingPrice, b.totalPrice = :shippingPrice + b.totalPrice
+            where b.basketId = :basketId
+        """
+	),
 )
 @Entity(name = "baskets")
 @TypeDef(
@@ -59,6 +70,18 @@ class BasketEntity(
 
 	@Column(name = "price_before_tax", nullable = false)
 	var priceBeforeTax: BigDecimal,
+
+	@Column(name = "shipping_price", nullable = false)
+	var shippingPrice: BigDecimal,
+
+	@Column(name = "product_price", nullable = false)
+	var productPrice: BigDecimal,
+
+	@Column(name = "shipment_provider_name", nullable = true)
+	var shipmentProviderName: String?,
+
+	@Column(name = "external_shipment_provider_id", nullable = true)
+	var externalShipmentProviderId: String?,
 
 	@Column(nullable = false)
 	var tax: String,
@@ -86,9 +109,6 @@ class BasketEntity(
 	@OneToMany(mappedBy = "basketId", cascade = [CascadeType.ALL])
 	var itemEntities: MutableList<BasketItemEntity> = mutableListOf(),
 
-//	@OneToOne(cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
-//	@PrimaryKeyJoinColumn
-//	var order: OrderEntity? = null,
 	@OneToOne(mappedBy = "basket")
 	val order: OrderEntity? = null,
 
@@ -99,6 +119,7 @@ class BasketEntity(
 	companion object {
 		const val GET_BY_BASKET_ID = "BasketEntity.get_by_basket_id"
 		const val UPDATE_BASKET_PAYMENT_METHOD = "BasketEntity.update_basket_payment_method"
+		const val UPDATE_BASKET_SHIPMENT_PROVIDER = "BasketEntity.update_basket_shipment_provider"
 	}
 }
 
@@ -109,6 +130,9 @@ fun BasketEntity.toBasket() = Basket(
 		totalPrice = totalPrice,
 		tax = tax,
 		priceBeforeTax = priceBeforeTax,
+		priceAfterTax = priceBeforeTax.multiply(BigDecimal(1) + BigDecimal(TAX_RATE)).setScale(2),
+		productPrice = productPrice,
+		shippingPrice = shippingPrice,
 		currency = currency,
 	),
 	items = itemEntities.map { it.toBasketItem() },
@@ -118,18 +142,26 @@ fun BasketEntity.toBasket() = Basket(
 	shippingAddress = addressEntities.find { it.isSelected }?.toAddress(),
 	billingAddress = addressEntities.find { it.isBilling }?.toAddress(),
 	isOrderable = isBasketOrderable(),
+	shipmentProvider = if (shipmentProviderName != null && externalShipmentProviderId != null) {
+		OrderShipmentProvider(shipmentProviderName!!, shippingPrice, externalShipmentProviderId!!)
+	} else null
 )
 
 fun BasketEntity.isBasketOrderable(): Boolean = addressEntities.find { it.isSelected } != null
 		&& addressEntities.find { it.isBilling } != null
 		&& pspToken != null
 		&& paymentMethodType != null
+		&& externalShipmentProviderId != null
 
 fun CreateBasket.toBasketEntity() = BasketEntity(
 	userId = userId,
 	totalPrice = totalPrice,
 	priceBeforeTax = priceBeforeTax,
 	tax = tax,
-	currency = currency
+	currency = currency,
+	productPrice = productPrice,
+	shippingPrice = shippingPrice,
+	externalShipmentProviderId = null,
+	shipmentProviderName = null
 )
 

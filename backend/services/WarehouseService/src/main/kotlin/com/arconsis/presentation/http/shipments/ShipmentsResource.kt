@@ -1,6 +1,7 @@
 package com.arconsis.presentation.http.shipments
 
 import com.arconsis.domain.shipmentproviders.ShipmentProvider
+import com.arconsis.domain.shipmentproviders.ShipmentProvidersService
 import com.arconsis.domain.shipments.Shipment
 import com.arconsis.domain.shipments.ShipmentsService
 import com.arconsis.domain.shipments.UpdateShipment
@@ -12,11 +13,11 @@ import javax.ws.rs.*
 
 @ApplicationScoped
 @Path("/shipments")
-class ShipmentsResource(private val shipmentsService: ShipmentsService) {
+class ShipmentsResource(private val shipmentsService: ShipmentsService, private val shipmentProvidersService: ShipmentProvidersService) {
     @POST
     @Path("/providers")
     suspend fun listShipmentProviders(deliveryAddress: DeliveryAddressDto): List<ShipmentProvider> {
-        return shipmentsService.listShipmentProviders(deliveryAddress)
+        return shipmentProvidersService.listShipmentProviders(deliveryAddress)
     }
 
     @PUT

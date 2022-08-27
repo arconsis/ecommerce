@@ -17,6 +17,8 @@ data class Order(
     // addresses
     val shippingAddress: Address? = null,
     val billingAddress: Address? = null,
+    // shipmentProvider
+    val shipmentProvider: OrderShipmentProvider
 )
 
 data class Product(
@@ -31,11 +33,14 @@ enum class OrderStatus {
     OUT_OF_STOCK,
     PAYMENT_IN_PROGRESS,
     PAID,
+    PREPARING_SHIPMENT,
     SHIPPED,
     COMPLETED,
     PAYMENT_FAILED,
     CANCELLED,
-    REFUNDED
+    REFUNDED,
+    CREATING_SHIPMENT_LABEL_FAILED,
+    SHIPMENT_DELIVERY_FAILED,
 }
 
 data class OrderPaymentMethod (
@@ -46,7 +51,10 @@ data class OrderPaymentMethod (
 data class OrderPrices (
     val totalPrice: BigDecimal,
     val tax: String,
+    val priceAfterTax: BigDecimal,
     val priceBeforeTax: BigDecimal,
+    val productPrice: BigDecimal,
+    val shippingPrice: BigDecimal,
     val currency: String,
 )
 
@@ -54,5 +62,11 @@ enum class OrderPaymentMethodType {
     STRIPE,
     CASH_ON_DELIVERY
 }
+
+data class OrderShipmentProvider(
+    val name: String,
+    val price: BigDecimal,
+    val externalShipmentProviderId: String,
+)
 
 class OrdersDeserializer : ObjectMapperDeserializer<Order>(Order::class.java)

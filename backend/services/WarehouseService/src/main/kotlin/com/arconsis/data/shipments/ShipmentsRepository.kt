@@ -1,65 +1,65 @@
 package com.arconsis.data.shipments
 
 import com.arconsis.common.body
-import com.arconsis.data.shipments.dto.*
-import com.arconsis.domain.shipmentproviders.ShipmentProvider
+import com.arconsis.common.bodyAsString
+import com.arconsis.data.shipments.dto.ShipmentResponseDto
 import com.arconsis.domain.shipments.CreateShipment
 import com.arconsis.domain.shipments.Shipment
 import com.arconsis.domain.shipments.ShipmentStatus
-import com.arconsis.presentation.http.shipments.dto.DeliveryAddressDto
 import io.smallrye.mutiny.Uni
 import org.eclipse.microprofile.rest.client.inject.RestClient
 import org.hibernate.reactive.mutiny.Mutiny
+import org.jboss.logging.Logger
 import java.util.UUID
 import javax.enterprise.context.ApplicationScoped
-import javax.ws.rs.BadRequestException
 
 @ApplicationScoped
 class ShipmentsRepository(
-    @RestClient private val shipmentsRemoteStore: ShipmentsRemoteStore,
-    private val shipmentsDataStore: ShipmentsDataStore,
+	private val shipmentsDataStore: ShipmentsDataStore,
+	@RestClient private val shipmentsRemoteStore: ShipmentsRemoteStore,
+	private val logger: Logger,
 ) {
+	fun createShipment(createShipment: CreateShipment, session: Mutiny.Session): Uni<Shipment> {
+		return createShipmentOnShippo(createShipment)
+			.onFailure()
+			.recoverWithNull()
+			.flatMap { externalShipment ->
+				if (externalShipment != null) {
+					val newShipment = createShipment.copy(externalShipmentId = externalShipment.externalShipmentId)
+					shipmentsDataStore.createShipment(newShipment, ShipmentStatus.PREPARING_SHIPMENT, session)
+				} else {
+					logger.error("Creating shipment failed for order with id: ${createShipment.orderId} because of externalShipment not found")
+					val newShipment = createShipment.copy(externalShipmentId = null)
+					shipmentsDataStore.createShipment(newShipment, ShipmentStatus.CREATING_SHIPMENT_LABEL_FAILED, session)
+				}
+			}
+			.map {
+				it
+			}
+	}
 
-    fun createShipment(createShipment: CreateShipment, session: Mutiny.Session): Uni<Shipment> {
-        return shipmentsDataStore.createShipment(createShipment, session)
-    }
+	private fun createShipmentOnShippo(createShipment: CreateShipment): Uni<ShipmentResponseDto?> {
+		return shipmentsRemoteStore.createShipment(
+			providerId = createShipment.externalShipmentProviderId,
+			labelFileType = "PDF",
+			async = "false"
+		).map {
+			when (it.status) {
+				in 200..299 -> {
+					it.body<ShipmentResponseDto>()
+				}
+				else -> {
+					logger.error("Creating shipment failed for order with id: ${createShipment.orderId} because of ${it.bodyAsString()}")
+					null
+				}
+			}
+		}.onFailure {
+			logger.error("Creating shipment failed for order with id: ${createShipment.orderId} because of ${it}")
+			false
+		}.recoverWithNull()
+	}
 
-    fun updateShipmentStatus(shipmentId: UUID, shipmentStatus: ShipmentStatus, session: Mutiny.Session): Uni<Shipment> {
-        return shipmentsDataStore.updateShipmentStatus(shipmentId, shipmentStatus, session)
-    }
-
-    suspend fun listShipmentProviders(deliveryAddress: DeliveryAddressDto): List<ShipmentProvider> {
-        val response =  shipmentsRemoteStore.listShipmentProviders(ListShipmentProvidersDto(
-            addressFrom = ShipmentAddressDto(
-                name = fromName,
-                street1 = fromStreet,
-                city = fromCity,
-                zip = fromPostalCode,
-                country = fromCountry
-            ),
-            addressTo = ShipmentAddressDto(
-                name = deliveryAddress.name,
-                street1 = "${deliveryAddress.address} ${deliveryAddress.houseNumber}",
-                city = deliveryAddress.city,
-                zip = deliveryAddress.postalCode,
-                country = deliveryAddress.countryCode
-            ),
-            parcels = listOf(ParcelDto())
-
-        ))
-        return when (response.status) {
-            in 200..201 -> response.body<ShipmentProviderResponseDto>()!!.providers.map {
-                it.toShipmentProvider()
-            }
-            else -> throw BadRequestException("Shipment providers not found")
-        }
-    }
-
-    companion object {
-        private const val fromName = "Arconsis Ecommerce"
-        private const val fromStreet = "Krithoni 9"
-        private const val fromCity = "Berlin"
-        private const val fromPostalCode = "10115"
-        private const val fromCountry = "DE"
-    }
+	fun updateShipmentStatus(shipmentId: UUID, shipmentStatus: ShipmentStatus, session: Mutiny.Session): Uni<Shipment> {
+		return shipmentsDataStore.updateShipmentStatus(shipmentId, shipmentStatus, session)
+	}
 }

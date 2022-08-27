@@ -33,8 +33,4 @@ class ShipmentsService(
                 }
         }
     }
-
-    suspend fun listShipmentProviders(deliveryAddress: DeliveryAddressDto): List<ShipmentProvider> {
-        return shipmentsRepository.listShipmentProviders(deliveryAddress)
-    }
 }

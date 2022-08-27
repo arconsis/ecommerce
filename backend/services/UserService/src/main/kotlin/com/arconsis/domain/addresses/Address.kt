@@ -26,7 +26,7 @@ data class CreateAddress(
 )
 
 enum class SupportedCountryCode {
-    GR
+    DE
 }
 
 enum class CountryCode {

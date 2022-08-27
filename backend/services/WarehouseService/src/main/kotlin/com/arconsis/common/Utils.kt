@@ -27,3 +27,10 @@ inline fun <reified T> Response.body(statusCodeRange: IntRange = 200..299, onErr
 		}
 		else -> onError(this)
 	}
+
+fun Response.bodyAsString(): String? = try {
+	bufferEntity()
+	readEntity(String::class.java)
+} catch (e: Exception) {
+	null
+}

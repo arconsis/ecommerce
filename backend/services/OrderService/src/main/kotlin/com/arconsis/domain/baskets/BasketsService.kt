@@ -86,4 +86,15 @@ class BasketsService(
 				.map { it }
 		}
 	}
+
+	fun updateBasketShippingProvider(basketId: UUID, newShippingProvider: AddShippingProviderDto): Uni<Basket> {
+		return sessionFactory.withTransaction { session, _ ->
+			basketsRepository.updateBasketShippingProvider(basketId, newShippingProvider, session)
+				.flatMap { isUpdated ->
+					if (!isUpdated) abort(OrdersFailureReason.BasketNotFound)
+					basketsRepository.getBasket(basketId, session)
+				}
+				.map { it }
+		}
+	}
 }

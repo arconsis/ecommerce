@@ -30,45 +30,21 @@ class ShipmentsService(
 ) {
 	fun handleShipmentEvents(eventId: UUID, shipment: Shipment): Uni<Void> {
 		return when (shipment.status) {
-			ShipmentStatus.DELIVERED -> handleDeliveredShipment(eventId, shipment)
-			ShipmentStatus.SHIPPED -> handleOutForShipment(eventId, shipment)
+			ShipmentStatus.PREPARING_SHIPMENT -> proceedWithOrderUpdate(eventId, shipment, OrderStatus.PREPARING_SHIPMENT)
+			ShipmentStatus.DELIVERED -> proceedWithOrderUpdate(eventId, shipment, OrderStatus.COMPLETED)
+			ShipmentStatus.SHIPPED -> proceedWithOrderUpdate(eventId, shipment, OrderStatus.SHIPPED)
+			ShipmentStatus.CREATING_SHIPMENT_LABEL_FAILED -> proceedWithOrderUpdate(eventId, shipment, OrderStatus.CREATING_SHIPMENT_LABEL_FAILED)
+			ShipmentStatus.DELIVERY_FAILED -> proceedWithOrderUpdate(eventId, shipment, OrderStatus.SHIPMENT_DELIVERY_FAILED)
 			else -> return Uni.createFrom().voidItem()
 		}
 	}
 
-	private fun handleDeliveredShipment(eventId: UUID, shipment: Shipment): Uni<Void> {
+	private fun proceedWithOrderUpdate(eventId: UUID, shipment: Shipment, orderStatus: OrderStatus): Uni<Void> {
 		return sessionFactory.withTransaction { session, _ ->
 			val proceedEvent = ProcessedEvent(
 				eventId = eventId,
 				processedAt = Instant.now()
 			)
-			val orderStatus = OrderStatus.COMPLETED
-			processedEventsRepository.createEvent(proceedEvent, session)
-				.updateOrderStatus(shipment, orderStatus, session)
-				.flatMap { order ->
-					Uni.combine().all().unis(
-						basketsRepository.getBasket(order.basketId, session),
-						order.toUni(),
-					).asPair()
-				}
-				.map { (basket, order) ->
-					val enrichedOrder = order.copy(items = basket!!.items.map { it.toOrderItem(order.orderId) })
-					enrichedOrder
-				}
-				.createOutboxEvent(session)
-				.map {
-					null
-				}
-		}
-	}
-
-	private fun handleOutForShipment(eventId: UUID, shipment: Shipment): Uni<Void> {
-		return sessionFactory.withTransaction { session, _ ->
-			val proceedEvent = ProcessedEvent(
-				eventId = eventId,
-				processedAt = Instant.now()
-			)
-			val orderStatus = OrderStatus.SHIPPED
 			processedEventsRepository.createEvent(proceedEvent, session)
 				.updateOrderStatus(shipment, orderStatus, session)
 				.flatMap { order ->
