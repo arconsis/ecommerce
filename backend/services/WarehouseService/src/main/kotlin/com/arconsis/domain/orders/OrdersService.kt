@@ -46,7 +46,6 @@ class OrdersService(
 				eventId = eventId,
 				processedAt = Instant.now()
 			)
-
 			processedEventsRepository.createEvent(proceedEvent, session)
 				.flatMap {
 					val unis: List<Uni<Boolean>> = order.items.map {
@@ -73,7 +72,12 @@ class OrdersService(
 					val createShipment = CreateShipment(
 						orderId = order.orderId,
 						userId = order.userId,
-						status = ShipmentStatus.PREPARING_SHIPMENT
+						status = ShipmentStatus.PREPARING_SHIPMENT,
+						providerName = order.shipmentProvider.name,
+						externalShipmentProviderId = order.shipmentProvider.externalShipmentProviderId,
+						price = order.prices.shippingPrice,
+						currency = order.prices.currency,
+						shipmentFailureReason = null
 					)
 					shipmentsRepository.createShipment(createShipment, session)
 				}

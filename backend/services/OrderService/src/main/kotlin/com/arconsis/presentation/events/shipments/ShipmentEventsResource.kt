@@ -9,13 +9,15 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import io.smallrye.mutiny.Uni
 import io.smallrye.reactive.messaging.kafka.Record
 import org.eclipse.microprofile.reactive.messaging.Incoming
+import org.jboss.logging.Logger
 import java.util.*
 import javax.enterprise.context.ApplicationScoped
 
 @ApplicationScoped
 class ShipmentEventsResource(
     private val shipmentsService: ShipmentsService,
-    private val objectMapper: ObjectMapper
+    private val objectMapper: ObjectMapper,
+    private val logger: Logger
 ) {
     @Incoming("warehouse-in")
     fun consumeWarehouseEvents(warehouseEventsDto: Record<String, WarehouseEventDto>): Uni<Void> {
@@ -30,7 +32,10 @@ class ShipmentEventsResource(
             Shipment::class.java
         )
         return shipmentsService.handleShipmentEvents(eventId, shipment)
-            .onFailure()
+            .onFailure {
+                logger.error("Handling shipment events failed because of: ", it)
+                false
+            }
             .recoverWithNull()
     }
 }

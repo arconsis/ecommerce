@@ -25,19 +25,21 @@ data class CreateBasketItemDto(
 fun CreateBasketDto.toCreateBasket(items: List<CreateBasketItem>) = CreateBasket(
 	userId = userId,
 	totalPrice = items.calculateBasketTotalPriceAfterTax(),
-	priceBeforeTax = items.calculateBasketTotalPrice(),
+	priceBeforeTax = items.calculateBasketProductPrice(),
+	productPrice = items.calculateBasketProductPrice(),
+	shippingPrice = BigDecimal(0),
 	tax = TAX_RATE,
 	currency = items[0].currency,
 	items = items
 )
 
-private fun List<CreateBasketItem>.calculateBasketTotalPrice(): BigDecimal {
+private fun List<CreateBasketItem>.calculateBasketProductPrice(): BigDecimal {
 	return this.fold(BigDecimal(0)) { acc, item ->
 		acc + (item.price * BigDecimal(item.quantity))
 	}.setScale(2)
 }
 
-private fun List<CreateBasketItem>.calculateBasketTotalPriceAfterTax(): BigDecimal {
-	val price = this.calculateBasketTotalPrice()
-	return price.multiply(BigDecimal(1) + BigDecimal(TAX_RATE)).setScale(2)
+private fun List<CreateBasketItem>.calculateBasketTotalPriceAfterTax(shippingPrice: BigDecimal = BigDecimal(0)): BigDecimal {
+	val price = this.calculateBasketProductPrice()
+	return price.multiply(BigDecimal(1) + BigDecimal(TAX_RATE) + shippingPrice).setScale(2)
 }

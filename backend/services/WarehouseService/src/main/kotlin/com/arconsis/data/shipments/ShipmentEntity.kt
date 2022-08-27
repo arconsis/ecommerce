@@ -8,6 +8,7 @@ import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.Type
 import org.hibernate.annotations.TypeDef
 import org.hibernate.annotations.UpdateTimestamp
+import java.math.BigDecimal
 import java.time.Instant
 import java.util.*
 import javax.persistence.*
@@ -40,6 +41,24 @@ class ShipmentEntity(
     @Column(name = "shipment_id")
     var shipmentId: UUID? = null,
 
+    @Column(name = "external_shipment_id", nullable = true)
+    var externalShipmentId: String?,
+
+    @Column(name = "shipment_failure_reason", nullable = true)
+    var shipmentFailureReason: String?,
+
+    @Column(name = "external_shipment_provider_id", nullable = false)
+    var externalShipmentProviderId: String,
+
+    @Column(name = "shipment_provider_name", nullable = false)
+    var providerName: String,
+
+    @Column(name = "price", nullable = false)
+    var price: BigDecimal,
+
+    @Column(name = "currency", nullable = false)
+    var currency: String,
+
     @Column(name = "order_id", nullable = false)
     var orderId: UUID,
 
@@ -69,11 +88,23 @@ fun ShipmentEntity.toShipment() = Shipment(
     shipmentId = shipmentId!!,
     orderId = orderId,
     status = status,
-    userId = userId
+    userId = userId,
+    externalShipmentId = externalShipmentId,
+    shipmentFailureReason = shipmentFailureReason,
+    externalShipmentProviderId = externalShipmentProviderId,
+    price = price,
+    currency = currency,
+    providerName = providerName
 )
 
-fun CreateShipment.toShipmentEntity() = ShipmentEntity(
+fun CreateShipment.toShipmentEntity(status: ShipmentStatus) = ShipmentEntity(
     orderId = orderId,
+    externalShipmentId = externalShipmentId,
+    externalShipmentProviderId = externalShipmentProviderId,
+    price = price,
+    currency = currency,
+    providerName = providerName,
     userId = userId,
-    status = ShipmentStatus.PREPARING_SHIPMENT
+    status = status,
+    shipmentFailureReason = shipmentFailureReason
 )

@@ -1,6 +1,6 @@
-package com.arconsis.data.shipments
+package com.arconsis.data.shipmentproviders
 
-import io.smallrye.mutiny.Uni
+import com.arconsis.data.shipmentproviders.dto.ListShipmentProvidersDto
 import org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient
 import javax.enterprise.context.ApplicationScoped
@@ -11,15 +11,13 @@ import javax.ws.rs.core.Response
 @ApplicationScoped
 @RegisterRestClient(configKey = "shippo")
 @Produces(MediaType.APPLICATION_JSON)
-@RegisterClientHeaders(ShipmentsRemoteStoreHeadersFactory::class)
-interface ShipmentsRemoteStore {
+@RegisterClientHeaders(ShipmentProvidersRemoteStoreHeadersFactory::class)
+interface ShipmentProvidesRemoteStore {
 	@POST
-	@Path("transactions")
-	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	@Path("shipments")
+	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	fun createShipment(
-		@FormParam("rate") providerId: String,
-		@FormParam("label_file_type") labelFileType: String,
-		@FormParam("async") async: String,
-	): Uni<Response>
+	suspend fun listShipmentProviders(
+		listShipmentProviders: ListShipmentProvidersDto,
+	): Response
 }

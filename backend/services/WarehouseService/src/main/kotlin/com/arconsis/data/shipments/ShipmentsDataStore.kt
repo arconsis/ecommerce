@@ -11,8 +11,8 @@ import javax.enterprise.context.ApplicationScoped
 
 @ApplicationScoped
 class ShipmentsDataStore {
-	fun createShipment(createShipment: CreateShipment, session: Session): Uni<Shipment> {
-		val shipmentEntity = createShipment.toShipmentEntity()
+	fun createShipment(createShipment: CreateShipment, status: ShipmentStatus, session: Session): Uni<Shipment> {
+		val shipmentEntity = createShipment.toShipmentEntity(status)
 		return session.persist(shipmentEntity)
 			.map { shipmentEntity.toShipment() }
 	}

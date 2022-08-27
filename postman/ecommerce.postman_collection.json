@@ -45,7 +45,7 @@
                 "header": [],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n    \"name\": \"my home 3\",\n    \"address\": \"Leros 3\",\n    \"houseNumber\": \"9\",\n    \"countryCode\": \"GR\",\n    \"postalCode\": \"85400\",\n    \"city\": \"Leros\",\n    \"phone\": \"+306991001001\"\n}",
+                  "raw": "{\n    \"name\": \"dimos botsaris\",\n    \"address\": \"Test Street\",\n    \"houseNumber\": \"9\",\n    \"countryCode\": \"DE\",\n    \"postalCode\": \"10115\",\n    \"city\": \"Berlin\",\n    \"phone\": \"+306991001001\"\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -53,13 +53,13 @@
                   }
                 },
                 "url": {
-                  "raw": "{{orders-host}}/baskets/d5de04d8-f562-4122-9566-94d76fb302e8/shipping_address",
+                  "raw": "{{orders-host}}/baskets/0114eb83-b553-4d74-916a-ea4f7e2a374d/shipping_address",
                   "host": [
                     "{{orders-host}}"
                   ],
                   "path": [
                     "baskets",
-                    "d5de04d8-f562-4122-9566-94d76fb302e8",
+                    "0114eb83-b553-4d74-916a-ea4f7e2a374d",
                     "shipping_address"
                   ]
                 }
@@ -89,6 +89,34 @@
                     "baskets",
                     "f9391217-f5c7-427f-8696-8425f34eeb22",
                     "payment_method"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Add basket shiping method provider",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"providerId\": \"088f8f674bc3454fa1a84078d8edd27c\",\n    \"price\": \"4.95\",\n    \"name\": \"Deutsche Post\"\n}\n",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{orders-host}}/baskets/5b666c90-6317-4d86-a5e9-8a924f738c3b/shipping_provider",
+                  "host": [
+                    "{{orders-host}}"
+                  ],
+                  "path": [
+                    "baskets",
+                    "5b666c90-6317-4d86-a5e9-8a924f738c3b",
+                    "shipping_provider"
                   ]
                 }
               },
@@ -287,7 +315,7 @@
                 "header": [],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n    \"name\": \"dimos\",\n    \"address\": \"berlin\",\n    \"houseNumber\": \"9\",\n    \"countryCode\": \"DE\",\n    \"postalCode\": \"10115\",\n    \"city\": \"berlin\",\n    \"phone\": \"342\"\n}",
+                  "raw": "{\n    \"name\": \"dimos botsaris\",\n    \"address\": \"Test Street\",\n    \"houseNumber\": \"9\",\n    \"countryCode\": \"DE\",\n    \"postalCode\": \"10115\",\n    \"city\": \"Berlin\",\n    \"phone\": \"342\"\n}",
                   "options": {
                     "raw": {
                       "language": "json"
