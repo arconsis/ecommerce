@@ -1,6 +1,7 @@
 package com.arconsis.domain.baskets
 
 import com.arconsis.domain.orders.OrderItem
+import com.arconsis.domain.orders.SupportedCurrencies
 import java.math.BigDecimal
 import java.util.*
 
@@ -11,7 +12,7 @@ data class BasketItem(
 	val thumbnail: String,
 	val productName: String,
 	val description: String,
-	val currency: String,
+	val currency: SupportedCurrencies,
 	val price: BigDecimal,
 	val quantity: Int
 )
@@ -21,7 +22,7 @@ data class CreateBasketItem(
 	val thumbnail: String,
 	val productName: String,
 	val description: String,
-	val currency: String,
+	val currency: SupportedCurrencies,
 	val price: BigDecimal,
 	val quantity: Int
 )

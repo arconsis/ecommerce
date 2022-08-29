@@ -1,34 +1,38 @@
-package com.arconsis.domain.addresses
+package com.arconsis.domain.shippingaddresses
 
 import java.util.*
 
-data class Address(
+data class ShippingAddress(
     val addressId: UUID,
-    val name: String,
+    val firstName: String,
+    val lastName: String,
     val address: String,
     val houseNumber: String,
     val countryCode: SupportedCountryCode,
     val postalCode: String,
     val city: String,
     val phone: String,
+    val state: String,
     val isBilling: Boolean,
     val isSelected: Boolean,
 )
 
-data class CreateAddress(
-    val name: String,
+data class CreateShippingAddress(
+    val firstName: String,
+    val lastName: String,
     val address: String,
     val houseNumber: String,
     val countryCode: SupportedCountryCode,
     val postalCode: String,
     val city: String,
     val phone: String,
+    val state: String,
     val isBilling: Boolean,
     val isSelected: Boolean,
 )
 
 enum class SupportedCountryCode {
-    DE
+    US
 }
 
 enum class CountryCode {

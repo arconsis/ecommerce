@@ -1,5 +1,6 @@
 package com.arconsis.presentation.http.products.dto
 
+import com.arconsis.domain.orders.SupportedCurrencies
 import com.arconsis.domain.products.CreateProduct
 import java.math.BigDecimal
 
@@ -8,7 +9,7 @@ data class CreateProductDto(
 	val productName: String,
 	val description: String,
 	val price: BigDecimal,
-	val currency: String,
+	val currency: SupportedCurrencies,
 	val size: String,
 	val category: String,
 )

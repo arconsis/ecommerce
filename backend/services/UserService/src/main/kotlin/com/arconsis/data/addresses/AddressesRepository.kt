@@ -24,6 +24,7 @@ class AddressesRepository(private val sessionFactory: Mutiny.SessionFactory) {
 						postalCode = createAddress.postalCode,
 						city = createAddress.city,
 						phone = createAddress.phone,
+						state = createAddress.state,
 						isSelected = createAddress.isSelected,
 						userId = userId,
 					)

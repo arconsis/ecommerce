@@ -250,16 +250,18 @@ CREATE TYPE valid_country_code AS ENUM (
     'ZW'
     );
 
-CREATE TABLE addresses
+CREATE TABLE shipping_addresses
 (
     address_id   UUID PRIMARY KEY,
-    name         VARCHAR(200)                        NOT NULL,
+    first_name   VARCHAR(200)                        NOT NULL,
+    last_name    VARCHAR(200)                        NOT NULL,
     address      VARCHAR(200)                        NOT NULL,
     house_number VARCHAR(200)                        NOT NULL,
     country_code VALID_COUNTRY_CODE                  NOT NULL,
     postal_code  VARCHAR(10)                         NOT NULL,
     city         VARCHAR(200)                        NOT NULL,
     phone        VARCHAR(50)                         NOT NULL,
+    state        VARCHAR(50)                         NOT NULL,
     is_billing   BOOLEAN                             NOT NULL,
     is_selected  BOOLEAN                             NOT NULL,
     basket_id    UUID REFERENCES baskets (basket_id) NOT NULL

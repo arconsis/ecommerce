@@ -1,5 +1,6 @@
 package com.arconsis.domain.shipments
 
+import com.arconsis.domain.orders.SupportedCurrencies
 import io.quarkus.kafka.client.serialization.ObjectMapperDeserializer
 import java.math.BigDecimal
 import java.util.*
@@ -11,7 +12,7 @@ data class Shipment(
 	val externalShipmentProviderId: String,
 	val providerName: String,
 	val price: BigDecimal,
-	val currency: String,
+	val currency: SupportedCurrencies,
 	val orderId: UUID,
 	val status: ShipmentStatus,
 	val userId: UUID

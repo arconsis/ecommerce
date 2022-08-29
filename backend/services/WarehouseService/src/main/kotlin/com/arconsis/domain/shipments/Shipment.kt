@@ -1,5 +1,6 @@
 package com.arconsis.domain.shipments
 
+import com.arconsis.domain.orders.SupportedCurrencies
 import com.arconsis.domain.outboxevents.AggregateType
 import com.arconsis.domain.outboxevents.CreateOutboxEvent
 import com.arconsis.domain.outboxevents.OutboxEventType
@@ -24,7 +25,7 @@ data class Shipment(
 	val externalShipmentProviderId: String,
 	val providerName: String,
 	val price: BigDecimal,
-	val currency: String,
+	val currency: SupportedCurrencies,
 	val orderId: UUID,
 	val status: ShipmentStatus,
 	val userId: UUID
@@ -39,7 +40,7 @@ data class CreateShipment(
 	val shipmentFailureReason: String?,
 	val providerName: String,
 	val price: BigDecimal,
-	val currency: String,
+	val currency: SupportedCurrencies,
 	val userId: UUID,
 	val status: ShipmentStatus,
 )

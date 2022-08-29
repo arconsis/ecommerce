@@ -1,5 +1,6 @@
 package com.arconsis.domain.checkouts
 
+import com.arconsis.domain.orders.SupportedCurrencies
 import com.arconsis.domain.outboxevents.AggregateType
 import com.arconsis.domain.outboxevents.CreateOutboxEvent
 import com.arconsis.domain.outboxevents.OutboxEventType
@@ -12,7 +13,7 @@ data class Checkout(
     val orderId: UUID,
     val userId: UUID,
     val amount: BigDecimal,
-    val currency: String,
+    val currency: SupportedCurrencies,
     val paymentStatus: CheckoutStatus,
     val paymentErrorMessage: String?,
     val paymentErrorCode: String?,
@@ -24,7 +25,7 @@ data class CreateCheckout(
     val orderId: UUID,
     val userId: UUID,
     val amount: BigDecimal,
-    val currency: String,
+    val currency: SupportedCurrencies,
     val paymentStatus: CheckoutStatus,
     val paymentErrorMessage: String? = null,
     val paymentErrorCode: String? = null,

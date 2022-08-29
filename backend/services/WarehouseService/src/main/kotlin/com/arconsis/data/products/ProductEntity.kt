@@ -1,9 +1,11 @@
 package com.arconsis.data.products
 
 import com.arconsis.data.common.PostgreSQLEnumType
+import com.arconsis.domain.orders.SupportedCurrencies
 import com.arconsis.domain.products.CreateProduct
 import com.arconsis.domain.products.Product
 import org.hibernate.annotations.CreationTimestamp
+import org.hibernate.annotations.Type
 import org.hibernate.annotations.TypeDef
 import org.hibernate.annotations.UpdateTimestamp
 import java.math.BigDecimal
@@ -35,7 +37,12 @@ class ProductEntity(
 	var productName: String,
 	var description: String,
 	var price: BigDecimal,
-	var currency: String,
+
+	@Enumerated(EnumType.STRING)
+	@Column(name = "currency", nullable = false, columnDefinition = "supported_currencies")
+	@Type(type = "pgsql_enum")
+	var currency: SupportedCurrencies,
+
 	var size: String,
 
 	var category: String,

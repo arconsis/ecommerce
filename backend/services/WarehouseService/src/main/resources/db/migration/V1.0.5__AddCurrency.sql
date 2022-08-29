@@ -1,6 +1,6 @@
 BEGIN;
 
 alter table products
-    add column currency varchar not null;
+    add column currency supported_currencies not null;
 
 COMMIT;

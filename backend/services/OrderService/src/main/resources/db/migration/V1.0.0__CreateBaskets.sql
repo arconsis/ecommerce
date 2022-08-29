@@ -1,3 +1,7 @@
+CREATE TYPE supported_currencies AS ENUM (
+    'USD'
+    );
+
 CREATE TABLE baskets
 (
     basket_id                     UUID PRIMARY KEY,
@@ -7,7 +11,7 @@ CREATE TABLE baskets
     shipping_price                NUMERIC NOT NULL,
     product_price                 NUMERIC NOT NULL,
     tax                           VARCHAR NOT NULL,
-    currency                      VARCHAR NOT NULL,
+    currency                      supported_currencies NOT NULL,
     external_shipment_provider_id VARCHAR NULL,
     shipment_provider_name        VARCHAR NULL,
     created_at                    TIMESTAMP,

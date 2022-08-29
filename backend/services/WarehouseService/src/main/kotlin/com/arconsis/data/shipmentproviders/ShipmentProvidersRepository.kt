@@ -20,14 +20,16 @@ class ShipmentProvidersRepository(
                 street1 = fromStreet,
                 city = fromCity,
                 zip = fromPostalCode,
-                country = fromCountry
+                country = fromCountry,
+                state = fromState
             ),
             addressTo = ShipmentAddressDto(
-                name = deliveryAddress.name,
-                street1 = "${deliveryAddress.address} ${deliveryAddress.houseNumber}",
+                name = "${deliveryAddress.firstName} ${deliveryAddress.lastName}",
+                street1 = "${deliveryAddress.houseNumber} ${deliveryAddress.address}",
                 city = deliveryAddress.city,
                 zip = deliveryAddress.postalCode,
-                country = deliveryAddress.countryCode
+                country = deliveryAddress.countryCode,
+                state = deliveryAddress.state
             ),
             parcels = listOf(ParcelDto())
 
@@ -43,9 +45,10 @@ class ShipmentProvidersRepository(
 
     companion object {
         private const val fromName = "Arconsis Ecommerce"
-        private const val fromStreet = "Krithoni 9"
-        private const val fromCity = "Berlin"
-        private const val fromPostalCode = "10115"
-        private const val fromCountry = "DE"
+        private const val fromStreet = "Clayton St."
+        private const val fromCity = "San Francisco"
+        private const val fromPostalCode = "94100"
+        private const val fromCountry = "US"
+        private const val fromState = "CA"
     }
 }

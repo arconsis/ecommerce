@@ -4,6 +4,7 @@ import com.arconsis.data.PostgreSQLEnumType
 import com.arconsis.domain.checkouts.Checkout
 import com.arconsis.domain.checkouts.CheckoutStatus
 import com.arconsis.domain.checkouts.CreateCheckout
+import com.arconsis.domain.orders.SupportedCurrencies
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.Type
 import org.hibernate.annotations.TypeDef
@@ -48,8 +49,10 @@ class CheckoutEntity(
     @Column(nullable = false)
     var amount: BigDecimal,
 
-    @Column(nullable = false)
-    var currency: String,
+    @Enumerated(EnumType.STRING)
+    @Column(name = "currency", nullable = false, columnDefinition = "supported_currencies")
+    @Type(type = "pgsql_enum")
+    var currency: SupportedCurrencies,
 
     @CreationTimestamp
     @Column(name = "created_at")
