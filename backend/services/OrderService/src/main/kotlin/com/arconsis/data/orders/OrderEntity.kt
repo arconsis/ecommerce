@@ -119,8 +119,8 @@ fun OrderEntity.toOrder() = Order(
 //    checkoutSessionId = checkoutSessionId,
 //    checkoutUrl = checkoutUrl,
     paymentMethod = OrderPaymentMethod(pspToken = pspToken, paymentMethodType = paymentMethodType),
-    shippingShippingAddress = basket.deliveryAddressEntities.find { it.isSelected }?.toAddress(),
-    billingShippingAddress = basket.deliveryAddressEntities.find { it.isBilling }?.toAddress(),
+    shippingShippingAddress = basket.shippingAddressEntities.find { it.isSelected }?.toAddress(),
+    billingShippingAddress = basket.shippingAddressEntities.find { it.isBilling }?.toAddress(),
     shipmentProvider = OrderShipmentProvider(
         name = shipmentProviderName,
         externalShipmentProviderId = externalShipmentProviderId,

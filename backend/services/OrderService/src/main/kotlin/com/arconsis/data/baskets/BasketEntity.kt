@@ -113,7 +113,7 @@ class BasketEntity(
 
 	@LazyCollection(LazyCollectionOption.FALSE)
 	@OneToMany(mappedBy = "basketId", cascade = [CascadeType.ALL])
-	var deliveryAddressEntities: MutableList<ShippingAddressEntity> = mutableListOf()
+	var shippingAddressEntities: MutableList<ShippingAddressEntity> = mutableListOf()
 ) {
 	companion object {
 		const val GET_BY_BASKET_ID = "BasketEntity.get_by_basket_id"
@@ -138,16 +138,16 @@ fun BasketEntity.toBasket() = Basket(
 	paymentMethod = if (paymentMethodType != null && pspToken != null) {
 		OrderPaymentMethod(paymentMethodType = paymentMethodType!!, pspToken = pspToken!!)
 	} else null,
-	shippingShippingAddress = deliveryAddressEntities.find { it.isSelected }?.toAddress(),
-	billingShippingAddress = deliveryAddressEntities.find { it.isBilling }?.toAddress(),
+	shippingShippingAddress = shippingAddressEntities.find { it.isSelected }?.toAddress(),
+	billingShippingAddress = shippingAddressEntities.find { it.isBilling }?.toAddress(),
 	isOrderable = isBasketOrderable(),
 	shipmentProvider = if (shipmentProviderName != null && externalShipmentProviderId != null) {
 		OrderShipmentProvider(shipmentProviderName!!, shippingPrice, externalShipmentProviderId!!, currency)
 	} else null
 )
 
-fun BasketEntity.isBasketOrderable(): Boolean = deliveryAddressEntities.find { it.isSelected } != null
-		&& deliveryAddressEntities.find { it.isBilling } != null
+fun BasketEntity.isBasketOrderable(): Boolean = shippingAddressEntities.find { it.isSelected } != null
+		&& shippingAddressEntities.find { it.isBilling } != null
 		&& pspToken != null
 		&& paymentMethodType != null
 		&& externalShipmentProviderId != null
