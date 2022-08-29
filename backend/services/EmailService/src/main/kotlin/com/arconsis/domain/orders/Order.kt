@@ -41,13 +41,18 @@ data class OrderPrices (
     val priceBeforeTax: BigDecimal,
     val productPrice: BigDecimal,
     val shippingPrice: BigDecimal,
-    val currency: String,
+    val currency: SupportedCurrencies,
 )
 
 data class OrderShipmentProvider(
     val name: String,
     val price: BigDecimal,
     val externalShipmentProviderId: String,
+    val currency: SupportedCurrencies
 )
+
+enum class SupportedCurrencies {
+    USD,
+}
 
 class OrdersDeserializer : ObjectMapperDeserializer<Order>(Order::class.java)

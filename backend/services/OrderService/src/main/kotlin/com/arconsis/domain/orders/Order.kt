@@ -1,6 +1,6 @@
 package com.arconsis.domain.orders
 
-import com.arconsis.domain.addresses.Address
+import com.arconsis.domain.shippingaddresses.ShippingAddress
 import com.arconsis.domain.outboxevents.AggregateType
 import com.arconsis.domain.outboxevents.CreateOutboxEvent
 import com.arconsis.domain.outboxevents.OutboxEventType
@@ -18,8 +18,8 @@ data class Order(
 	// psp ref
 	val paymentMethod: OrderPaymentMethod,
 	// addresses
-	val shippingAddress: Address? = null,
-	val billingAddress: Address? = null,
+	val shippingShippingAddress: ShippingAddress? = null,
+	val billingShippingAddress: ShippingAddress? = null,
 	// shipmentProvider
 	val shipmentProvider: OrderShipmentProvider
 )
@@ -29,7 +29,7 @@ data class OrderItem(
 	val productId: UUID,
 	val orderId: UUID,
 	val price: BigDecimal,
-	val currency: String,
+	val currency: SupportedCurrencies,
 	val quantity: Int,
 	val productName: String,
 	val thumbnail: String,
@@ -40,7 +40,7 @@ data class CreateOrder(
 	val totalPrice: BigDecimal,
 	val priceBeforeTax: BigDecimal,
 	val tax: String,
-	val currency: String,
+	val currency: SupportedCurrencies,
 	val basketId: UUID,
 	val pspToken: String,
 	val paymentMethodType: OrderPaymentMethodType
@@ -74,18 +74,23 @@ data class OrderPrices(
 	val priceBeforeTax: BigDecimal,
 	val productPrice: BigDecimal,
 	val shippingPrice: BigDecimal = BigDecimal(0),
-	val currency: String,
+	val currency: SupportedCurrencies,
 )
 
 data class OrderShipmentProvider(
 	val name: String,
 	val price: BigDecimal,
 	val externalShipmentProviderId: String,
+	val currency: SupportedCurrencies
 )
 
 enum class OrderPaymentMethodType {
 	STRIPE,
 	CASH_ON_DELIVERY
+}
+
+enum class SupportedCurrencies {
+	USD,
 }
 
 fun Order.toCreateOutboxEvent(objectMapper: ObjectMapper): CreateOutboxEvent = CreateOutboxEvent(

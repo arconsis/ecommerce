@@ -1,6 +1,7 @@
 package com.arconsis.data.shipments
 
 import com.arconsis.data.common.PostgreSQLEnumType
+import com.arconsis.domain.orders.SupportedCurrencies
 import com.arconsis.domain.shipments.CreateShipment
 import com.arconsis.domain.shipments.Shipment
 import com.arconsis.domain.shipments.ShipmentStatus
@@ -56,8 +57,10 @@ class ShipmentEntity(
     @Column(name = "price", nullable = false)
     var price: BigDecimal,
 
-    @Column(name = "currency", nullable = false)
-    var currency: String,
+    @Enumerated(EnumType.STRING)
+    @Column(name = "currency", nullable = false, columnDefinition = "supported_currencies")
+    @Type(type = "pgsql_enum")
+    var currency: SupportedCurrencies,
 
     @Column(name = "order_id", nullable = false)
     var orderId: UUID,

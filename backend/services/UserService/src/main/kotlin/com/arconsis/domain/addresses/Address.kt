@@ -11,6 +11,7 @@ data class Address(
     val postalCode: String,
     val city: String,
     val phone: String,
+    val state: String,
     val isSelected: Boolean,
 )
 
@@ -23,10 +24,11 @@ data class CreateAddress(
     val city: String,
     val phone: String,
     val isSelected: Boolean,
+    val state: String
 )
 
 enum class SupportedCountryCode {
-    DE
+    US
 }
 
 enum class CountryCode {

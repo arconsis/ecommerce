@@ -61,6 +61,9 @@ class AddressEntity(
     @Column
     var phone: String,
 
+    @Column
+    var state: String,
+
     @Column(name = "is_selected")
     var isSelected: Boolean,
 ) {

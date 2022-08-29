@@ -8,7 +8,7 @@ data class OrderItem(
 	val productId: UUID,
 	val orderId: UUID,
 	val price: BigDecimal,
-	val currency: String,
+	val currency: SupportedCurrencies,
 	val quantity: Int,
 	val productName: String,
 	val thumbnail: String,

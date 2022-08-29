@@ -14,7 +14,7 @@ class PaymentsRepository(
 	fun charge(order: Order): Uni<Void> {
 		return paymentsRemoteStore.charge(
 			amount = order.prices.totalPrice.movePointRight(2).intValueExact().toLong().toString(),
-			currency = order.prices.currency,
+			currency = order.prices.currency.name,
 			source = order.paymentMethod.pspToken,
 			description = "Payment for order with id: ${order.orderId} for user with id: ${order.userId}",
 			orderId = order.orderId.toString()

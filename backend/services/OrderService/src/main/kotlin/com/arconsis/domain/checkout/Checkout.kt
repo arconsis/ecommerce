@@ -1,5 +1,6 @@
 package com.arconsis.domain.checkout
 
+import com.arconsis.domain.orders.SupportedCurrencies
 import java.math.BigDecimal
 import java.util.*
 
@@ -8,7 +9,7 @@ data class Checkout(
 	val orderId: UUID,
 	val userId: UUID,
 	val amount: BigDecimal,
-	val currency: String,
+	val currency: SupportedCurrencies,
 	val paymentStatus: CheckoutStatus,
 	val paymentErrorMessage: String?,
 	val paymentErrorCode: String?,

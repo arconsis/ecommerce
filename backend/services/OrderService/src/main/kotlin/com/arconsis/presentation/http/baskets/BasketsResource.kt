@@ -4,7 +4,7 @@ import com.arconsis.domain.baskets.Basket
 import com.arconsis.domain.baskets.BasketsService
 import com.arconsis.presentation.http.baskets.dto.AddPaymentMethodDto
 import com.arconsis.presentation.http.baskets.dto.AddShippingProviderDto
-import com.arconsis.presentation.http.baskets.dto.CreateAddressDto
+import com.arconsis.presentation.http.baskets.dto.CreateShippingAddressDto
 import com.arconsis.presentation.http.baskets.dto.CreateBasketDto
 import io.smallrye.mutiny.Uni
 import java.util.*
@@ -35,7 +35,7 @@ class BasketsResource(val basketsService: BasketsService) {
 	@Path("/{basketId}/shipping_address")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	fun createBasketShippingAddress(@PathParam("basketId") basketId: UUID, address: CreateAddressDto, uriInfo: UriInfo): Uni<Basket> {
+	fun createBasketShippingAddress(@PathParam("basketId") basketId: UUID, address: CreateShippingAddressDto, uriInfo: UriInfo): Uni<Basket> {
 		return basketsService.createBasketShippingAddress(basketId, address)
 	}
 

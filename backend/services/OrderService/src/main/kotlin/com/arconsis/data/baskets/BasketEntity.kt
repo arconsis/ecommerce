@@ -2,8 +2,8 @@ package com.arconsis.data.baskets
 
 import com.arconsis.common.TAX_RATE
 import com.arconsis.data.PostgreSQLEnumType
-import com.arconsis.data.addresses.AddressEntity
-import com.arconsis.data.addresses.toAddress
+import com.arconsis.data.shippingaddresses.ShippingAddressEntity
+import com.arconsis.data.shippingaddresses.toAddress
 import com.arconsis.data.basketitems.BasketItemEntity
 import com.arconsis.data.basketitems.toBasketItem
 import com.arconsis.data.baskets.BasketEntity.Companion.GET_BY_BASKET_ID
@@ -12,10 +12,7 @@ import com.arconsis.data.baskets.BasketEntity.Companion.UPDATE_BASKET_SHIPMENT_P
 import com.arconsis.data.orders.OrderEntity
 import com.arconsis.domain.baskets.Basket
 import com.arconsis.domain.baskets.CreateBasket
-import com.arconsis.domain.orders.OrderPaymentMethod
-import com.arconsis.domain.orders.OrderPaymentMethodType
-import com.arconsis.domain.orders.OrderPrices
-import com.arconsis.domain.orders.OrderShipmentProvider
+import com.arconsis.domain.orders.*
 import org.hibernate.annotations.*
 import java.math.BigDecimal
 import java.time.Instant
@@ -86,8 +83,10 @@ class BasketEntity(
 	@Column(nullable = false)
 	var tax: String,
 
-	@Column(nullable = false)
-	var currency: String,
+	@Enumerated(EnumType.STRING)
+	@Column(name = "currency", nullable = false, columnDefinition = "supported_currencies")
+	@Type(type = "pgsql_enum")
+	var currency: SupportedCurrencies,
 
 	@Column(name = "psp_token", nullable = true, unique = true)
 	var pspToken: String? = null,
@@ -114,7 +113,7 @@ class BasketEntity(
 
 	@LazyCollection(LazyCollectionOption.FALSE)
 	@OneToMany(mappedBy = "basketId", cascade = [CascadeType.ALL])
-	var addressEntities: MutableList<AddressEntity> = mutableListOf()
+	var shippingAddressEntities: MutableList<ShippingAddressEntity> = mutableListOf()
 ) {
 	companion object {
 		const val GET_BY_BASKET_ID = "BasketEntity.get_by_basket_id"
@@ -139,16 +138,16 @@ fun BasketEntity.toBasket() = Basket(
 	paymentMethod = if (paymentMethodType != null && pspToken != null) {
 		OrderPaymentMethod(paymentMethodType = paymentMethodType!!, pspToken = pspToken!!)
 	} else null,
-	shippingAddress = addressEntities.find { it.isSelected }?.toAddress(),
-	billingAddress = addressEntities.find { it.isBilling }?.toAddress(),
+	shippingShippingAddress = shippingAddressEntities.find { it.isSelected }?.toAddress(),
+	billingShippingAddress = shippingAddressEntities.find { it.isBilling }?.toAddress(),
 	isOrderable = isBasketOrderable(),
 	shipmentProvider = if (shipmentProviderName != null && externalShipmentProviderId != null) {
-		OrderShipmentProvider(shipmentProviderName!!, shippingPrice, externalShipmentProviderId!!)
+		OrderShipmentProvider(shipmentProviderName!!, shippingPrice, externalShipmentProviderId!!, currency)
 	} else null
 )
 
-fun BasketEntity.isBasketOrderable(): Boolean = addressEntities.find { it.isSelected } != null
-		&& addressEntities.find { it.isBilling } != null
+fun BasketEntity.isBasketOrderable(): Boolean = shippingAddressEntities.find { it.isSelected } != null
+		&& shippingAddressEntities.find { it.isBilling } != null
 		&& pspToken != null
 		&& paymentMethodType != null
 		&& externalShipmentProviderId != null

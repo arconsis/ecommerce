@@ -2,7 +2,9 @@ package com.arconsis.data.basketitems
 
 import com.arconsis.data.PostgreSQLEnumType
 import com.arconsis.domain.baskets.BasketItem
+import com.arconsis.domain.orders.SupportedCurrencies
 import org.hibernate.annotations.CreationTimestamp
+import org.hibernate.annotations.Type
 import org.hibernate.annotations.TypeDef
 import org.hibernate.annotations.UpdateTimestamp
 import java.math.BigDecimal
@@ -31,8 +33,10 @@ class BasketItemEntity(
 	@Column(nullable = false)
 	var price: BigDecimal,
 
-	@Column(nullable = false)
-	var currency: String,
+	@Enumerated(EnumType.STRING)
+	@Column(name = "currency", nullable = false, columnDefinition = "supported_currencies")
+	@Type(type = "pgsql_enum")
+	var currency: SupportedCurrencies,
 
 	@Column(nullable = false)
 	var quantity: Int,

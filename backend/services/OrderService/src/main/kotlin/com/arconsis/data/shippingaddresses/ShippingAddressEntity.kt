@@ -1,7 +1,7 @@
-package com.arconsis.data.addresses
+package com.arconsis.data.shippingaddresses
 
 import com.arconsis.data.PostgreSQLEnumType
-import com.arconsis.domain.addresses.SupportedCountryCode
+import com.arconsis.domain.shippingaddresses.SupportedCountryCode
 import org.hibernate.annotations.Type
 import org.hibernate.annotations.TypeDef
 import java.util.*
@@ -9,33 +9,33 @@ import javax.persistence.*
 
 @NamedQueries(
     NamedQuery(
-        name = AddressEntity.UNSET_BASKET_ADDRESSES_BILLING_ADDRESS_FLAG,
-        query = """ update addresses a 
+        name = ShippingAddressEntity.UNSET_BASKET_ADDRESSES_BILLING_ADDRESS_FLAG,
+        query = """ update shipping_addresses a 
                     set a.isBilling  = false
                     where a.basketId = :basketId
                         """
     ),
     NamedQuery(
-        name = AddressEntity.UNSET_BASKET_ADDRESSES_IS_SELECTED_ADDRESS_FLAG,
-        query = """ update addresses a 
+        name = ShippingAddressEntity.UNSET_BASKET_ADDRESSES_IS_SELECTED_ADDRESS_FLAG,
+        query = """ update shipping_addresses a 
                     set a.isSelected = false
                     where a.basketId = :basketId
                         """
     ),
     NamedQuery(
-        name = AddressEntity.SET_IS_BILLING_ADDRESS_FLAG,
-        query = """ update addresses a 
+        name = ShippingAddressEntity.SET_IS_BILLING_ADDRESS_FLAG,
+        query = """ update shipping_addresses a 
                     set a.isBilling = true
                     where a.addressId = :addressId
                         """
     ),
 )
-@Entity(name = "addresses")
+@Entity(name = "shipping_addresses")
 @TypeDef(
     name = "pgsql_enum",
     typeClass = PostgreSQLEnumType::class
 )
-class AddressEntity(
+class ShippingAddressEntity(
     @Id
     @GeneratedValue
     @Column(name = "address_id")
@@ -45,8 +45,11 @@ class AddressEntity(
     @Column(name = "basket_id")
     var basketId: UUID,
 
-    @Column
-    var name: String,
+    @Column(name = "first_name")
+    var firstName: String,
+
+    @Column(name = "last_name")
+    var lastName: String,
 
     @Column
     var address: String,
@@ -67,6 +70,9 @@ class AddressEntity(
 
     @Column
     var phone: String,
+
+    @Column
+    val state: String,
 
     @Column(name = "is_billing")
     var isBilling: Boolean,

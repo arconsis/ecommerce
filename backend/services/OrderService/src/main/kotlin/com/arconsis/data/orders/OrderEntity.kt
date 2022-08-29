@@ -2,7 +2,7 @@ package com.arconsis.data.orders
 
 import com.arconsis.common.TAX_RATE
 import com.arconsis.data.PostgreSQLEnumType
-import com.arconsis.data.addresses.toAddress
+import com.arconsis.data.shippingaddresses.toAddress
 import com.arconsis.data.basketitems.toBasketItem
 import com.arconsis.data.baskets.BasketEntity
 import com.arconsis.data.orders.OrderEntity.Companion.UPDATE_ORDER_STATUS
@@ -65,8 +65,10 @@ class OrderEntity(
     @Column(nullable = false)
     var tax: String,
 
-    @Column(nullable = false)
-    var currency: String,
+    @Enumerated(EnumType.STRING)
+    @Column(name = "currency", nullable = false, columnDefinition = "supported_currencies")
+    @Type(type = "pgsql_enum")
+    var currency: SupportedCurrencies,
 
     @Column(name = "shipment_provider_name", nullable = false)
     var shipmentProviderName: String,
@@ -117,12 +119,13 @@ fun OrderEntity.toOrder() = Order(
 //    checkoutSessionId = checkoutSessionId,
 //    checkoutUrl = checkoutUrl,
     paymentMethod = OrderPaymentMethod(pspToken = pspToken, paymentMethodType = paymentMethodType),
-    shippingAddress = basket.addressEntities.find { it.isSelected }?.toAddress(),
-    billingAddress = basket.addressEntities.find { it.isBilling }?.toAddress(),
+    shippingShippingAddress = basket.shippingAddressEntities.find { it.isSelected }?.toAddress(),
+    billingShippingAddress = basket.shippingAddressEntities.find { it.isBilling }?.toAddress(),
     shipmentProvider = OrderShipmentProvider(
         name = shipmentProviderName,
         externalShipmentProviderId = externalShipmentProviderId,
-        price = shippingPrice
+        price = shippingPrice,
+        currency = currency
     )
 )
 

@@ -17,18 +17,18 @@ CREATE TYPE order_status AS ENUM (
 CREATE TABLE orders
 (
     order_id                      UUID PRIMARY KEY,
-    user_id                       UUID         NOT NULL,
+    user_id                       UUID                 NOT NULL,
 --     we set it unique to avoid duplicated orders from same basket
-    basket_id                     UUID         NOT NULL UNIQUE REFERENCES baskets (basket_id) ON DELETE CASCADE,
-    status                        order_status NOT NULL,
-    total_price                   NUMERIC      NOT NULL,
-    shipping_price                NUMERIC      NOT NULL,
-    product_price                 NUMERIC      NOT NULL,
-    price_before_tax              NUMERIC      NOT NULL,
-    tax                           VARCHAR      NOT NULL,
-    external_shipment_provider_id VARCHAR      NOT NULL,
-    shipment_provider_name        VARCHAR      NOT NULL,
-    currency                      VARCHAR      NOT NULL,
+    basket_id                     UUID                 NOT NULL UNIQUE REFERENCES baskets (basket_id) ON DELETE CASCADE,
+    status                        order_status         NOT NULL,
+    total_price                   NUMERIC              NOT NULL,
+    shipping_price                NUMERIC              NOT NULL,
+    product_price                 NUMERIC              NOT NULL,
+    price_before_tax              NUMERIC              NOT NULL,
+    tax                           VARCHAR              NOT NULL,
+    external_shipment_provider_id VARCHAR              NOT NULL,
+    shipment_provider_name        VARCHAR              NOT NULL,
+    currency                      supported_currencies NOT NULL,
     created_at                    TIMESTAMP,
     updated_at                    TIMESTAMP
 );

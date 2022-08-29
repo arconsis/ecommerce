@@ -1,30 +1,30 @@
 package com.arconsis.domain.orders
 
-import com.arconsis.domain.addresses.Address
+import com.arconsis.domain.shippingaddresses.ShippingAddress
 import io.quarkus.kafka.client.serialization.ObjectMapperDeserializer
 import java.math.BigDecimal
 import java.util.*
 
 data class Order(
-    val orderId: UUID,
-    val basketId: UUID,
-    val userId: UUID,
-    val prices: OrderPrices,
-    val status: OrderStatus,
-    val items: List<OrderItem>,
+	val orderId: UUID,
+	val basketId: UUID,
+	val userId: UUID,
+	val prices: OrderPrices,
+	val status: OrderStatus,
+	val items: List<OrderItem>,
     // psp ref
-    val paymentMethod: OrderPaymentMethod,
+	val paymentMethod: OrderPaymentMethod,
     // addresses
-    val shippingAddress: Address? = null,
-    val billingAddress: Address? = null,
+	val shippingAddress: ShippingAddress? = null,
+	val billingShippingAddress: ShippingAddress? = null,
     // shipmentProvider
-    val shipmentProvider: OrderShipmentProvider
+	val shipmentProvider: OrderShipmentProvider
 )
 
 data class Product(
     val productId: UUID,
     val price: BigDecimal,
-    val currency: String
+    val currency: SupportedCurrencies
 )
 
 enum class OrderStatus {
@@ -55,7 +55,7 @@ data class OrderPrices (
     val priceBeforeTax: BigDecimal,
     val productPrice: BigDecimal,
     val shippingPrice: BigDecimal,
-    val currency: String,
+    val currency: SupportedCurrencies,
 )
 
 enum class OrderPaymentMethodType {
@@ -63,10 +63,15 @@ enum class OrderPaymentMethodType {
     CASH_ON_DELIVERY
 }
 
+enum class SupportedCurrencies {
+	USD,
+}
+
 data class OrderShipmentProvider(
     val name: String,
     val price: BigDecimal,
     val externalShipmentProviderId: String,
+	val currency: SupportedCurrencies
 )
 
 class OrdersDeserializer : ObjectMapperDeserializer<Order>(Order::class.java)

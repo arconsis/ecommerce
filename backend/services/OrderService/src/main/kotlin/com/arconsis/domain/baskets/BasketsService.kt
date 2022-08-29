@@ -1,7 +1,7 @@
 package com.arconsis.domain.baskets
 
 import com.arconsis.common.errors.abort
-import com.arconsis.data.addresses.AddressesRepository
+import com.arconsis.data.shippingaddresses.ShippingAddressesRepository
 import com.arconsis.data.baskets.BasketsRepository
 import com.arconsis.data.products.ProductsRepository
 import com.arconsis.domain.orders.OrdersFailureReason
@@ -15,7 +15,7 @@ import javax.ws.rs.BadRequestException
 
 @ApplicationScoped
 class BasketsService(
-	private val addressesRepository: AddressesRepository,
+	private val shippingAddressesRepository: ShippingAddressesRepository,
 	private val basketsRepository: BasketsRepository,
 	private val productsRepository: ProductsRepository,
 	private val sessionFactory: Mutiny.SessionFactory,
@@ -64,10 +64,10 @@ class BasketsService(
 		}
 	}
 
-	fun createBasketShippingAddress(basketId: UUID, address: CreateAddressDto): Uni<Basket> {
-		val newAddress = address.toCreateAddress(isSelected = true, isBilling = true)
+	fun createBasketShippingAddress(basketId: UUID, address: CreateShippingAddressDto): Uni<Basket> {
+		val newAddress = address.toCreateShippingAddress(isSelected = true, isBilling = true)
 		return sessionFactory.withTransaction { session, _ ->
-			addressesRepository.createShippingAddress(newAddress, basketId, session)
+			shippingAddressesRepository.createShippingAddress(newAddress, basketId, session)
 		}.flatMap {
 			sessionFactory.withTransaction { session, _ ->
 				basketsRepository.getBasket(basketId, session)

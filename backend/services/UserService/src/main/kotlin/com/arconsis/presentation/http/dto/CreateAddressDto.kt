@@ -6,20 +6,22 @@ import javax.validation.constraints.NotBlank
 import javax.validation.constraints.NotNull
 
 data class CreateAddressDto(
-    @field:NotBlank
+	@field:NotBlank
     val name: String,
-    @field:NotBlank
+	@field:NotBlank
     val address: String,
-    @field:NotBlank
+	@field:NotBlank
     val houseNumber: String,
-    @field:NotNull
+	@field:NotNull
     val countryCode: SupportedCountryCode,
-    @field:NotBlank
+	@field:NotBlank
     val postalCode: String,
-    @field:NotBlank
+	@field:NotBlank
     val city: String,
-    @field:NotBlank
+	@field:NotBlank
     val phone: String,
+	@field:NotBlank
+	val state: String,
 )
 
 fun CreateAddressDto.toCreateAddress(isSelected: Boolean) = CreateAddress(
@@ -30,5 +32,6 @@ fun CreateAddressDto.toCreateAddress(isSelected: Boolean) = CreateAddress(
     postalCode = postalCode,
     city = city,
     phone = phone,
+	state = state,
     isSelected = isSelected
 )

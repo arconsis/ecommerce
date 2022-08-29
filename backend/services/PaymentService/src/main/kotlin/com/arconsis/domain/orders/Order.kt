@@ -1,6 +1,6 @@
 package com.arconsis.domain.orders
 
-import com.arconsis.domain.addresses.Address
+import com.arconsis.domain.shippingaddresses.ShippingAddress
 import com.arconsis.domain.checkouts.Checkout
 import com.arconsis.domain.checkouts.CheckoutStatus
 import com.arconsis.domain.checkouts.CreateCheckout
@@ -19,8 +19,8 @@ data class Order(
     val paymentMethod: OrderPaymentMethod,
     val checkout: Checkout?,
     // addresses
-    val shippingAddress: Address? = null,
-    val billingAddress: Address? = null,
+    val shippingAddress: ShippingAddress? = null,
+    val billingShippingAddress: ShippingAddress? = null,
     // shipmentProvider
     val shipmentProvider: OrderShipmentProvider
 )
@@ -53,7 +53,7 @@ data class OrderPrices (
     val priceAfterTax: BigDecimal,
     val productPrice: BigDecimal,
     val shippingPrice: BigDecimal,
-    val currency: String,
+    val currency: SupportedCurrencies,
 )
 
 enum class OrderPaymentMethodType {
@@ -65,7 +65,12 @@ data class OrderShipmentProvider(
     val name: String,
     val price: BigDecimal,
     val externalShipmentProviderId: String,
+    val currency: SupportedCurrencies
 )
+
+enum class SupportedCurrencies {
+    USD,
+}
 
 fun Order.toCreateCheckout(pspToken: String, paymentStatus: CheckoutStatus) = CreateCheckout(
     userId = userId,
