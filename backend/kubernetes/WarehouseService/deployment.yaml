@@ -60,4 +60,9 @@ spec:
               secretKeyRef:
                 name: eda-secrets
                 key: POSTGRES_PASSWORD
+          - name: QUARKUS_SHIPPO_API_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: eda-secrets
+                key: QUARKUS_SHIPPO_API_TOKEN
             
