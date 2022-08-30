@@ -10,6 +10,7 @@ data class Shipment(
 	val externalShipmentId: String?,
 	val shipmentFailureReason: String?,
 	val externalShipmentProviderId: String,
+	val externalShipmentLabelId: String?,
 	val providerName: String,
 	val price: BigDecimal,
 	val currency: SupportedCurrencies,

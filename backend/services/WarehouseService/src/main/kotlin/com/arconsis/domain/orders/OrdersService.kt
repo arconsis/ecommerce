@@ -1,9 +1,12 @@
 package com.arconsis.domain.orders
 
+import com.arconsis.data.common.asPair
 import com.arconsis.data.common.toUni
 import com.arconsis.data.inventory.InventoryRepository
 import com.arconsis.data.outboxevents.OutboxEventsRepository
 import com.arconsis.data.processedevents.ProcessedEventsRepository
+import com.arconsis.data.shipmentlabels.ShipmentLabelsRepository
+import com.arconsis.data.shipmentproviders.ShipmentProvidersRepository
 import com.arconsis.data.shipments.ShipmentsRepository
 import com.arconsis.domain.ordersvalidations.OrderValidation
 import com.arconsis.domain.ordersvalidations.OrderValidationStatus
@@ -22,7 +25,9 @@ import javax.enterprise.context.ApplicationScoped
 
 @ApplicationScoped
 class OrdersService(
+	private val shipmentProvidersRepository: ShipmentProvidersRepository,
 	private val shipmentsRepository: ShipmentsRepository,
+	private val shipmentLabelsRepository: ShipmentLabelsRepository,
 	private val inventoryRepository: InventoryRepository,
 	private val outboxEventsRepository: OutboxEventsRepository,
 	private val sessionFactory: Mutiny.SessionFactory,
@@ -69,16 +74,46 @@ class OrdersService(
 			)
 			processedEventsRepository.createEvent(proceedEvent, session)
 				.flatMap {
-					val createShipment = CreateShipment(
-						orderId = order.orderId,
-						userId = order.userId,
-						status = ShipmentStatus.PREPARING_SHIPMENT,
-						providerName = order.shipmentProvider.name,
-						externalShipmentProviderId = order.shipmentProvider.externalShipmentProviderId,
-						price = order.prices.shippingPrice,
-						currency = order.prices.currency,
-						shipmentFailureReason = null
-					)
+					shipmentProvidersRepository.getShipmentProvider(order.shipmentProvider.externalShipmentProviderId)
+				}
+				.flatMap { provider ->
+					Uni.combine().all().unis(
+						shipmentLabelsRepository.createShipmentLabel(
+							order.shipmentProvider.externalShipmentProviderId,
+							order.orderId
+						),
+						provider.toUni()
+					).asPair()
+				}
+				.flatMap { (shipmentLabelId, provider) ->
+					val createShipment = if (shipmentLabelId != null) {
+						CreateShipment(
+							orderId = order.orderId,
+							userId = order.userId,
+							status = ShipmentStatus.PREPARING_SHIPMENT,
+							providerName = order.shipmentProvider.name,
+							externalShipmentProviderId = order.shipmentProvider.externalShipmentProviderId,
+							externalShipmentId = provider.providerId,
+							externalShipmentLabelId = shipmentLabelId,
+							price = order.prices.shippingPrice,
+							currency = order.prices.currency,
+							shipmentFailureReason = null
+						)
+					} else {
+						logger.error("Creating shipment failed for order with id: ${order.orderId} because of externalShipmentLabelId not found")
+						CreateShipment(
+							orderId = order.orderId,
+							userId = order.userId,
+							status = ShipmentStatus.PREPARING_SHIPMENT,
+							providerName = order.shipmentProvider.name,
+							externalShipmentProviderId = order.shipmentProvider.externalShipmentProviderId,
+							externalShipmentId = provider.providerId,
+							externalShipmentLabelId = null,
+							price = order.prices.shippingPrice,
+							currency = order.prices.currency,
+							shipmentFailureReason = null
+						)
+					}
 					shipmentsRepository.createShipment(createShipment, session)
 				}
 				.createShipmentEvent(session)

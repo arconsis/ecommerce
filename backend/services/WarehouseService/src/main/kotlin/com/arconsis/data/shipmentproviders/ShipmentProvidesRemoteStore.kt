@@ -1,6 +1,7 @@
 package com.arconsis.data.shipmentproviders
 
 import com.arconsis.data.shipmentproviders.dto.ListShipmentProvidersDto
+import io.smallrye.mutiny.Uni
 import org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient
 import javax.enterprise.context.ApplicationScoped
@@ -20,4 +21,12 @@ interface ShipmentProvidesRemoteStore {
 	suspend fun listShipmentProviders(
 		listShipmentProviders: ListShipmentProvidersDto,
 	): Response
+
+	@GET
+	@Path("rates/{providerId}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	fun getShipmentProvider(
+		@PathParam("providerId") providerId: String,
+	): Uni<Response>
 }

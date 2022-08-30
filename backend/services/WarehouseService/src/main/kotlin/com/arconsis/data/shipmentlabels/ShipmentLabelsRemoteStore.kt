@@ -11,13 +11,13 @@ import javax.ws.rs.core.Response
 @ApplicationScoped
 @RegisterRestClient(configKey = "shippo")
 @Produces(MediaType.APPLICATION_JSON)
-@RegisterClientHeaders(ShipmentsRemoteStoreHeadersFactory::class)
-interface ShipmentsRemoteStore {
+@RegisterClientHeaders(ShipmentLabelsRemoteStoreHeadersFactory::class)
+interface ShipmentLabelsRemoteStore {
 	@POST
 	@Path("transactions")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Produces(MediaType.APPLICATION_JSON)
-	fun createShipment(
+	fun createShipmentLabel(
 		@FormParam("rate") providerId: String,
 		@FormParam("label_file_type") labelFileType: String,
 		@FormParam("async") async: String,

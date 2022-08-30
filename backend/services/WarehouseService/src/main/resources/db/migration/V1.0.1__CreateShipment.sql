@@ -17,6 +17,7 @@ CREATE TABLE shipments
     external_shipment_id          VARCHAR              NULL,
     shipment_failure_reason       VARCHAR              NULL,
     external_shipment_provider_id VARCHAR              NOT NULL,
+    external_shipment_label_id    VARCHAR              NULL UNIQUE,
     shipment_provider_name        VARCHAR              NOT NULL,
     price                         NUMERIC              NOT NULL,
     currency                      supported_currencies NOT NULL,
