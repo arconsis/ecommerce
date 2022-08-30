@@ -6,7 +6,7 @@ import org.eclipse.microprofile.rest.client.ext.ClientHeadersFactory
 import javax.ws.rs.core.MultivaluedHashMap
 import javax.ws.rs.core.MultivaluedMap
 
-class ShipmentsRemoteStoreHeadersFactory(
+class ShipmentLabelsRemoteStoreHeadersFactory(
 	@ConfigProperty(name = "QUARKUS_SHIPPO_API_TOKEN") private val apiKey: String,
 ): ClientHeadersFactory {
 	override fun update(incomingHeaders: MultivaluedMap<String, String>?, clientOutgoingHeaders: MultivaluedMap<String, String>?): MultivaluedMap<String, String> {

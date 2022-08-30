@@ -4,7 +4,7 @@ import com.arconsis.domain.orders.SupportedCurrencies
 import com.arconsis.domain.shipmentproviders.ShipmentProvider
 import com.fasterxml.jackson.annotation.JsonProperty
 
-data class ShipmentProviderResponseDto(
+data class ListShipmentProviderResponseDto(
 	@JsonProperty("rates") val providers: List<ShipmentProviderRateResponseDto>,
 )
 
@@ -15,6 +15,7 @@ data class ShipmentProviderRateResponseDto(
 	@JsonProperty("provider") val name: String,
 	@JsonProperty("provider_image_75") val image: String,
 	@JsonProperty("carrier_account") val carrierAccount: String,
+	@JsonProperty("shipment") val shipmentId: String,
 )
 
 fun ShipmentProviderRateResponseDto.toShipmentProvider() = ShipmentProvider(
@@ -23,5 +24,6 @@ fun ShipmentProviderRateResponseDto.toShipmentProvider() = ShipmentProvider(
 	currency = currency,
 	name = name,
 	image = image,
-	carrierAccount = carrierAccount
+	carrierAccount = carrierAccount,
+	externalShipmentId = shipmentId
 )

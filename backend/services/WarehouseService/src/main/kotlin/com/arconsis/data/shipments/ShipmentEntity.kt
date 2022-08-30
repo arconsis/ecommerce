@@ -54,6 +54,9 @@ class ShipmentEntity(
     @Column(name = "shipment_provider_name", nullable = false)
     var providerName: String,
 
+    @Column(name = "external_shipment_label_id", nullable = true, unique = true)
+    var externalShipmentLabelId: String?,
+
     @Column(name = "price", nullable = false)
     var price: BigDecimal,
 
@@ -95,6 +98,7 @@ fun ShipmentEntity.toShipment() = Shipment(
     externalShipmentId = externalShipmentId,
     shipmentFailureReason = shipmentFailureReason,
     externalShipmentProviderId = externalShipmentProviderId,
+    externalShipmentLabelId = externalShipmentLabelId,
     price = price,
     currency = currency,
     providerName = providerName
@@ -104,6 +108,7 @@ fun CreateShipment.toShipmentEntity(status: ShipmentStatus) = ShipmentEntity(
     orderId = orderId,
     externalShipmentId = externalShipmentId,
     externalShipmentProviderId = externalShipmentProviderId,
+    externalShipmentLabelId = externalShipmentLabelId,
     price = price,
     currency = currency,
     providerName = providerName,
