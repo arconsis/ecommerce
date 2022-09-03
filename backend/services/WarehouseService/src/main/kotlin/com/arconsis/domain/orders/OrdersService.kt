@@ -7,13 +7,13 @@ import com.arconsis.data.inventory.InventoryRepository
 import com.arconsis.data.outboxevents.OutboxEventsRepository
 import com.arconsis.data.processedevents.ProcessedEventsRepository
 import com.arconsis.data.shipmentlabels.ShipmentLabelsRepository
-import com.arconsis.data.shipmentproviders.ShipmentProvidersRepository
+import com.arconsis.data.shippingproviders.ShippingProvidersRepository
 import com.arconsis.data.shipments.ShipmentsRepository
 import com.arconsis.domain.ordersvalidations.OrderValidation
 import com.arconsis.domain.ordersvalidations.OrderValidationStatus
 import com.arconsis.domain.ordersvalidations.toCreateOutboxEvent
 import com.arconsis.domain.processedevents.ProcessedEvent
-import com.arconsis.domain.shipmentproviders.ShipmentProvidersFailureReason
+import com.arconsis.domain.shippingproviders.ShippingProvidersFailureReason
 import com.arconsis.domain.shipments.*
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.smallrye.mutiny.Uni
@@ -23,11 +23,10 @@ import org.jboss.logging.Logger
 import java.time.Instant
 import java.util.*
 import javax.enterprise.context.ApplicationScoped
-import javax.ws.rs.BadRequestException
 
 @ApplicationScoped
 class OrdersService(
-	private val shipmentProvidersRepository: ShipmentProvidersRepository,
+	private val shippingProvidersRepository: ShippingProvidersRepository,
 	private val shipmentsRepository: ShipmentsRepository,
 	private val shipmentLabelsRepository: ShipmentLabelsRepository,
 	private val inventoryRepository: InventoryRepository,
@@ -78,18 +77,18 @@ class OrdersService(
 				.flatMap {
 					shipmentLabelsRepository.createShipmentLabel(
 						deliveryAddress = order.shippingAddress,
-						externalShipmentProviderId = order.shipmentProvider.externalShipmentProviderId,
-						serviceLevelToken = order.shipmentProvider.carrierAccount,
+						externalShippingProviderId = order.shippingProvider.externalShippingProviderId,
+						serviceLevelToken = order.shippingProvider.carrierAccount,
 						orderId = order.orderId
 					)
 				}
 				.flatMap { (shipmentLabelId, rateId) ->
 					if (rateId == null) {
-						abort(ShipmentProvidersFailureReason.ShipmentProviderNotFound)
+						abort(ShippingProvidersFailureReason.ShippingProviderNotFound)
 					}
 					Uni.combine().all().unis(
 						shipmentLabelId.toUni(),
-						shipmentProvidersRepository.getShipmentId(rateId),
+						shippingProvidersRepository.getShipmentId(rateId),
 					).asPair()
 				}
 				.flatMap { (shipmentLabelId, externalShipmentId) ->
@@ -98,8 +97,8 @@ class OrdersService(
 							orderId = order.orderId,
 							userId = order.userId,
 							status = ShipmentStatus.PREPARING_SHIPMENT,
-							providerName = order.shipmentProvider.name,
-							externalShipmentProviderId = order.shipmentProvider.externalShipmentProviderId,
+							providerName = order.shippingProvider.name,
+							externalShippingProviderId = order.shippingProvider.externalShippingProviderId,
 							externalShipmentId = externalShipmentId,
 							externalShipmentLabelId = shipmentLabelId,
 							price = order.prices.shippingPrice,
@@ -112,8 +111,8 @@ class OrdersService(
 							orderId = order.orderId,
 							userId = order.userId,
 							status = ShipmentStatus.PREPARING_SHIPMENT,
-							providerName = order.shipmentProvider.name,
-							externalShipmentProviderId = order.shipmentProvider.externalShipmentProviderId,
+							providerName = order.shippingProvider.name,
+							externalShippingProviderId = order.shippingProvider.externalShippingProviderId,
 							externalShipmentId = externalShipmentId,
 							externalShipmentLabelId = null,
 							price = order.prices.shippingPrice,

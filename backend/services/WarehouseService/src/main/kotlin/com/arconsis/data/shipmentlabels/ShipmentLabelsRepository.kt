@@ -21,11 +21,11 @@ class ShipmentLabelsRepository(
 ) {
 	fun createShipmentLabel(
 		deliveryAddress: ShippingAddress,
-		externalShipmentProviderId: String,
+		externalShippingProviderId: String,
 		serviceLevelToken: String,
 		orderId: UUID,
 	): Uni<Pair<String?, String?>> {
-		return createShipmentLabelOnShippo(deliveryAddress, externalShipmentProviderId, serviceLevelToken, orderId)
+		return createShipmentLabelOnShippo(deliveryAddress, externalShippingProviderId, serviceLevelToken, orderId)
 			.onFailure()
 			.recoverWithNull()
 			.map {
@@ -35,7 +35,7 @@ class ShipmentLabelsRepository(
 
 	private fun createShipmentLabelOnShippo(
 		deliveryAddress: ShippingAddress,
-		externalShipmentProviderId: String,
+		externalShippingProviderId: String,
 		serviceLevelToken: String,
 		orderId: UUID,
 	): Uni<ShipmentLabelResponseDto?> {
@@ -59,7 +59,7 @@ class ShipmentLabelsRepository(
 				),
 				parcels = listOf(ParcelDto())
 			),
-			providerId = externalShipmentProviderId,
+			providerId = externalShippingProviderId,
 			serviceLevelToken = serviceLevelToken
 		)
 		return shipmentsRemoteStore.createShipmentLabel(createShipmentLabelDto)

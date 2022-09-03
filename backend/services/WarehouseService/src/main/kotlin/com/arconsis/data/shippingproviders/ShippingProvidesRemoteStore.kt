@@ -1,4 +1,4 @@
-package com.arconsis.data.shipmentproviders
+package com.arconsis.data.shippingproviders
 
 import io.smallrye.mutiny.Uni
 import org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders
@@ -11,13 +11,13 @@ import javax.ws.rs.core.Response
 @ApplicationScoped
 @RegisterRestClient(configKey = "shippo")
 @Produces(MediaType.APPLICATION_JSON)
-@RegisterClientHeaders(ShipmentProvidersRemoteStoreHeadersFactory::class)
-interface ShipmentProvidesRemoteStore {
+@RegisterClientHeaders(ShippingProvidersRemoteStoreHeadersFactory::class)
+interface ShippingProvidesRemoteStore {
 	@GET
 	@Path("rates/{providerId}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	fun getShipmentProviderRate(@PathParam("providerId") providerId: String): Uni<Response>
+	fun getShippingProviderRate(@PathParam("providerId") providerId: String): Uni<Response>
 
 	@GET
 	@Path("service-groups")

@@ -17,8 +17,8 @@ data class Order(
     // addresses
 	val shippingAddress: ShippingAddress,
 	val billingAddress: ShippingAddress,
-    // shipmentProvider
-	val shipmentProvider: OrderShipmentProvider
+    // shipping
+	val shippingProvider: OrderShippingProvider
 )
 
 data class Product(
@@ -67,10 +67,10 @@ enum class SupportedCurrencies {
 	USD,
 }
 
-data class OrderShipmentProvider(
+data class OrderShippingProvider(
     val name: String,
     val price: BigDecimal,
-    val externalShipmentProviderId: String,
+    val externalShippingProviderId: String,
 	val currency: SupportedCurrencies,
 	val carrierAccount: String
 )

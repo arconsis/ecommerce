@@ -3,7 +3,7 @@ package com.arconsis.domain.baskets
 import com.arconsis.domain.shippingaddresses.ShippingAddress
 import com.arconsis.domain.orders.OrderPaymentMethod
 import com.arconsis.domain.orders.OrderPrices
-import com.arconsis.domain.orders.OrderShipmentProvider
+import com.arconsis.domain.orders.OrderShippingProvider
 import com.arconsis.domain.orders.SupportedCurrencies
 import java.math.BigDecimal
 import java.util.*
@@ -17,8 +17,8 @@ data class Basket(
 	val billingShippingAddress: ShippingAddress? = null,
 	val paymentMethod: OrderPaymentMethod? = null,
 	val isOrderable: Boolean,
-	// shipmentProvider
-	val shipmentProvider: OrderShipmentProvider?
+	// shippingProvider
+	val shippingProvider: OrderShippingProvider?
 )
 
 data class CreateBasket(

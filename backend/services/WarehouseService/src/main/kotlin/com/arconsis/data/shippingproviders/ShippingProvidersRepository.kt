@@ -1,13 +1,13 @@
-package com.arconsis.data.shipmentproviders
+package com.arconsis.data.shippingproviders
 
 import com.arconsis.common.body
 import com.arconsis.common.bodyAsString
 import com.arconsis.common.errors.abort
 import com.arconsis.common.pmap
-import com.arconsis.data.shipmentproviders.dto.*
-import com.arconsis.domain.shipmentproviders.ShipmentProvider
-import com.arconsis.domain.shipmentproviders.ShipmentProviderRate
-import com.arconsis.domain.shipmentproviders.ShipmentProvidersFailureReason
+import com.arconsis.data.shippingproviders.dto.*
+import com.arconsis.domain.shippingproviders.ShippingProvider
+import com.arconsis.domain.shippingproviders.ShippingProviderRate
+import com.arconsis.domain.shippingproviders.ShippingProvidersFailureReason
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.smallrye.mutiny.Uni
@@ -17,12 +17,12 @@ import javax.enterprise.context.ApplicationScoped
 import javax.ws.rs.BadRequestException
 
 @ApplicationScoped
-class ShipmentProvidersRepository(
-	@RestClient private val shipmentProvidesRemoteStore: ShipmentProvidesRemoteStore,
+class ShippingProvidersRepository(
+	@RestClient private val shippingProvidesRemoteStore: ShippingProvidesRemoteStore,
 	private val objectMapper: ObjectMapper
 ) {
-	suspend fun listShipmentProviders(): List<ShipmentProvider> {
-		val serviceGroupsResponse = shipmentProvidesRemoteStore.listServiceGroups().awaitSuspending()
+	suspend fun listShippingProviders(): List<ShippingProvider> {
+		val serviceGroupsResponse = shippingProvidesRemoteStore.listServiceGroups().awaitSuspending()
 		val serviceGroups = when (serviceGroupsResponse.status) {
 			in 200..299 -> {
 				objectMapper.readValue(serviceGroupsResponse.bodyAsString(), object: TypeReference<List<ServiceGroupResponseDto>>() {})
@@ -34,17 +34,17 @@ class ShipmentProvidersRepository(
 		} ?: return emptyList()
 		return serviceGroups.pmap { serviceGroup ->
 			val providerId = serviceGroup.serviceLevels[0].carrierAccount
-			val carrierAccountResponse = shipmentProvidesRemoteStore.getCarrierAccount(providerId, SERVICE_LEVEL_QUERY_PARAM)
+			val carrierAccountResponse = shippingProvidesRemoteStore.getCarrierAccount(providerId, SERVICE_LEVEL_QUERY_PARAM)
 				.awaitSuspending()
 			val carrierAccount = when (carrierAccountResponse.status) {
-				in 200..299 -> carrierAccountResponse.body<ShipmentProviderResponseDto>()!!
+				in 200..299 -> carrierAccountResponse.body<ShippingProviderResponseDto>()!!
 				else -> throw BadRequestException("Carrier account not found")
 			}
-			ShipmentProvider(
+			ShippingProvider(
 				providerId = carrierAccount.providerId,
 				name = serviceGroup.name,
 				description = serviceGroup.description,
-				rate = ShipmentProviderRate(
+				rate = ShippingProviderRate(
 					price = serviceGroup.price,
 					currency = serviceGroup.currency,
 				),
@@ -57,26 +57,26 @@ class ShipmentProvidersRepository(
 	}
 
 	fun getShipmentId(providerId: String): Uni<String?> {
-		return shipmentProvidesRemoteStore.getShipmentProviderRate(providerId).map {
+		return shippingProvidesRemoteStore.getShippingProviderRate(providerId).map {
 			when (it.status) {
-				in 200..299 -> it.body<ShipmentProviderRateResponseDto>()?.shipmentId
-				else -> abort(ShipmentProvidersFailureReason.ShipmentProviderNotFound)
+				in 200..299 -> it.body<ShippingProviderRateResponseDto>()?.shipmentId
+				else -> abort(ShippingProvidersFailureReason.ShippingProviderNotFound)
 			}
 		}
 	}
 
-	fun getShipmentProviderToken(carrierAccountId: String, carrierName: String): Uni<String?> {
-		return shipmentProvidesRemoteStore.getCarrierAccount(carrierAccountId, SERVICE_LEVEL_QUERY_PARAM)
+	fun getShippingProviderToken(carrierAccountId: String, carrierName: String): Uni<String?> {
+		return shippingProvidesRemoteStore.getCarrierAccount(carrierAccountId, SERVICE_LEVEL_QUERY_PARAM)
 			.map { response ->
 				when (response.status) {
 					in 200..299 -> {
-						response.body<ShipmentProviderResponseDto>()
+						response.body<ShippingProviderResponseDto>()
 							?.serviceLevels
 							?.firstOrNull { it.carrierName == carrierName }
 							?.token
 
 					}
-					else -> abort(ShipmentProvidersFailureReason.ShipmentProviderNotFound)
+					else -> abort(ShippingProvidersFailureReason.ShippingProviderNotFound)
 				}
 			}
 	}

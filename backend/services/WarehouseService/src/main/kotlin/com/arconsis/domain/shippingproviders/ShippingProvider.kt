@@ -1,11 +1,11 @@
-package com.arconsis.domain.shipmentproviders
+package com.arconsis.domain.shippingproviders
 
 import com.arconsis.domain.orders.SupportedCurrencies
 
-data class ShipmentProvider(
+data class ShippingProvider(
 	val providerId: String,
 	val name: String,
-	val rate: ShipmentProviderRate,
+	val rate: ShippingProviderRate,
 	val carrier: String,
 	val carrierName: String,
 	val carrierImage: String,
@@ -13,7 +13,7 @@ data class ShipmentProvider(
 	val description: String
 )
 
-data class ShipmentProviderRate(
+data class ShippingProviderRate(
 	val price: String,
 	val currency: SupportedCurrencies,
 )

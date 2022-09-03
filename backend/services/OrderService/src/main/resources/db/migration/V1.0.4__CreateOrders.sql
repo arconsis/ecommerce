@@ -26,9 +26,9 @@ CREATE TABLE orders
     product_price                 NUMERIC              NOT NULL,
     price_before_tax              NUMERIC              NOT NULL,
     tax                           VARCHAR              NOT NULL,
-    external_shipment_provider_id VARCHAR              NOT NULL,
+    external_shipping_provider_id VARCHAR              NOT NULL,
     carrier_account               VARCHAR              NOT NULL,
-    shipment_provider_name        VARCHAR              NOT NULL,
+    shipping_provider_name        VARCHAR              NOT NULL,
     currency                      supported_currencies NOT NULL,
     created_at                    TIMESTAMP,
     updated_at                    TIMESTAMP

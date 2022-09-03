@@ -22,7 +22,7 @@ data class Shipment(
 	val shipmentId: UUID,
 	val externalShipmentId: String?,
 	val shipmentFailureReason: String?,
-	val externalShipmentProviderId: String,
+	val externalShippingProviderId: String,
 	val externalShipmentLabelId: String?,
 	val providerName: String,
 	val price: BigDecimal,
@@ -37,7 +37,7 @@ class UpdateShipment(val shipmentId: UUID, val status: ShipmentStatus)
 data class CreateShipment(
 	val orderId: UUID,
 	val externalShipmentId: String?,
-	val externalShipmentProviderId: String,
+	val externalShippingProviderId: String,
 	val externalShipmentLabelId: String?,
 	val shipmentFailureReason: String?,
 	val providerName: String,

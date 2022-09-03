@@ -70,11 +70,11 @@ class OrderEntity(
     @Type(type = "pgsql_enum")
     var currency: SupportedCurrencies,
 
-    @Column(name = "shipment_provider_name", nullable = false)
-    var shipmentProviderName: String,
+    @Column(name = "shipping_provider_name", nullable = false)
+    var shippingProviderName: String,
 
-    @Column(name = "external_shipment_provider_id", nullable = false)
-    var externalShipmentProviderId: String,
+    @Column(name = "external_shipping_provider_id", nullable = false)
+    var externalShippingProviderId: String,
 
     @Column(name = "carrier_account", nullable = false)
     var carrierAccount: String,
@@ -122,9 +122,9 @@ fun OrderEntity.toOrder() = Order(
     paymentMethod = OrderPaymentMethod(pspToken = pspToken, paymentMethodType = paymentMethodType),
     shippingAddress = basket.shippingAddressEntities.find { it.isSelected }!!.toAddress(),
     billingAddress = basket.shippingAddressEntities.find { it.isBilling }!!.toAddress(),
-    shipmentProvider = OrderShipmentProvider(
-        name = shipmentProviderName,
-        externalShipmentProviderId = externalShipmentProviderId,
+    shippingProvider = OrderShippingProvider(
+        name = shippingProviderName,
+        externalShippingProviderId = externalShippingProviderId,
         price = shippingPrice,
         currency = currency,
         carrierAccount = carrierAccount
@@ -144,7 +144,7 @@ fun CreateOrder.toOrderEntity(status: OrderStatus, basket: BasketEntity) = Order
     basket = basket,
     paymentMethodType = paymentMethodType,
     pspToken = pspToken,
-    externalShipmentProviderId = basket.externalShipmentProviderId!!,
-    shipmentProviderName = basket.shipmentProviderName!!,
+    externalShippingProviderId = basket.externalShippingProviderId!!,
+    shippingProviderName = basket.shippingProviderName!!,
     carrierAccount = basket.carrierAccount!!
 )
