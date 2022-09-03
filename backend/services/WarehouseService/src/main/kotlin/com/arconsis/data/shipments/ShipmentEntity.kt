@@ -48,10 +48,10 @@ class ShipmentEntity(
     @Column(name = "shipment_failure_reason", nullable = true)
     var shipmentFailureReason: String?,
 
-    @Column(name = "external_shipment_provider_id", nullable = false)
-    var externalShipmentProviderId: String,
+    @Column(name = "external_shipping_provider_id", nullable = false)
+    var externalShippingProviderId: String,
 
-    @Column(name = "shipment_provider_name", nullable = false)
+    @Column(name = "shipping_provider_name", nullable = false)
     var providerName: String,
 
     @Column(name = "external_shipment_label_id", nullable = true, unique = true)
@@ -97,7 +97,7 @@ fun ShipmentEntity.toShipment() = Shipment(
     userId = userId,
     externalShipmentId = externalShipmentId,
     shipmentFailureReason = shipmentFailureReason,
-    externalShipmentProviderId = externalShipmentProviderId,
+    externalShippingProviderId = externalShippingProviderId,
     externalShipmentLabelId = externalShipmentLabelId,
     price = price,
     currency = currency,
@@ -107,7 +107,7 @@ fun ShipmentEntity.toShipment() = Shipment(
 fun CreateShipment.toShipmentEntity(status: ShipmentStatus) = ShipmentEntity(
     orderId = orderId,
     externalShipmentId = externalShipmentId,
-    externalShipmentProviderId = externalShipmentProviderId,
+    externalShippingProviderId = externalShippingProviderId,
     externalShipmentLabelId = externalShipmentLabelId,
     price = price,
     currency = currency,

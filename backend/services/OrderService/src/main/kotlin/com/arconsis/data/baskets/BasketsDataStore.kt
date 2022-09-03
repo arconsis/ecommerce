@@ -54,10 +54,10 @@ class BasketsDataStore {
 		newShippingProvider: AddShippingProviderDto,
 		session: Mutiny.Session
 	): Uni<Boolean> {
-		return session.createNamedQuery<BasketEntity>(BasketEntity.UPDATE_BASKET_SHIPMENT_PROVIDER)
-			.setParameter("externalShipmentProviderId", newShippingProvider.providerId)
+		return session.createNamedQuery<BasketEntity>(BasketEntity.UPDATE_BASKET_SHIPPING_PROVIDER)
+			.setParameter("externalShippingProviderId", newShippingProvider.providerId)
 			.setParameter("carrierAccount", newShippingProvider.carrierAccount)
-			.setParameter("shipmentProviderName", newShippingProvider.name)
+			.setParameter("shippingProviderName", newShippingProvider.name)
 			.setParameter("shippingPrice", newShippingProvider.price)
 			.setParameter("basketId", basketId)
 			.executeUpdate()

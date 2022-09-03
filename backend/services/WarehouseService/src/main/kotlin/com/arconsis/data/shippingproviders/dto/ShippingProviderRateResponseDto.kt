@@ -1,9 +1,9 @@
-package com.arconsis.data.shipmentproviders.dto
+package com.arconsis.data.shippingproviders.dto
 
 import com.arconsis.domain.orders.SupportedCurrencies
 import com.fasterxml.jackson.annotation.JsonProperty
 
-data class ShipmentProviderRateResponseDto(
+data class ShippingProviderRateResponseDto(
 	@JsonProperty("object_id") val providerId: String,
 	@JsonProperty("amount") val price: String,
 	@JsonProperty("currency") val currency: SupportedCurrencies,

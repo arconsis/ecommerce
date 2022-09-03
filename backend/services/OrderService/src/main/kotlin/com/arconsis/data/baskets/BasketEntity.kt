@@ -8,7 +8,7 @@ import com.arconsis.data.basketitems.BasketItemEntity
 import com.arconsis.data.basketitems.toBasketItem
 import com.arconsis.data.baskets.BasketEntity.Companion.GET_BY_BASKET_ID
 import com.arconsis.data.baskets.BasketEntity.Companion.UPDATE_BASKET_PAYMENT_METHOD
-import com.arconsis.data.baskets.BasketEntity.Companion.UPDATE_BASKET_SHIPMENT_PROVIDER
+import com.arconsis.data.baskets.BasketEntity.Companion.UPDATE_BASKET_SHIPPING_PROVIDER
 import com.arconsis.data.orders.OrderEntity
 import com.arconsis.domain.baskets.Basket
 import com.arconsis.domain.baskets.CreateBasket
@@ -40,10 +40,10 @@ import javax.persistence.NamedQuery
         """
 	),
 	NamedQuery(
-		name = UPDATE_BASKET_SHIPMENT_PROVIDER,
+		name = UPDATE_BASKET_SHIPPING_PROVIDER,
 		query = """
             update baskets b
-            set b.shipmentProviderName = :shipmentProviderName, b.externalShipmentProviderId = :externalShipmentProviderId, b.shippingPrice = :shippingPrice, b.carrierAccount = :carrierAccount, b.totalPrice = :shippingPrice + b.totalPrice
+            set b.shippingProviderName = :shippingProviderName, b.externalShippingProviderId = :externalShippingProviderId, b.shippingPrice = :shippingPrice, b.carrierAccount = :carrierAccount, b.totalPrice = :shippingPrice + b.totalPrice
             where b.basketId = :basketId
         """
 	),
@@ -74,11 +74,11 @@ class BasketEntity(
 	@Column(name = "product_price", nullable = false)
 	var productPrice: BigDecimal,
 
-	@Column(name = "shipment_provider_name", nullable = true)
-	var shipmentProviderName: String?,
+	@Column(name = "shipping_provider_name", nullable = true)
+	var shippingProviderName: String?,
 
-	@Column(name = "external_shipment_provider_id", nullable = true)
-	var externalShipmentProviderId: String?,
+	@Column(name = "external_shipping_provider_id", nullable = true)
+	var externalShippingProviderId: String?,
 
 	@Column(name = "carrier_account", nullable = true)
 	var carrierAccount: String?,
@@ -121,7 +121,7 @@ class BasketEntity(
 	companion object {
 		const val GET_BY_BASKET_ID = "BasketEntity.get_by_basket_id"
 		const val UPDATE_BASKET_PAYMENT_METHOD = "BasketEntity.update_basket_payment_method"
-		const val UPDATE_BASKET_SHIPMENT_PROVIDER = "BasketEntity.update_basket_shipment_provider"
+		const val UPDATE_BASKET_SHIPPING_PROVIDER = "BasketEntity.update_basket_shipping_provider"
 	}
 }
 
@@ -144,11 +144,11 @@ fun BasketEntity.toBasket() = Basket(
 	shippingShippingAddress = shippingAddressEntities.find { it.isSelected }?.toAddress(),
 	billingShippingAddress = shippingAddressEntities.find { it.isBilling }?.toAddress(),
 	isOrderable = isBasketOrderable(),
-	shipmentProvider = if (shipmentProviderName != null && externalShipmentProviderId != null && carrierAccount != null) {
-		OrderShipmentProvider(
-			shipmentProviderName!!,
+	shippingProvider = if (shippingProviderName != null && externalShippingProviderId != null && carrierAccount != null) {
+		OrderShippingProvider(
+			shippingProviderName!!,
 			shippingPrice,
-			externalShipmentProviderId!!,
+			externalShippingProviderId!!,
 			currency,
 			carrierAccount!!
 		)
@@ -159,7 +159,7 @@ fun BasketEntity.isBasketOrderable(): Boolean = shippingAddressEntities.find { i
 		&& shippingAddressEntities.find { it.isBilling } != null
 		&& pspToken != null
 		&& paymentMethodType != null
-		&& externalShipmentProviderId != null
+		&& externalShippingProviderId != null
 		&& carrierAccount != null
 
 fun CreateBasket.toBasketEntity() = BasketEntity(
@@ -170,8 +170,8 @@ fun CreateBasket.toBasketEntity() = BasketEntity(
 	currency = currency,
 	productPrice = productPrice,
 	shippingPrice = shippingPrice,
-	externalShipmentProviderId = null,
-	shipmentProviderName = null,
+	externalShippingProviderId = null,
+	shippingProviderName = null,
 	carrierAccount = null
 )
 

@@ -9,7 +9,7 @@ data class Shipment(
 	val shipmentId: UUID,
 	val externalShipmentId: String?,
 	val shipmentFailureReason: String?,
-	val externalShipmentProviderId: String,
+	val externalShippingProviderId: String,
 	val externalShipmentLabelId: String?,
 	val providerName: String,
 	val price: BigDecimal,

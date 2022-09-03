@@ -1,4 +1,4 @@
-package com.arconsis.data.shipmentproviders.dto
+package com.arconsis.data.shippingproviders.dto
 
 import com.arconsis.domain.orders.SupportedCurrencies
 import com.fasterxml.jackson.annotation.JsonProperty

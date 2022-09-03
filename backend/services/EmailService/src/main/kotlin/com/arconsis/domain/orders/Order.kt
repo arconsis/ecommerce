@@ -14,8 +14,8 @@ data class Order(
     // addresses
     val shippingAddress: Address,
     val billingAddress: Address,
-    // shipmentProvider
-    val shipmentProvider: OrderShipmentProvider
+    // shippingProvider
+    val shippingProvider: OrderShippingProvider
 )
 
 enum class OrderStatus {
@@ -44,10 +44,10 @@ data class OrderPrices (
     val currency: SupportedCurrencies,
 )
 
-data class OrderShipmentProvider(
+data class OrderShippingProvider(
     val name: String,
     val price: BigDecimal,
-    val externalShipmentProviderId: String,
+    val externalShippingProviderId: String,
     val currency: SupportedCurrencies,
     val carrierAccount: String
 )
