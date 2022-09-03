@@ -1,5 +1,6 @@
 package com.arconsis.domain.orders
 
+import com.arconsis.common.errors.abort
 import com.arconsis.data.common.asPair
 import com.arconsis.data.common.toUni
 import com.arconsis.data.inventory.InventoryRepository
@@ -12,6 +13,7 @@ import com.arconsis.domain.ordersvalidations.OrderValidation
 import com.arconsis.domain.ordersvalidations.OrderValidationStatus
 import com.arconsis.domain.ordersvalidations.toCreateOutboxEvent
 import com.arconsis.domain.processedevents.ProcessedEvent
+import com.arconsis.domain.shipmentproviders.ShipmentProvidersFailureReason
 import com.arconsis.domain.shipments.*
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.smallrye.mutiny.Uni
@@ -21,7 +23,7 @@ import org.jboss.logging.Logger
 import java.time.Instant
 import java.util.*
 import javax.enterprise.context.ApplicationScoped
-
+import javax.ws.rs.BadRequestException
 
 @ApplicationScoped
 class OrdersService(
@@ -30,9 +32,9 @@ class OrdersService(
 	private val shipmentLabelsRepository: ShipmentLabelsRepository,
 	private val inventoryRepository: InventoryRepository,
 	private val outboxEventsRepository: OutboxEventsRepository,
+	private val processedEventsRepository: ProcessedEventsRepository,
 	private val sessionFactory: Mutiny.SessionFactory,
 	private val objectMapper: ObjectMapper,
-	private val processedEventsRepository: ProcessedEventsRepository,
 	private val logger: Logger
 ) {
 	fun handleOrderEvents(eventId: UUID, order: Order): Uni<Void> {
@@ -74,18 +76,23 @@ class OrdersService(
 			)
 			processedEventsRepository.createEvent(proceedEvent, session)
 				.flatMap {
-					shipmentProvidersRepository.getShipmentProvider(order.shipmentProvider.externalShipmentProviderId)
+					shipmentLabelsRepository.createShipmentLabel(
+						deliveryAddress = order.shippingAddress,
+						externalShipmentProviderId = order.shipmentProvider.externalShipmentProviderId,
+						serviceLevelToken = order.shipmentProvider.carrierAccount,
+						orderId = order.orderId
+					)
 				}
-				.flatMap { provider ->
+				.flatMap { (shipmentLabelId, rateId) ->
+					if (rateId == null) {
+						abort(ShipmentProvidersFailureReason.ShipmentProviderNotFound)
+					}
 					Uni.combine().all().unis(
-						shipmentLabelsRepository.createShipmentLabel(
-							order.shipmentProvider.externalShipmentProviderId,
-							order.orderId
-						),
-						provider.toUni()
+						shipmentLabelId.toUni(),
+						shipmentProvidersRepository.getShipmentId(rateId),
 					).asPair()
 				}
-				.flatMap { (shipmentLabelId, provider) ->
+				.flatMap { (shipmentLabelId, externalShipmentId) ->
 					val createShipment = if (shipmentLabelId != null) {
 						CreateShipment(
 							orderId = order.orderId,
@@ -93,7 +100,7 @@ class OrdersService(
 							status = ShipmentStatus.PREPARING_SHIPMENT,
 							providerName = order.shipmentProvider.name,
 							externalShipmentProviderId = order.shipmentProvider.externalShipmentProviderId,
-							externalShipmentId = provider.providerId,
+							externalShipmentId = externalShipmentId,
 							externalShipmentLabelId = shipmentLabelId,
 							price = order.prices.shippingPrice,
 							currency = order.prices.currency,
@@ -107,7 +114,7 @@ class OrdersService(
 							status = ShipmentStatus.PREPARING_SHIPMENT,
 							providerName = order.shipmentProvider.name,
 							externalShipmentProviderId = order.shipmentProvider.externalShipmentProviderId,
-							externalShipmentId = provider.providerId,
+							externalShipmentId = externalShipmentId,
 							externalShipmentLabelId = null,
 							price = order.prices.shippingPrice,
 							currency = order.prices.currency,

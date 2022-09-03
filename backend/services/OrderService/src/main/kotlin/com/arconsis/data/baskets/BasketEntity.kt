@@ -43,7 +43,7 @@ import javax.persistence.NamedQuery
 		name = UPDATE_BASKET_SHIPMENT_PROVIDER,
 		query = """
             update baskets b
-            set b.shipmentProviderName = :shipmentProviderName, b.externalShipmentProviderId = :externalShipmentProviderId, b.shippingPrice = :shippingPrice, b.totalPrice = :shippingPrice + b.totalPrice
+            set b.shipmentProviderName = :shipmentProviderName, b.externalShipmentProviderId = :externalShipmentProviderId, b.shippingPrice = :shippingPrice, b.carrierAccount = :carrierAccount, b.totalPrice = :shippingPrice + b.totalPrice
             where b.basketId = :basketId
         """
 	),
@@ -79,6 +79,9 @@ class BasketEntity(
 
 	@Column(name = "external_shipment_provider_id", nullable = true)
 	var externalShipmentProviderId: String?,
+
+	@Column(name = "carrier_account", nullable = true)
+	var carrierAccount: String?,
 
 	@Column(nullable = false)
 	var tax: String,
@@ -141,8 +144,14 @@ fun BasketEntity.toBasket() = Basket(
 	shippingShippingAddress = shippingAddressEntities.find { it.isSelected }?.toAddress(),
 	billingShippingAddress = shippingAddressEntities.find { it.isBilling }?.toAddress(),
 	isOrderable = isBasketOrderable(),
-	shipmentProvider = if (shipmentProviderName != null && externalShipmentProviderId != null) {
-		OrderShipmentProvider(shipmentProviderName!!, shippingPrice, externalShipmentProviderId!!, currency)
+	shipmentProvider = if (shipmentProviderName != null && externalShipmentProviderId != null && carrierAccount != null) {
+		OrderShipmentProvider(
+			shipmentProviderName!!,
+			shippingPrice,
+			externalShipmentProviderId!!,
+			currency,
+			carrierAccount!!
+		)
 	} else null
 )
 
@@ -151,6 +160,7 @@ fun BasketEntity.isBasketOrderable(): Boolean = shippingAddressEntities.find { i
 		&& pspToken != null
 		&& paymentMethodType != null
 		&& externalShipmentProviderId != null
+		&& carrierAccount != null
 
 fun CreateBasket.toBasketEntity() = BasketEntity(
 	userId = userId,
@@ -161,6 +171,7 @@ fun CreateBasket.toBasketEntity() = BasketEntity(
 	productPrice = productPrice,
 	shippingPrice = shippingPrice,
 	externalShipmentProviderId = null,
-	shipmentProviderName = null
+	shipmentProviderName = null,
+	carrierAccount = null
 )
 

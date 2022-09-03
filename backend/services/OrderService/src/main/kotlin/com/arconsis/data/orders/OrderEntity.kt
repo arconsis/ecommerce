@@ -76,6 +76,9 @@ class OrderEntity(
     @Column(name = "external_shipment_provider_id", nullable = false)
     var externalShipmentProviderId: String,
 
+    @Column(name = "carrier_account", nullable = false)
+    var carrierAccount: String,
+
     @Column(name = "psp_token", nullable = false, unique = true)
     var pspToken: String,
 
@@ -116,16 +119,15 @@ fun OrderEntity.toOrder() = Order(
     ),
     status = status,
     items = basket.itemEntities.map { it.toBasketItem().toOrderItem(orderId!!) },
-//    checkoutSessionId = checkoutSessionId,
-//    checkoutUrl = checkoutUrl,
     paymentMethod = OrderPaymentMethod(pspToken = pspToken, paymentMethodType = paymentMethodType),
-    shippingShippingAddress = basket.shippingAddressEntities.find { it.isSelected }?.toAddress(),
-    billingShippingAddress = basket.shippingAddressEntities.find { it.isBilling }?.toAddress(),
+    shippingAddress = basket.shippingAddressEntities.find { it.isSelected }!!.toAddress(),
+    billingAddress = basket.shippingAddressEntities.find { it.isBilling }!!.toAddress(),
     shipmentProvider = OrderShipmentProvider(
         name = shipmentProviderName,
         externalShipmentProviderId = externalShipmentProviderId,
         price = shippingPrice,
-        currency = currency
+        currency = currency,
+        carrierAccount = carrierAccount
     )
 )
 
@@ -143,5 +145,6 @@ fun CreateOrder.toOrderEntity(status: OrderStatus, basket: BasketEntity) = Order
     paymentMethodType = paymentMethodType,
     pspToken = pspToken,
     externalShipmentProviderId = basket.externalShipmentProviderId!!,
-    shipmentProviderName = basket.shipmentProviderName!!
+    shipmentProviderName = basket.shipmentProviderName!!,
+    carrierAccount = basket.carrierAccount!!
 )

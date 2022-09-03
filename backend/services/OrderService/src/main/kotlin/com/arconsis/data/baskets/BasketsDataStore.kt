@@ -56,6 +56,7 @@ class BasketsDataStore {
 	): Uni<Boolean> {
 		return session.createNamedQuery<BasketEntity>(BasketEntity.UPDATE_BASKET_SHIPMENT_PROVIDER)
 			.setParameter("externalShipmentProviderId", newShippingProvider.providerId)
+			.setParameter("carrierAccount", newShippingProvider.carrierAccount)
 			.setParameter("shipmentProviderName", newShippingProvider.name)
 			.setParameter("shippingPrice", newShippingProvider.price)
 			.setParameter("basketId", basketId)

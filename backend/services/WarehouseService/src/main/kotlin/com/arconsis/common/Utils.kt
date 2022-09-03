@@ -1,6 +1,9 @@
 package com.arconsis.common
 
 import io.smallrye.mutiny.Uni
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import java.time.Duration
 import javax.ws.rs.core.MultivaluedMap
 import javax.ws.rs.core.Response
@@ -33,4 +36,15 @@ fun Response.bodyAsString(): String? = try {
 	readEntity(String::class.java)
 } catch (e: Exception) {
 	null
+}
+
+suspend fun <A, B> Iterable<A>.pmap(chunkSize: Int = 24, f: suspend (A) -> B): List<B> {
+	val batches = this.chunked(chunkSize)
+	return coroutineScope {
+		batches.flatMap{ deferredList ->
+			deferredList.map {
+				async { f(it) }
+			}.awaitAll()
+		}
+	}
 }

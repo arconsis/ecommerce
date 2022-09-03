@@ -1,4 +1,4 @@
-package com.arconsis.presentation.http.shipments.dto
+package com.arconsis.presentation.http.shipments.request.dto
 
 import javax.validation.constraints.NotBlank
 import javax.validation.constraints.NotNull

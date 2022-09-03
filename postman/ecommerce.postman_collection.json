@@ -101,7 +101,7 @@
                 "header": [],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n    \"providerId\": \"c0cf08e8c3e94ca8be7de0b58f981811\",\n    \"price\": \"7.54\",\n    \"name\": \"USPS\",\n    \"currency\": \"USD\"\n}\n",
+                  "raw": "{\n    \"providerId\": \"542c6a2419b5486181cfac4b45672fe4\",\n    \"carrierAccount\": \"usps_parcel_select\",\n    \"price\": \"7\",\n    \"name\": \"USPS\",\n    \"currency\": \"USD\"\n}\n",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -109,13 +109,13 @@
                   }
                 },
                 "url": {
-                  "raw": "{{orders-host}}/baskets/990441a9-127d-45cf-ad12-620612224aab/shipping_provider",
+                  "raw": "{{orders-host}}/baskets/883af300-cb2c-42fa-8991-4e5aceae2a8e/shipping_provider",
                   "host": [
                     "{{orders-host}}"
                   ],
                   "path": [
                     "baskets",
-                    "990441a9-127d-45cf-ad12-620612224aab",
+                    "883af300-cb2c-42fa-8991-4e5aceae2a8e",
                     "shipping_provider"
                   ]
                 }
@@ -315,7 +315,7 @@
                 "header": [],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n    \"firstName\": \"Dimos\",\n    \"lastName\": \"Botsaris\",\n    \"address\": \"Clayton St.\",\n    \"houseNumber\": \"9\",\n    \"countryCode\": \"US\",\n    \"postalCode\": \"94117\",\n    \"city\": \"San Francisco\",\n    \"phone\": \"+306991001001\",\n    \"state\": \"CA\"\n}",
+                  "raw": "{\n    \"firstName\": \"Dimos\",\n    \"lastName\": \"Botsaris\",\n    \"address\": \"Clayton St.\",\n    \"houseNumber\": \"9\",\n    \"countryCode\": \"US\",\n    \"postalCode\": \"94117-1163\",\n    \"city\": \"San Francisco\",\n    \"phone\": \"+306991001001\",\n    \"state\": \"CA\"\n}",
                   "options": {
                     "raw": {
                       "language": "json"
