@@ -15,8 +15,8 @@ data class Order(
     // psp ref
 	val paymentMethod: OrderPaymentMethod,
     // addresses
-	val shippingAddress: ShippingAddress? = null,
-	val billingShippingAddress: ShippingAddress? = null,
+	val shippingAddress: ShippingAddress,
+	val billingAddress: ShippingAddress,
     // shipmentProvider
 	val shipmentProvider: OrderShipmentProvider
 )
@@ -71,7 +71,8 @@ data class OrderShipmentProvider(
     val name: String,
     val price: BigDecimal,
     val externalShipmentProviderId: String,
-	val currency: SupportedCurrencies
+	val currency: SupportedCurrencies,
+	val carrierAccount: String
 )
 
 class OrdersDeserializer : ObjectMapperDeserializer<Order>(Order::class.java)

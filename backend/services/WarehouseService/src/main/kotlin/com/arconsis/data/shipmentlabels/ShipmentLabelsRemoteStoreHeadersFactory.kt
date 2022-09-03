@@ -1,4 +1,4 @@
-package com.arconsis.data.shipments
+package com.arconsis.data.shipmentlabels
 
 import com.arconsis.common.addHeader
 import org.eclipse.microprofile.config.inject.ConfigProperty

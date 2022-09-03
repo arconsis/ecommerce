@@ -1,4 +1,4 @@
-package com.arconsis.data.shipmentproviders.dto
+package com.arconsis.data.shipmentlabels.dto.request
 
 import com.fasterxml.jackson.annotation.JsonProperty
 

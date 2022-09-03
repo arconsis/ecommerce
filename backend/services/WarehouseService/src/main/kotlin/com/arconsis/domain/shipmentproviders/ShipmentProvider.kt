@@ -4,10 +4,16 @@ import com.arconsis.domain.orders.SupportedCurrencies
 
 data class ShipmentProvider(
 	val providerId: String,
-	val externalShipmentId: String,
+	val name: String,
+	val rate: ShipmentProviderRate,
+	val carrier: String,
+	val carrierName: String,
+	val carrierImage: String,
+	val carrierAccount: String,
+	val description: String
+)
+
+data class ShipmentProviderRate(
 	val price: String,
 	val currency: SupportedCurrencies,
-	val name: String,
-	val image: String,
-	val carrierAccount: String
 )

@@ -8,6 +8,8 @@ data class AddShippingProviderDto(
 	@field:NotBlank
 	val providerId: String,
 	@field:NotBlank
+	val carrierAccount: String,
+	@field:NotBlank
 	val price: BigDecimal,
 	@field:NotBlank
 	val name: String,

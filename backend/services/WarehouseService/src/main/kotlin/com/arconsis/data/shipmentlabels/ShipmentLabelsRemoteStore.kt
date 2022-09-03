@@ -1,5 +1,6 @@
-package com.arconsis.data.shipments
+package com.arconsis.data.shipmentlabels
 
+import com.arconsis.data.shipmentlabels.dto.request.CreateShipmentLabelDto
 import io.smallrye.mutiny.Uni
 import org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient
@@ -15,11 +16,9 @@ import javax.ws.rs.core.Response
 interface ShipmentLabelsRemoteStore {
 	@POST
 	@Path("transactions")
-	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	fun createShipmentLabel(
-		@FormParam("rate") providerId: String,
-		@FormParam("label_file_type") labelFileType: String,
-		@FormParam("async") async: String,
+		createShipmentLabelDto: CreateShipmentLabelDto,
 	): Uni<Response>
 }
