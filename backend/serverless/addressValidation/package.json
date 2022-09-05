@@ -1,0 +1,33 @@
+{
+  "name": "addressvalidation",
+  "version": "1.0.0",
+  "description": "Lambda used to validate user address",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc && cd ../ && sam build AddressValidation --no-cached",
+    "watch": "tsc -w",
+    "invokeLocal": "tsc && cd ../ && sam build AddressValidation --no-cached && sam local invoke AddressValidation --env-vars ./addressValidation/.local.env.json -e ./addressValidation/event.json",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Dimos Botsaris <botsaris.d@gmail.com>",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.27.2",
+    "dotenv": "^16.0.2",
+    "moment": "^2.29.4"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.102",
+    "@types/dotenv": "^8.2.0",
+    "@types/node": "^17.0.8",
+    "@typescript-eslint/eslint-plugin": "^5.9.1",
+    "@typescript-eslint/parser": "^5.9.1",
+    "aws-sdk": "^2.1189.0",
+    "eslint": "^8.6.0",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-config-airbnb-typescript": "^16.1.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "ts-node": "^10.4.0",
+    "typescript": "^4.5.4"
+  }
+}
