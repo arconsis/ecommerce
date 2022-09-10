@@ -1,4 +1,4 @@
-package com.arconsis.presentation.http.products.dto
+package com.arconsis.presentation.http.products.dto.request
 
 import com.arconsis.domain.orders.SupportedCurrencies
 import com.arconsis.domain.products.CreateProduct

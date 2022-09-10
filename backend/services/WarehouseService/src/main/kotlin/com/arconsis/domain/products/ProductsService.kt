@@ -18,6 +18,10 @@ class ProductsService(
 	private val inventoryRepository: InventoryRepository,
 	private val sessionFactory: Mutiny.SessionFactory,
 ) {
+	fun listProducts(offset: Int, limit: Int, search: String?): Uni<Pair<List<Product>, Int>> {
+		return productsRepository.listProducts(offset, limit, search)
+	}
+
 	fun getProduct(productId: UUID): Uni<Product?> {
 		return sessionFactory.withTransaction { session, _ ->
 			productsRepository.getProduct(productId, session)
