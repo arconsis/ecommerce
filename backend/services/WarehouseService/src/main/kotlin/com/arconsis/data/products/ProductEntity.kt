@@ -19,6 +19,11 @@ import javax.persistence.*
             select p from products p
 			where p.productId = :productId
         """
+	),
+	NamedQuery(
+		name = ProductEntity.LIST_COUNT,
+		query = """ select count (p.id) from  products p
+        """
 	)
 )
 @Entity(name = "products")
@@ -70,6 +75,7 @@ class ProductEntity(
 ) {
 	companion object {
 		const val GET_BY_PRODUCT_ID = "ProductEntity.get_by_product_id"
+		const val LIST_COUNT = "ProductEntity.list_count"
 	}
 }
 

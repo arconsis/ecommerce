@@ -247,6 +247,41 @@
               "response": []
             },
             {
+              "name": "List products",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"thumbnail\": \"https://pickbazarlaravel.s3.ap-southeast-1.amazonaws.com/5/conversions/CelerySticks-thumbnail.jpg\",\n    \"name\": \"Celery Stick\",\n    \"description\": \"celery stick - celery stalks cut into small sticks. crudites - raw vegetables cut into bite-sized strips and served with a dip. celery - stalks eaten raw or cooked or used as seasoning.\",\n    \"price\": \"6\",\n    \"currency\": \"USD\",\n    \"dimensions\": {\n        \"size\": {\n            \"height\": null,\n            \"width\":  null,\n            \"length\": null,\n            \"unit\": null\n        },\n        \"weight\": {\n            \"value\": 1,\n            \"unit\": \"lb\"\n        }\n    },\n    \"tags\": \"#fruit\",\n    \"quantityInStock\": 51\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{warehouse-host}}/products?search=name:cle",
+                  "host": [
+                    "{{warehouse-host}}"
+                  ],
+                  "path": [
+                    "products"
+                  ],
+                  "query": [
+                    {
+                      "key": "search",
+                      "value": "name:cle"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
               "name": "Get product",
               "protocolProfileBehavior": {
                 "disableBodyPruning": true
