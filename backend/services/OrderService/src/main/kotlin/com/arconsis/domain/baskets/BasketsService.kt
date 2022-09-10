@@ -44,9 +44,11 @@ class BasketsService(
 									price = product.price,
 									currency = product.currency,
 									quantity = item.quantity,
-									productName = product.productName,
+									name = product.name,
 									description = product.description,
-									thumbnail = product.thumbnail
+									thumbnail = product.thumbnail,
+									slug = product.slug,
+									sku = product.sku
 								)
 							}
 					}

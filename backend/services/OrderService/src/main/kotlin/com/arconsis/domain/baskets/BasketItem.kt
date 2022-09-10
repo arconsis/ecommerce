@@ -10,7 +10,7 @@ data class BasketItem(
 	val basketId: UUID,
 	val productId: UUID,
 	val thumbnail: String,
-	val productName: String,
+	val name: String,
 	val description: String,
 	val currency: SupportedCurrencies,
 	val price: BigDecimal,
@@ -20,7 +20,9 @@ data class BasketItem(
 data class CreateBasketItem(
 	val productId: UUID,
 	val thumbnail: String,
-	val productName: String,
+	val name: String,
+	val slug: String,
+	val sku: String,
 	val description: String,
 	val currency: SupportedCurrencies,
 	val price: BigDecimal,
@@ -34,6 +36,6 @@ fun BasketItem.toOrderItem(orderId: UUID) = OrderItem(
 	price = price,
 	currency = currency,
 	quantity = quantity,
-	productName = productName,
+	name = name,
 	thumbnail = thumbnail
 )
