@@ -227,7 +227,7 @@
                 "header": [],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n    \"thumbnail\": \"https://images.unsplash.com/photo-1505740420928-5e560c06d30e?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8M3x8cHJvZHVjdHxlbnwwfHwwfHw%3D&w=1000&q=80\",\n    \"productName\": \"productName9\",\n    \"description\": \"description9\",\n    \"price\": \"50\",\n    \"currency\": \"USD\",\n    \"size\": \"32\",\n    \"category\": \"shoes\"\n}",
+                  "raw": "{\n    \"thumbnail\": \"https://pickbazarlaravel.s3.ap-southeast-1.amazonaws.com/5/conversions/CelerySticks-thumbnail.jpg\",\n    \"name\": \"Celery Stick\",\n    \"description\": \"celery stick - celery stalks cut into small sticks. crudites - raw vegetables cut into bite-sized strips and served with a dip. celery - stalks eaten raw or cooked or used as seasoning.\",\n    \"price\": \"6\",\n    \"currency\": \"USD\",\n    \"dimensions\": {\n        \"size\": {\n            \"height\": null,\n            \"width\":  null,\n            \"length\": null,\n            \"unit\": null\n        },\n        \"weight\": {\n            \"value\": 1,\n            \"unit\": \"lb\"\n        }\n    },\n    \"tags\": \"#fruit\",\n    \"quantityInStock\": 51\n}",
                   "options": {
                     "raw": {
                       "language": "json"

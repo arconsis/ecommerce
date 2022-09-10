@@ -13,7 +13,7 @@ class ProductsRepository(val productsDataStore: ProductsDataStore) {
 		return productsDataStore.getProduct(productId, session)
 	}
 
-	fun createProduct(newProduct: CreateProduct, session: Mutiny.Session): Uni<Product> {
-		return productsDataStore.createProduct(newProduct, session)
+	fun createProduct(newProduct: CreateProduct, slug: String, sku: String, session: Mutiny.Session): Uni<Product> {
+		return productsDataStore.createProduct(newProduct, slug, sku, session)
 	}
 }

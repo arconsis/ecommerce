@@ -44,8 +44,8 @@ class BasketItemEntity(
 	@Column(nullable = false)
 	var thumbnail: String,
 
-	@Column(name = "product_name", nullable = false)
-	var productName: String,
+	@Column(name = "name", nullable = false)
+	var name: String,
 
 	@Column(nullable = false)
 	var description: String,
@@ -64,7 +64,7 @@ fun BasketItemEntity.toBasketItem() = BasketItem(
 	basketId = basketId,
 	productId = productId,
 	thumbnail =thumbnail,
-	productName = productName,
+	name = name,
 	description = description,
 	currency = currency,
 	price = price,

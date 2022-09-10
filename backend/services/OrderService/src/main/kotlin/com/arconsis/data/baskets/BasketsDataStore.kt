@@ -24,7 +24,7 @@ class BasketsDataStore {
 						price = it.price,
 						currency = it.currency,
 						thumbnail = it.thumbnail,
-						productName = it.productName,
+						name = it.name,
 						description = it.description
 					)
 				}.toMutableList()

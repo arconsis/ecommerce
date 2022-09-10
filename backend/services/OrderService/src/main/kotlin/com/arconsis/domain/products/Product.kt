@@ -7,8 +7,10 @@ import java.util.*
 data class Product(
 	val productId: UUID,
 	val thumbnail: String,
-	val productName: String,
+	val name: String,
+	val slug: String,
+	val sku: String,
 	val description: String,
 	val currency: SupportedCurrencies,
-	val price: BigDecimal,
+	val price: BigDecimal
 )

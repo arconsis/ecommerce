@@ -48,3 +48,10 @@ suspend fun <A, B> Iterable<A>.pmap(chunkSize: Int = 24, f: suspend (A) -> B): L
 		}
 	}
 }
+
+fun String.toSlug() = toLowerCase()
+	.replace("\n", " ")
+	.replace("[^a-z\\d\\s]".toRegex(), " ")
+	.split(" ")
+	.joinToString("-")
+	.replace("-+".toRegex(), "-")

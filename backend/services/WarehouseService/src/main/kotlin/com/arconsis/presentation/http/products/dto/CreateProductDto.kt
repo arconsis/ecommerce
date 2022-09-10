@@ -2,24 +2,27 @@ package com.arconsis.presentation.http.products.dto
 
 import com.arconsis.domain.orders.SupportedCurrencies
 import com.arconsis.domain.products.CreateProduct
+import com.arconsis.domain.products.ProductDimensions
 import java.math.BigDecimal
 
 data class CreateProductDto(
 	val thumbnail: String,
-	val productName: String,
+	val name: String,
 	val description: String,
 	val price: BigDecimal,
 	val currency: SupportedCurrencies,
-	val size: String,
-	val category: String,
+	val tags: String,
+	val dimensions: ProductDimensions,
+	val quantityInStock: Int?,
 )
 
 fun CreateProductDto.toCreateProduct() = CreateProduct(
 	thumbnail = thumbnail,
-	productName = productName,
+	name = name,
 	description = description,
 	price = price,
 	currency = currency,
-	size = size,
-	category = category
+	dimensions = dimensions,
+	quantityInStock = quantityInStock,
+	tags = tags
 )
