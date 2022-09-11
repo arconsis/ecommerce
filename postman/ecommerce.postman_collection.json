@@ -123,6 +123,34 @@
               "response": []
             },
             {
+              "name": "Add basket items",
+              "request": {
+                "method": "PATCH",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "[\n        {\n            \"productId\": \"fd01c8de-22cc-4cf7-b411-c44dfbb6701e\",\n            \"quantity\": 3\n        },\n        {\n            \"productId\": \"d125def5-68b7-4ac1-9eb9-094b70315814\",\n            \"quantity\": 3\n        },\n        {\n            \"productId\": \"02970f02-1643-4568-990b-1d3927921f32\",\n            \"quantity\": 3\n        }\n    ]",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{orders-host}}/baskets/123efb79-8570-4d85-b6f6-2b5e2fd00426/items",
+                  "host": [
+                    "{{orders-host}}"
+                  ],
+                  "path": [
+                    "baskets",
+                    "123efb79-8570-4d85-b6f6-2b5e2fd00426",
+                    "items"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
               "name": "Get specific basket",
               "request": {
                 "method": "GET",

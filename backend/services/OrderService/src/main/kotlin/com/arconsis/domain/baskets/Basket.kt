@@ -11,7 +11,7 @@ import java.util.*
 data class Basket(
 	val basketId: UUID,
 	val userId: UUID,
-	val prices: OrderPrices,
+	val pricing: OrderPrices,
 	val items: List<BasketItem>,
 	val shippingShippingAddress: ShippingAddress? = null,
 	val billingShippingAddress: ShippingAddress? = null,

@@ -32,26 +32,7 @@ class BasketsService(
 					}.toList()
 				}
 				.flatMap { products ->
-					val basketItems = basketDto.items.map { item ->
-						products
-							.find { it.productId == item.productId }
-							.let { product ->
-								if (product == null) {
-									throw BadRequestException("Product with id: ${item.productId} not found")
-								}
-								CreateBasketItem(
-									productId = item.productId,
-									price = product.price,
-									currency = product.currency,
-									quantity = item.quantity,
-									name = product.name,
-									description = product.description,
-									thumbnail = product.thumbnail,
-									slug = product.slug,
-									sku = product.sku
-								)
-							}
-					}
+					val basketItems = basketDto.items.fetchDetailsFromProduct(products)
 					val newBasket = basketDto.toCreateBasket(basketItems)
 					basketsRepository.createBasket(newBasket, session)
 				}
@@ -98,5 +79,54 @@ class BasketsService(
 				}
 				.map { it }
 		}
+	}
+
+	fun addBasketItem(basketId: UUID, items: List<CreateBasketItemDto>): Uni<Basket> {
+		return sessionFactory.withTransaction { session, _ ->
+			val unis: List<Uni<Product>> = items.map { item ->
+				productsRepository.getProduct(item.productId)
+			}
+			Uni.combine()
+				.all().unis<Uni<List<Product>>>(unis).combinedWith { listOfResponses: List<*> ->
+					listOfResponses.map {
+						it as Product
+					}.toList()
+				}
+				.flatMap { products ->
+					val basketItems = items.fetchDetailsFromProduct(products)
+					basketsRepository.addBasketItem(basketId, basketItems, session)
+				}
+				.map { areStored ->
+					if (!areStored) abort(OrdersFailureReason.BasketNotFound)
+					areStored
+				}
+		}
+			.flatMap {
+				sessionFactory.withTransaction { session, _ ->
+					basketsRepository.getBasket(basketId, session)
+						.map { it }
+				}
+			}
+	}
+
+	private fun List<CreateBasketItemDto>.fetchDetailsFromProduct(products: List<Product>) = this.map { item ->
+		products
+			.find { it.productId == item.productId }
+			.let { product ->
+				if (product == null) {
+					throw BadRequestException("Product with id: ${item.productId} not found")
+				}
+				CreateBasketItem(
+					productId = item.productId,
+					price = product.price,
+					currency = product.currency,
+					quantity = item.quantity,
+					name = product.name,
+					description = product.description,
+					thumbnail = product.thumbnail,
+					slug = product.slug,
+					sku = product.sku
+				)
+			}
 	}
 }

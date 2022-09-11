@@ -12,7 +12,7 @@ data class Order(
 	val orderId: UUID,
 	val basketId: UUID,
 	val userId: UUID,
-	val prices: OrderPrices,
+	val pricing: OrderPrices,
 	val status: OrderStatus,
 	val items: List<OrderItem>,
 	// psp ref
