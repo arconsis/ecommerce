@@ -128,7 +128,7 @@ class BasketEntity(
 fun BasketEntity.toBasket() = Basket(
 	basketId = basketId!!,
 	userId = userId,
-	prices = OrderPrices(
+	pricing = OrderPrices(
 		totalPrice = totalPrice,
 		tax = tax,
 		priceBeforeTax = priceBeforeTax,

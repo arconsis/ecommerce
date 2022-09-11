@@ -2,6 +2,7 @@ package com.arconsis.data.baskets
 
 import com.arconsis.domain.baskets.Basket
 import com.arconsis.domain.baskets.CreateBasket
+import com.arconsis.domain.baskets.CreateBasketItem
 import com.arconsis.presentation.http.baskets.dto.AddPaymentMethodDto
 import com.arconsis.presentation.http.baskets.dto.AddShippingProviderDto
 import io.smallrye.mutiny.Uni
@@ -33,5 +34,13 @@ class BasketsRepository(private val basketsDataStore: BasketsDataStore) {
 		session: Mutiny.Session
 	): Uni<Boolean> {
 		return basketsDataStore.updateBasketShippingProvider(basketId, newShippingProvider, session)
+	}
+
+	fun addBasketItem(
+		basketId: UUID,
+		items: List<CreateBasketItem>,
+		session: Mutiny.Session
+	): Uni<Boolean> {
+		return basketsDataStore.addBasketItem(basketId, items, session)
 	}
 }

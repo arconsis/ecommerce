@@ -2,10 +2,7 @@ package com.arconsis.presentation.http.baskets
 
 import com.arconsis.domain.baskets.Basket
 import com.arconsis.domain.baskets.BasketsService
-import com.arconsis.presentation.http.baskets.dto.AddPaymentMethodDto
-import com.arconsis.presentation.http.baskets.dto.AddShippingProviderDto
-import com.arconsis.presentation.http.baskets.dto.CreateShippingAddressDto
-import com.arconsis.presentation.http.baskets.dto.CreateBasketDto
+import com.arconsis.presentation.http.baskets.dto.*
 import io.smallrye.mutiny.Uni
 import java.util.*
 import javax.enterprise.context.ApplicationScoped
@@ -27,8 +24,16 @@ class BasketsResource(val basketsService: BasketsService) {
 	@Path("/{basketId}")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	fun getOrder(@PathParam("basketId") basketId: UUID): Uni<Basket?> {
+	fun getBasket(@PathParam("basketId") basketId: UUID): Uni<Basket?> {
 		return basketsService.getBasket(basketId)
+	}
+
+	@PATCH
+	@Path("/{basketId}/items")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	fun addItems(@PathParam("basketId") basketId: UUID, items: List<CreateBasketItemDto>): Uni<Basket> {
+		return basketsService.addBasketItem(basketId, items)
 	}
 
 	@POST

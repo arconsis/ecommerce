@@ -101,8 +101,8 @@ class OrdersService(
 							externalShippingProviderId = order.shippingProvider.externalShippingProviderId,
 							externalShipmentId = externalShipmentId,
 							externalShipmentLabelId = shipmentLabelId,
-							price = order.prices.shippingPrice,
-							currency = order.prices.currency,
+							price = order.pricing.shippingPrice,
+							currency = order.pricing.currency,
 							shipmentFailureReason = null
 						)
 					} else {
@@ -115,8 +115,8 @@ class OrdersService(
 							externalShippingProviderId = order.shippingProvider.externalShippingProviderId,
 							externalShipmentId = externalShipmentId,
 							externalShipmentLabelId = null,
-							price = order.prices.shippingPrice,
-							currency = order.prices.currency,
+							price = order.pricing.shippingPrice,
+							currency = order.pricing.currency,
 							shipmentFailureReason = null
 						)
 					}

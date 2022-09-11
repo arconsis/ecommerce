@@ -12,7 +12,7 @@ data class Order(
     val orderId: UUID,
     val basketId: UUID,
     val userId: UUID,
-    val prices: OrderPrices,
+    val pricing: OrderPrices,
     val status: OrderStatus,
     val items: List<OrderItem>,
     // psp ref
@@ -76,8 +76,8 @@ enum class SupportedCurrencies {
 fun Order.toCreateCheckout(pspToken: String, paymentStatus: CheckoutStatus) = CreateCheckout(
     userId = userId,
     orderId = orderId,
-    amount = prices.totalPrice,
-    currency = prices.currency,
+    amount = pricing.totalPrice,
+    currency = pricing.currency,
     paymentStatus = paymentStatus,
     paymentErrorMessage = null,
     paymentErrorCode = null,
