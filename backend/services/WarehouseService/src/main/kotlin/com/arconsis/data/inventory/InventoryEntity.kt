@@ -6,6 +6,7 @@ import com.arconsis.data.inventory.InventoryEntity.Companion.INCREASE_PRODUCT_ST
 import com.arconsis.data.inventory.InventoryEntity.Companion.PRODUCT_ID
 import com.arconsis.data.inventory.InventoryEntity.Companion.STOCK
 import com.arconsis.data.inventory.InventoryEntity.Companion.UPDATE_PRODUCT_STOCK
+import com.arconsis.data.products.ProductEntity
 import com.arconsis.domain.inventory.CreateInventory
 import com.arconsis.domain.inventory.Inventory
 import org.hibernate.annotations.CreationTimestamp
@@ -53,7 +54,8 @@ class InventoryEntity(
     @Column(name = "inventory_id")
     var inventoryId: UUID? = null,
 
-    @Column(name = "product_id", nullable = false)
+    // FK
+    @Column(name = "product_id", unique = true, insertable = false, updatable = false)
     var productId: UUID,
 
     @Column(nullable = false)
@@ -66,6 +68,10 @@ class InventoryEntity(
     @UpdateTimestamp
     @Column(name = "updated_at")
     var updatedAt: Instant? = null,
+
+    @OneToOne(cascade = [CascadeType.ALL])
+    @JoinColumn(name = "product_id", referencedColumnName = "product_id")
+    val product: ProductEntity
 ) {
     companion object {
         const val GET_BY_INVENTORY_ID = "InventoryEntity.get_by_inventory_id"
@@ -78,9 +84,10 @@ class InventoryEntity(
     }
 }
 
-fun CreateInventory.toInventoryEntity() = InventoryEntity(
+fun CreateInventory.toInventoryEntity(product: ProductEntity) = InventoryEntity(
     productId = productId,
     stock = stock,
+    product = product
 )
 
 fun InventoryEntity.toInventory() = Inventory(

@@ -41,6 +41,9 @@ class ProductsService(
 		return sessionFactory.withTransaction { session, _ ->
 			val slug = newProduct.name.toSlug()
 			val sku = RandomStringUtils.randomAlphanumeric(SKU_ID_LENGTH)
+			if (newProduct.gallery.all { !it.isPrimary }) {
+				newProduct.gallery[0].isPrimary = true
+			}
 			productsRepository.createProduct(newProduct, slug, sku, session)
 				.flatMap { product ->
 					if (newProduct.quantityInStock != null) {

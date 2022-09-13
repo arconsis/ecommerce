@@ -1,16 +1,20 @@
 package com.arconsis.data.products
 
 import com.arconsis.data.common.PostgreSQLEnumType
+import com.arconsis.data.inventory.InventoryEntity
+import com.arconsis.data.productmedia.ProductMediaEntity
 import com.arconsis.domain.orders.SupportedCurrencies
+import com.arconsis.domain.productmedia.ProductMedia
 import com.arconsis.domain.products.*
-import org.hibernate.annotations.CreationTimestamp
-import org.hibernate.annotations.Type
-import org.hibernate.annotations.TypeDef
-import org.hibernate.annotations.UpdateTimestamp
+import org.hibernate.annotations.*
 import java.math.BigDecimal
 import java.time.Instant
 import java.util.*
 import javax.persistence.*
+import javax.persistence.CascadeType
+import javax.persistence.Entity
+import javax.persistence.NamedQueries
+import javax.persistence.NamedQuery
 
 @NamedQueries(
 	NamedQuery(
@@ -18,11 +22,6 @@ import javax.persistence.*
 		query = """
             select p from products p
 			where p.productId = :productId
-        """
-	),
-	NamedQuery(
-		name = ProductEntity.LIST_COUNT,
-		query = """ select count (p.id) from  products p
         """
 	)
 )
@@ -39,7 +38,6 @@ class ProductEntity(
 	var name: String,
 	val slug: String,
 	val sku: String,
-	var thumbnail: String,
 	var description: String,
 	var price: BigDecimal,
 
@@ -72,16 +70,21 @@ class ProductEntity(
 	@UpdateTimestamp
 	@Column(name = "updated_at")
 	var updatedAt: Instant? = null,
+
+	@LazyCollection(LazyCollectionOption.FALSE)
+	@OneToMany(mappedBy = "productId", cascade = [CascadeType.ALL])
+	var gallery: MutableList<ProductMediaEntity> = mutableListOf(),
+
+	@OneToOne(mappedBy = "product")
+	val order: InventoryEntity? = null,
 ) {
 	companion object {
 		const val GET_BY_PRODUCT_ID = "ProductEntity.get_by_product_id"
-		const val LIST_COUNT = "ProductEntity.list_count"
 	}
 }
 
 fun ProductEntity.toProduct() = Product(
 	productId = productId!!,
-	thumbnail = thumbnail,
 	name = name,
 	slug = slug,
 	sku = sku,
@@ -102,11 +105,20 @@ fun ProductEntity.toProduct() = Product(
 			value = weight,
 			unit = weightUnit
 		)
-	)
+	),
+	gallery = gallery.map {
+		ProductMedia(
+			mediaId = it.mediaId!!,
+			productId = it.productId,
+			original = it.original,
+			thumbnail = it.thumbnail,
+			isPrimary = it.isPrimary,
+			type = it.type
+		)
+	}
 )
 
 fun CreateProduct.toProductEntity(slug: String, sku: String) = ProductEntity(
-	thumbnail = thumbnail,
 	name = name,
 	slug = slug,
 	sku = sku,

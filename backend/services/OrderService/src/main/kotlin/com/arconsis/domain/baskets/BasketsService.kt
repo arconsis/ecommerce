@@ -11,7 +11,6 @@ import io.smallrye.mutiny.Uni
 import org.hibernate.reactive.mutiny.Mutiny
 import java.util.*
 import javax.enterprise.context.ApplicationScoped
-import javax.ws.rs.BadRequestException
 
 @ApplicationScoped
 class BasketsService(
@@ -113,9 +112,7 @@ class BasketsService(
 		products
 			.find { it.productId == item.productId }
 			.let { product ->
-				if (product == null) {
-					throw BadRequestException("Product with id: ${item.productId} not found")
-				}
+				if (product == null) abort(BasketsFailureReason.ProductNotFound)
 				CreateBasketItem(
 					productId = item.productId,
 					price = product.price,
@@ -123,7 +120,7 @@ class BasketsService(
 					quantity = item.quantity,
 					name = product.name,
 					description = product.description,
-					thumbnail = product.thumbnail,
+					thumbnail = product.gallery.find { it.isPrimary }?.thumbnail ?: abort(BasketsFailureReason.ProductNotFound),
 					slug = product.slug,
 					sku = product.sku
 				)

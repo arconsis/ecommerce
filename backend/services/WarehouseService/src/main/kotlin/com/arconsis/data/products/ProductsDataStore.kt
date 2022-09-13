@@ -1,6 +1,7 @@
 package com.arconsis.data.products
 
 import com.arconsis.data.common.asPair
+import com.arconsis.data.productmedia.ProductMediaEntity
 import com.arconsis.domain.products.CreateProduct
 import com.arconsis.domain.products.Product
 import io.smallrye.mutiny.Uni
@@ -22,6 +23,18 @@ class ProductsDataStore(private val sessionFactory: Mutiny.SessionFactory) {
 	fun createProduct(newProduct: CreateProduct, slug: String, sku: String, session: Session): Uni<Product> {
 		val entity = newProduct.toProductEntity(slug, sku)
 		return session.persist(entity)
+			.flatMap {
+				entity.gallery = newProduct.gallery.map {
+					ProductMediaEntity(
+						productId = entity.productId!!,
+						original = it.original,
+						thumbnail = it.thumbnail,
+						isPrimary = it.isPrimary,
+						type = it.type
+					)
+				}.toMutableList()
+				session.persist(entity)
+			}
 			.map { entity.toProduct() }
 	}
 

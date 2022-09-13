@@ -1,6 +1,8 @@
 package com.arconsis.domain.products
 
 import com.arconsis.domain.orders.SupportedCurrencies
+import com.arconsis.domain.productmedia.CreateProductMedia
+import com.arconsis.domain.productmedia.ProductMedia
 import java.math.BigDecimal
 import java.util.*
 
@@ -9,7 +11,6 @@ data class Product(
 	val name: String,
 	val slug: String,
 	val sku: String,
-	val thumbnail: String,
 	val description: String,
 	val price: BigDecimal,
 	val currency: SupportedCurrencies,
@@ -17,10 +18,10 @@ data class Product(
 	val inStock: Boolean?,
 	val quantityInStock: Int?,
 	val dimensions: ProductDimensions,
+	val gallery: List<ProductMedia>
 )
 
 data class CreateProduct(
-	val thumbnail: String,
 	val name: String,
 	val description: String,
 	val price: BigDecimal,
@@ -28,6 +29,7 @@ data class CreateProduct(
 	val tags: String,
 	val dimensions: ProductDimensions,
 	val quantityInStock: Int?,
+	val gallery: List<CreateProductMedia>
 )
 
 data class ProductDimensions(
