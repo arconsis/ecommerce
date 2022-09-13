@@ -21,17 +21,18 @@ class BasketsService(
 ) {
 	fun createBasket(basketDto: CreateBasketDto): Uni<Basket> {
 		return sessionFactory.withTransaction { session, _ ->
-			val unis: List<Uni<Product>> = basketDto.items.map { item ->
-				productsRepository.getProduct(item.productId)
+			val unis: List<Uni<Product?>> = basketDto.items.map { item ->
+				productsRepository.getProduct(item.productId, session)
 			}
 			Uni.combine()
 				.all().unis<Uni<List<Product>>>(unis).combinedWith { listOfResponses: List<*> ->
 					listOfResponses.map {
-						it as Product
+						it as Product?
 					}.toList()
 				}
 				.flatMap { products ->
-					val basketItems = basketDto.items.fetchDetailsFromProduct(products)
+					if (products.any { it == null}) abort(BasketsFailureReason.ProductNotFound)
+					val basketItems = basketDto.items.fetchDetailsFromProduct(products.filterNotNull())
 					val newBasket = basketDto.toCreateBasket(basketItems)
 					basketsRepository.createBasket(newBasket, session)
 				}
@@ -82,17 +83,18 @@ class BasketsService(
 
 	fun addBasketItem(basketId: UUID, items: List<CreateBasketItemDto>): Uni<Basket> {
 		return sessionFactory.withTransaction { session, _ ->
-			val unis: List<Uni<Product>> = items.map { item ->
-				productsRepository.getProduct(item.productId)
+			val unis: List<Uni<Product?>> = items.map { item ->
+				productsRepository.getProduct(item.productId, session)
 			}
 			Uni.combine()
 				.all().unis<Uni<List<Product>>>(unis).combinedWith { listOfResponses: List<*> ->
 					listOfResponses.map {
-						it as Product
+						it as Product?
 					}.toList()
 				}
 				.flatMap { products ->
-					val basketItems = items.fetchDetailsFromProduct(products)
+					if (products.any { it == null}) abort(BasketsFailureReason.ProductNotFound)
+					val basketItems = items.fetchDetailsFromProduct(products.filterNotNull())
 					basketsRepository.addBasketItem(basketId, basketItems, session)
 				}
 				.map { areStored ->
@@ -120,7 +122,7 @@ class BasketsService(
 					quantity = item.quantity,
 					name = product.name,
 					description = product.description,
-					thumbnail = product.gallery.find { it.isPrimary }?.thumbnail ?: abort(BasketsFailureReason.ProductNotFound),
+					thumbnail = product.thumbnail,
 					slug = product.slug,
 					sku = product.sku
 				)

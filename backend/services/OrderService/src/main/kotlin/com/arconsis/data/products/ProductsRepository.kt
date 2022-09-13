@@ -1,26 +1,18 @@
 package com.arconsis.data.products
 
-import com.arconsis.common.body
-import com.arconsis.data.products.dto.ProductDto
-import com.arconsis.data.products.dto.toProduct
 import com.arconsis.domain.products.Product
 import io.smallrye.mutiny.Uni
-import org.eclipse.microprofile.rest.client.inject.RestClient
+import org.hibernate.reactive.mutiny.Mutiny.Session
 import java.util.*
 import javax.enterprise.context.ApplicationScoped
-import javax.ws.rs.BadRequestException
 
 @ApplicationScoped
-class ProductsRepository(
-	@RestClient private val productsRemoteStore: ProductsRemoteStore
-) {
+class ProductsRepository(private val productsDataStore: ProductsDataStore) {
+	fun createProduct(newProduct: Product, session: Session): Uni<Product> {
+		return productsDataStore.createProduct(newProduct, session)
+	}
 
-	fun getProduct(productId: UUID): Uni<Product> {
-		return productsRemoteStore.getProduct(productId).map {
-			when (it.status) {
-				200 -> it.body<ProductDto>()?.toProduct()
-				else -> throw BadRequestException("Product with id: $productId not found")
-			}
-		}
+	fun getProduct(productId: UUID, session: Session): Uni<Product?> {
+		return productsDataStore.getProduct(productId, session)
 	}
 }

@@ -21,6 +21,7 @@ enum class AggregateType {
     ORDER,
     SHIPMENT,
     ORDER_VALIDATION,
+    PRODUCT,
 }
 
 enum class OutboxEventType {
@@ -45,5 +46,7 @@ enum class OutboxEventType {
     SHIPMENT_DELIVERED,
     SHIPMENT_CANCELLED,
     CREATING_SHIPMENT_LABEL_FAILED,
-    SHIPMENT_DELIVERY_FAILED
+    SHIPMENT_DELIVERY_FAILED,
+    // product
+    PRODUCT_CREATED
 }

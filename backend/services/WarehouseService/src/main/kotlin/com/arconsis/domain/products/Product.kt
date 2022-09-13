@@ -1,8 +1,12 @@
 package com.arconsis.domain.products
 
 import com.arconsis.domain.orders.SupportedCurrencies
+import com.arconsis.domain.outboxevents.AggregateType
+import com.arconsis.domain.outboxevents.CreateOutboxEvent
+import com.arconsis.domain.outboxevents.OutboxEventType
 import com.arconsis.domain.productmedia.CreateProductMedia
 import com.arconsis.domain.productmedia.ProductMedia
+import com.fasterxml.jackson.databind.ObjectMapper
 import java.math.BigDecimal
 import java.util.*
 
@@ -58,3 +62,10 @@ enum class ProductSizeUnit {
 	cm,
 	m
 }
+
+fun Product.toCreateOutboxEvent(objectMapper: ObjectMapper): CreateOutboxEvent = CreateOutboxEvent(
+	aggregateType = AggregateType.PRODUCT,
+	aggregateId = this.productId,
+	type = OutboxEventType.PRODUCT_CREATED,
+	payload = objectMapper.writeValueAsString(this)
+)
