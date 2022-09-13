@@ -1,9 +1,12 @@
 package com.arconsis.data.inventory
 
+import com.arconsis.common.errors.abort
 import com.arconsis.data.inventory.InventoryEntity.Companion.PRODUCT_ID
 import com.arconsis.data.inventory.InventoryEntity.Companion.STOCK
+import com.arconsis.data.products.ProductEntity
 import com.arconsis.domain.inventory.CreateInventory
 import com.arconsis.domain.inventory.Inventory
+import com.arconsis.domain.inventory.InventoryFailureReason
 import io.smallrye.mutiny.Uni
 import org.hibernate.reactive.mutiny.Mutiny.Session
 import java.util.*
@@ -25,8 +28,9 @@ class InventoryDataStore {
 			.map { it.toInventory() }
 	}
 
-	fun createInventory(createInventory: CreateInventory, session: Session): Uni<Inventory> {
-		val inventoryEntity = createInventory.toInventoryEntity()
+	fun createInventory(createInventory: CreateInventory,session: Session): Uni<Inventory> {
+		val productEntity = session.getReference(ProductEntity::class.java, createInventory.productId) ?: abort(InventoryFailureReason.ProductNotFound)
+		val inventoryEntity = createInventory.toInventoryEntity(productEntity)
 		return session.persist(inventoryEntity)
 			.map { inventoryEntity.toInventory() }
 	}

@@ -21,12 +21,6 @@ data class Order(
 	val shippingProvider: OrderShippingProvider
 )
 
-data class Product(
-    val productId: UUID,
-    val price: BigDecimal,
-    val currency: SupportedCurrencies
-)
-
 enum class OrderStatus {
     REQUESTED,
     VALIDATED,
