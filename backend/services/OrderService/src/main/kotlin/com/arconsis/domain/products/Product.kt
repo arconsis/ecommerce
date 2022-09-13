@@ -12,16 +12,7 @@ data class Product(
 	val description: String,
 	val currency: SupportedCurrencies,
 	val price: BigDecimal,
-	val gallery: List<ProductMedia>
-)
-
-data class ProductMedia(
-	val mediaId: UUID,
-	val productId: UUID,
-	val original: String,
 	val thumbnail: String,
-	val type: ProductMediaType,
-	val isPrimary: Boolean
 )
 
 enum class ProductMediaType {
