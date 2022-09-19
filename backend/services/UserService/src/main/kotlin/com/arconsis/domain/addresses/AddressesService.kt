@@ -16,6 +16,9 @@ class AddressesService(private val addressesRepository: AddressesRepository) {
 
     fun createAddress(createAddress: CreateAddressDto, userId: UUID): Uni<Address> {
         val newAddress = createAddress.toCreateAddress(isSelected = true)
-        return addressesRepository.createAddress(newAddress, userId)
+        return addressesRepository.validateAddress(newAddress)
+            .flatMap {
+                addressesRepository.createAddress(newAddress, userId)
+            }
     }
 }

@@ -1,5 +1,8 @@
 package com.arconsis.common.errors
 
+import io.smallrye.mutiny.Uni
+import io.smallrye.mutiny.groups.UniOnTimeout
+
 class ChainAbortedException(internal val reason: FailureReason?) : RuntimeException() {
 	override fun toString(): String {
 		return "ChainAbortedException(reason = '$reason')"

@@ -38,8 +38,11 @@ class AddressEntity(
     @Column(name = "user_id")
     var userId: UUID,
 
-    @Column
-    var name: String,
+    @Column(name = "first_name")
+    var firstName: String,
+
+    @Column(name = "last_name")
+    var lastName: String,
 
     @Column
     var address: String,
