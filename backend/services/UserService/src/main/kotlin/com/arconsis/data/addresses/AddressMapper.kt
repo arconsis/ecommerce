@@ -5,7 +5,8 @@ import com.arconsis.domain.addresses.Address
 fun AddressEntity.toAddress(): Address {
     return Address(
         addressId = addressId!!,
-        name = name,
+        firstName = firstName,
+        lastName = lastName,
         address = address,
         houseNumber = houseNumber,
         countryCode = countryCode,

@@ -253,7 +253,8 @@ CREATE TYPE valid_country_code AS ENUM (
 CREATE TABLE addresses
 (
     address_id   UUID PRIMARY KEY,
-    name         VARCHAR(200)                    NOT NULL,
+    first_name   VARCHAR                         NOT NULL,
+    last_name    VARCHAR                         NOT NULL,
     address      VARCHAR(200)                    NOT NULL,
     house_number VARCHAR(200)                    NOT NULL,
     country_code VALID_COUNTRY_CODE              NOT NULL,

@@ -4,7 +4,8 @@ import java.util.*
 
 data class Address(
     val addressId: UUID,
-    val name: String,
+    val firstName: String,
+    val lastName: String,
     val address: String,
     val houseNumber: String,
     val countryCode: SupportedCountryCode,
@@ -16,7 +17,8 @@ data class Address(
 )
 
 data class CreateAddress(
-    val name: String,
+    val firstName: String,
+    val lastName: String,
     val address: String,
     val houseNumber: String,
     val countryCode: SupportedCountryCode,

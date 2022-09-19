@@ -7,7 +7,9 @@ import javax.validation.constraints.NotNull
 
 data class CreateAddressDto(
 	@field:NotBlank
-    val name: String,
+    val firstName: String,
+	@field:NotBlank
+	val lastName: String,
 	@field:NotBlank
     val address: String,
 	@field:NotBlank
@@ -25,7 +27,8 @@ data class CreateAddressDto(
 )
 
 fun CreateAddressDto.toCreateAddress(isSelected: Boolean) = CreateAddress(
-    name = name,
+    firstName = firstName,
+	lastName = lastName,
     address = address,
     houseNumber = houseNumber,
     countryCode = countryCode,
