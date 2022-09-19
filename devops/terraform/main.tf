@@ -15,7 +15,7 @@ locals {
 # VPC Configuration
 ################################################################################
 module "networking" {
-  source                        = "../../terraform/modules/network"
+  source                        = "./modules/network"
   region                        = var.aws_region
   vpc_name                      = var.vpc_name
   vpc_cidr                      = var.cidr_block
@@ -36,7 +36,7 @@ module "networking" {
 ################################################################################
 # TODO: Create different SGs for DB and Kafka
 module "private_vpc_sg" {
-  source            = "../../terraform/modules/security"
+  source            = "./modules/security"
   sg_name           = "private-vpc-security-group"
   description       = "Controls access to the private database (not internet facing) and MSK cluster"
   vpc_id            = module.networking.vpc_id
@@ -65,7 +65,7 @@ module "private_vpc_sg" {
 }
 
 module "eks_worker_sg" {
-  source                  = "../../terraform/modules/security"
+  source                  = "./modules/security"
   sg_name                 = "eks-worker-group-mgmt"
   description             = "worker group mgmt"
   vpc_id                  = module.networking.vpc_id
@@ -89,7 +89,7 @@ module "eks_worker_sg" {
 ################################################################################
 # ecommerce Database
 module "ecommerce_database" {
-  source               = "../../terraform/modules/database"
+  source               = "./modules/database"
   database_identifier  = "ecommerce-database"
   database_name        = var.ecommerce_database_name
   database_username    = var.ecommerce_database_username
@@ -108,11 +108,11 @@ resource "aws_iam_policy" "worker_policy" {
   name        = "worker-policy"
   description = "Worker policy for the ALB Ingress"
 
-  policy = file("../../terraform/templates/eks/iam-policy.json")
+  policy = file("./templates/eks/iam-policy.json")
 }
 
 module "eks" {
-  source        = "../../terraform/modules/eks"
+  source        = "./modules/eks"
   subnet_ids    = module.networking.private_subnet_ids
   vpc_id        = module.networking.vpc_id
   worker_sg_ids = [module.eks_worker_sg.security_group_id]
@@ -124,14 +124,14 @@ module "eks" {
 ################################################################################
 
 module "kafka" {
-  source                              = "../../terraform/modules/kafka"
+  source                              = "./modules/kafka"
   subnet_ids                          = module.networking.private_subnet_ids
   msk_sg_ids                          = [module.private_vpc_sg.security_group_id]
   client_broker_encryption_in_transit = "TLS_PLAINTEXT"
 }
 
 data "template_file" "users_connector_initializer" {
-  template = file("../../terraform/templates/debezium/connector.json.tpl")
+  template = file("./templates/debezium/connector.json.tpl")
   vars     = {
     database_connector_name = "${var.users_database_name}-${local.database_connector_name_suffix}"
     database_hostname       = module.ecommerce_database.db_endpoint
@@ -146,7 +146,7 @@ data "template_file" "users_connector_initializer" {
 }
 
 data "template_file" "orders_connector_initializer" {
-  template = file("../../terraform/templates/debezium/connector.json.tpl")
+  template = file("./templates/debezium/connector.json.tpl")
   vars     = {
     database_connector_name = "${var.orders_database_name}-${local.database_connector_name_suffix}"
     database_hostname       = module.ecommerce_database.db_endpoint
@@ -161,7 +161,7 @@ data "template_file" "orders_connector_initializer" {
 }
 
 data "template_file" "warehouse_connector_initializer" {
-  template = file("../../terraform/templates/debezium/connector.json.tpl")
+  template = file("./templates/debezium/connector.json.tpl")
   vars     = {
     database_connector_name = "${var.warehouse_database_name}-${local.database_connector_name_suffix}"
     database_hostname       = module.ecommerce_database.db_endpoint
@@ -176,7 +176,7 @@ data "template_file" "warehouse_connector_initializer" {
 }
 
 data "template_file" "payment_connector_initializer" {
-  template = file("../../terraform/templates/debezium/connector.json.tpl")
+  template = file("./templates/debezium/connector.json.tpl")
   vars     = {
     database_connector_name = "${var.payments_database_name}-${local.database_connector_name_suffix}"
     database_hostname       = module.ecommerce_database.db_endpoint
