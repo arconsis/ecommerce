@@ -280,7 +280,6 @@ resource "aws_cognito_user_pool" "ecommerce-auth-pool" {
 }
 
 resource "aws_cognito_user_pool_client" "ecommerce_client" {
-  name = "ecommerce_client"
-
+  name = var.ecommerce_cognito_client_name
   user_pool_id = aws_cognito_user_pool.ecommerce-auth-pool.id
 }

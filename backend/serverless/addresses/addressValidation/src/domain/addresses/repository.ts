@@ -1,5 +1,5 @@
-import { IAddressValidationRequest } from "../../presentation/functions/dto/IAddressValidationRequest";
+import { IAddressValidationRequest } from '../../presentation/functions/dto/IAddressValidationRequest';
 
 export interface IAddressesRepository {
-    validateAddress(address: IAddressValidationRequest): Promise<Boolean>;
+  validateAddress(address: IAddressValidationRequest): Promise<Boolean>;
 }

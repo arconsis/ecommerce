@@ -205,3 +205,9 @@ variable "ecommerce_cognito_pool_name" {
   type        = string
   default     = "ecommerce_cognito_pool"
 }
+
+variable "ecommerce_cognito_client_name" {
+  description = "Cognito client name"
+  type        = string
+  default     = "ecommerce_client"
+}
