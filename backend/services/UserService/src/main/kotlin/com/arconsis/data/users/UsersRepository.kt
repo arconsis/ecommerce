@@ -12,13 +12,12 @@ import javax.enterprise.context.ApplicationScoped
 class UsersRepository(private val sessionFactory: Mutiny.SessionFactory) {
 
     fun createUser(userCreate: UserCreate, session: Mutiny.Session): Uni<User> {
-        val password = BcryptUtil.bcryptHash(userCreate.password)
         val userEntity = UserEntity(
             firstName = userCreate.firstName,
             lastName = userCreate.lastName,
             email = userCreate.email,
-            password = password,
             username = userCreate.username,
+            sub = userCreate.sub
         )
         return session.persist(userEntity)
             .map { userEntity.toUser() }

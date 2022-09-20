@@ -4,9 +4,9 @@
   "description": "Lambda used to validate user address",
   "main": "index.js",
   "scripts": {
-    "build": "tsc && cd ../ && sam build AddressValidation --no-cached",
+    "build": "tsc && cd ../.. && sam build AddressValidation --no-cached",
     "watch": "tsc -w",
-    "invokeLocal": "tsc && cd ../ && sam build AddressValidation --no-cached && sam local invoke AddressValidation --env-vars ./addressValidation/.local.env.json -e ./addressValidation/event.json",
+    "invokeLocal": "tsc && cd ../.. && sam build AddressValidation --no-cached && sam local invoke AddressValidation --env-vars ./addresses/addressValidation/.local.env.json -e ./addresses/addressValidation/event.json",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Dimos Botsaris <botsaris.d@gmail.com>",

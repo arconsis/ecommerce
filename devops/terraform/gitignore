@@ -34,4 +34,6 @@ override.tf.json
 .terraformrc
 terraform.rc
 
+builds
+
 devops/aws/serverless/builds/**/*

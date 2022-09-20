@@ -1,0 +1,24 @@
+{
+  "name": "postregistration",
+  "version": "1.0.0",
+  "description": "Lambda used to register user on our db",
+  "main": "index.js",
+  "scripts": {
+    "build": "cd ../.. && sam build PostRegistration --no-cached",
+    "invokeLocal": "cd ../.. && sam build PostRegistration --no-cached && sam local invoke PostRegistration --env-vars ./auth/postRegistration/.local.env.json -e ./auth/postRegistration/event.json",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Dimos Botsaris <botsaris.d@gmail.com>",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.27.2",
+    "dotenv": "^16.0.2",
+    "moment": "^2.29.4"
+  },
+  "devDependencies": {
+    "aws-sdk": "^2.1189.0",
+    "eslint": "^8.7.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.25.4"
+  }
+}

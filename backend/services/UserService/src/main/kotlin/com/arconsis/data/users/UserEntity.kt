@@ -22,12 +22,11 @@ class UserEntity(
     @Column
     var email: String,
 
-    @Password
-    @Column
-    var password: String,
-
     @Column
     var username: String,
+
+    @Column
+    var sub: String,
 
     @Column(name = "created_at")
     var createdAt: Instant? = null,

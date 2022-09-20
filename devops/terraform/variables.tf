@@ -3,7 +3,7 @@
 ################################################################################
 variable "aws_region" {
   description = "The AWS region things are created in"
-  default     = "eu-west-1"
+  default     = "eu-west-2"
 }
 
 variable "aws_profile" {
@@ -197,4 +197,11 @@ variable "database_parameters" {
   description = "DB parameters"
   type        = list(map(string))
   default     = []
+}
+
+# cognito
+variable "ecommerce_cognito_pool_name" {
+  description = "Cognito pool name"
+  type        = string
+  default     = "ecommerce_cognito_pool"
 }
