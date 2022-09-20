@@ -1,9 +1,9 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: >
-  address-validation-lambda
+  cognito-lambdas
 
-  Validate user address
+  Amazon Cognito User Pool and lambdas
 
 Parameters:
   SHIPPO_API_TOKEN:
@@ -12,12 +12,19 @@ Parameters:
   STAGE:
     Description: Required. Stage for lambda
     Type: String
+  USERS_API_URL:
+    Description: Required. Users api url
+    Type: String
+  UserPoolName:
+    Type: String
+    Description: The name you want the User Pool to be created with
+    Default: 'LocalUserPoolName'
 
 Resources:
   AddressValidation:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
-      CodeUri: addressValidation/
+      CodeUri: addresses/addressValidation/
       Handler: dist/presentation/functions/app.lambdaHandler
       Runtime: nodejs16.x
       MemorySize: 512
@@ -33,6 +40,70 @@ Resources:
             Path: /address/validation
             Method: post
 
+  PostConfirmantion:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: auth/postConfirmation/
+      Handler: src/presentation/functions/app.handler
+      Runtime: nodejs16.x
+      MemorySize: 512
+      Timeout: 60
+      Environment:
+        Variables:
+          USERS_API_URL: !Ref USERS_API_URL
+          STAGE: !Ref STAGE
+
+  UserPool:
+    Type: "AWS::Cognito::UserPool"
+    Properties:
+      UserPoolName: !Ref UserPoolName
+      Schema:
+        - Name: firstName
+          AttributeDataType: String
+          Mutable: true
+          Required: true
+        - Name: lastName
+          AttributeDataType: String
+          Mutable: true
+          Required: true
+        - Name: userName
+          AttributeDataType: String
+          Mutable: true
+          Required: true
+        - Name: email
+          AttributeDataType: String
+          Mutable: true
+          Required: true
+      Policies:
+        PasswordPolicy:
+          MinimumLength: 8
+          RequireLowercase: true
+          RequireNumbers: true
+          RequireSymbols: true
+          RequireUppercase: true
+      UsernameAttributes:
+        - username
+      MfaConfiguration: "OFF"
+      LambdaConfig:
+        PostRegistration: !GetAtt PostRegistration.Arn
+
+  PostRegistrationInvocationPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !GetAtt PostRegistration.Arn
+      Principal: cognito-idp.amazonaws.com
+      SourceArn: !GetAtt UserPool.Arn
+
+  UserPoolClient:
+    Type: "AWS::Cognito::UserPoolClient"
+    Properties:
+      ClientName: ecommerce-local
+      GenerateSecret: false
+      UserPoolId: !Ref UserPool
+      ExplicitAuthFlows:
+        - ALLOW_USER_PASSWORD_AUTH
+
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
   # Find out more about other implicit resources you can reference within SAM
@@ -40,3 +111,9 @@ Outputs:
   AddressValidationApi:
     Description: "API Gateway endpoint URL for Prod stage for Address Validation function"
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/address/"
+  UserPoolId:
+    Description: ID of the User Pool
+    Value: !Ref UserPool
+  UserPoolClientId:
+    Description: ID of the User Pool Client
+    Value: !Ref UserPoolClient

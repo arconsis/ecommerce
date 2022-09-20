@@ -6,6 +6,7 @@ CREATE TABLE users
     email      VARCHAR NOT NULL,
     password   VARCHAR NOT NULL,
     username   VARCHAR NOT NULL,
+    sub        VARCHAR UNIQUE NOT NULL,
     created_at TIMESTAMP,
     updated_at TIMESTAMP
 

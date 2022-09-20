@@ -189,3 +189,97 @@ data "template_file" "payment_connector_initializer" {
     slot_name               = var.payments_slot_name
   }
 }
+
+module "post_confirmation" {
+  source = "terraform-aws-modules/lambda/aws"
+
+  function_name = "postConfirmation"
+  description   = "Lambda used to register user on our db"
+  handler       = "src/presentation/functions/app.handler"
+  runtime       = "nodejs16.x"
+  publish       = true
+  timeout       = 60
+
+  source_path = "../../backend/serverless/auth/postConfirmation"
+
+  store_on_s3 = true
+  s3_bucket   = "bucket-with-lambda-builds"
+
+  attach_dead_letter_policy = false
+
+  environment_variables = {
+    USERS_API_URL = "xxx"
+  }
+
+  allowed_triggers = {
+    cognito = {
+      principal  = "cognito-idp.amazonaws.com"
+      source_arn = aws_cognito_user_pool.ecommerce-auth-pool.arn
+    }
+  }
+}
+
+resource "aws_cognito_user_pool" "ecommerce-auth-pool" {
+  name                     = var.ecommerce_cognito_pool_name
+  mfa_configuration        = "OFF"
+  auto_verified_attributes = ["email"]
+  username_attributes      = ["email"]
+
+  schema {
+    attribute_data_type = "String"
+    mutable             = true
+    name                = "firstName"
+    required            = false
+    string_attribute_constraints {
+      min_length = 1
+      max_length = 256
+    }
+  }
+  schema {
+    attribute_data_type = "String"
+    mutable             = true
+    name                = "lastName"
+    required            = false
+    string_attribute_constraints {
+      min_length = 1
+      max_length = 256
+    }
+  }
+  schema {
+    attribute_data_type = "String"
+    mutable             = true
+    name                = "username"
+    required            = false
+    string_attribute_constraints {
+      min_length = 1
+      max_length = 256
+    }
+  }
+  schema {
+    attribute_data_type = "String"
+    mutable             = true
+    name                = "email"
+    required            = true
+    string_attribute_constraints {
+      min_length = 1
+      max_length = 256
+    }
+  }
+
+  password_policy {
+    minimum_length    = "8"
+    require_lowercase = true
+    require_numbers   = true
+    require_symbols   = true
+    require_uppercase = true
+  }
+
+  lambda_config {
+    post_confirmation = module.post_confirmation.lambda_function_arn
+  }
+}
+
+resource "aws_cognito_user_pool_client" "ecommerce_client" {
+  name = var.ecommerce_cognito_client_name
+  user_pool_id = aws_cognito_user_pool.ecommerce-auth-pool.id
+}

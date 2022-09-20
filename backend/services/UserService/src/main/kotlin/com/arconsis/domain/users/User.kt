@@ -13,7 +13,8 @@ data class User(
     val lastName: String,
     val email: String,
     val username: String,
-    val addresses: List<Address>
+    val addresses: List<Address>,
+    val sub: String
 )
 
 fun User.toCreateOutboxEvent(objectMapper: ObjectMapper): CreateOutboxEvent = CreateOutboxEvent(

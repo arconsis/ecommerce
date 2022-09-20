@@ -10,6 +10,7 @@ fun UserEntity.toUser(): User {
         lastName = lastName,
         email = email,
         username = username,
+        sub = sub,
         addresses = addressEntities.map {
             it.toAddress()
         }

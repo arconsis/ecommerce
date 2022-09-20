@@ -12,7 +12,7 @@ data class UserCreate(
     @Email
     val email: String,
     @NotBlank
-    val password: String,
-    @NotBlank
     val username: String,
+    @NotBlank
+    val sub: String,
 )
