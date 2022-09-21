@@ -1,3 +1,10 @@
+################################################################################
+################################################################################
+################################################################################
+# GENERAL CONFIGURATION
+################################################################################
+################################################################################
+################################################################################
 provider "aws" {
   shared_credentials_files = ["$HOME/.aws/credentials"]
   profile                  = var.aws_profile
@@ -11,8 +18,23 @@ locals {
   database_connector_name_suffix = "database-connector"
 }
 
+# Sendgrid Secrets
+resource "aws_secretsmanager_secret" "shippo_api_token_secret_manager" {
+  name                    = "shippo_api_token"
+  recovery_window_in_days = 0
+}
+
+resource "aws_secretsmanager_secret_version" "shippo_api_token_secret_version" {
+  secret_id     = aws_secretsmanager_secret.shippo_api_token_secret_manager.id
+  secret_string = var.shippo_api_token
+}
+
+################################################################################
+################################################################################
 ################################################################################
 # VPC Configuration
+################################################################################
+################################################################################
 ################################################################################
 module "networking" {
   source                        = "./modules/network"
@@ -32,7 +54,11 @@ module "networking" {
 }
 
 ################################################################################
+################################################################################
+################################################################################
 # SG Configuration
+################################################################################
+################################################################################
 ################################################################################
 # TODO: Create different SGs for DB and Kafka
 module "private_vpc_sg" {
@@ -85,9 +111,12 @@ module "eks_worker_sg" {
 }
 
 ################################################################################
+################################################################################
+################################################################################
 # Database Configuration
 ################################################################################
-# ecommerce Database
+################################################################################
+################################################################################
 module "ecommerce_database" {
   source               = "./modules/database"
   database_identifier  = "ecommerce-database"
@@ -101,9 +130,12 @@ module "ecommerce_database" {
 }
 
 ################################################################################
+################################################################################
+################################################################################
 # EKS Configuration
 ################################################################################
-
+################################################################################
+################################################################################
 resource "aws_iam_policy" "worker_policy" {
   name        = "worker-policy"
   description = "Worker policy for the ALB Ingress"
@@ -120,9 +152,12 @@ module "eks" {
 }
 
 ################################################################################
-# Kafka Configuration
 ################################################################################
-
+################################################################################
+# KAFKA Configuration
+################################################################################
+################################################################################
+################################################################################
 module "kafka" {
   source                              = "./modules/kafka"
   subnet_ids                          = module.networking.private_subnet_ids
@@ -190,6 +225,13 @@ data "template_file" "payment_connector_initializer" {
   }
 }
 
+################################################################################
+################################################################################
+################################################################################
+# LAMBDAS
+################################################################################
+################################################################################
+################################################################################
 module "post_confirmation" {
   source = "terraform-aws-modules/lambda/aws"
 
@@ -219,6 +261,105 @@ module "post_confirmation" {
   }
 }
 
+
+module "address_validation" {
+  source = "terraform-aws-modules/lambda/aws"
+
+  function_name = "validateAddress"
+  description   = "Lambda used to validate user address"
+  handler       = "dist/presentation/functions/app.lambdaHandler"
+  runtime       = "nodejs16.x"
+  publish       = true
+  timeout       = 60
+
+  source_path = "../../backend/serverless/addresses/addressValidation"
+
+  store_on_s3 = true
+  s3_bucket   = "bucket-with-lambda-builds"
+
+  vpc_subnet_ids         = module.networking.private_subnet_ids
+  vpc_security_group_ids = [module.private_vpc_sg.security_group_id]
+  attach_network_policy = true
+
+  allowed_triggers = {
+    AllowExecutionFromAPIGateway = {
+      service    = "apigateway"
+      source_arn = "${module.api_gateway.apigatewayv2_api_execution_arn}/*/*/*"
+    }
+  }
+
+  attach_dead_letter_policy = false
+
+  attach_policy_statements = true
+  policy_statements = {
+    secrets_manager_get_value = {
+      effect  = "Allow",
+      actions = ["secretsmanager:GetSecretValue"],
+      resources = [
+        aws_secretsmanager_secret.shippo_api_token_secret_manager.arn
+      ]
+    }
+  }
+
+  # TODO: get SHIPPO_API_TOKEN from aws_secretsmanager_secret
+  environment_variables = {
+    SHIPPO_API_TOKEN = var.shippo_api_token
+  }
+}
+
+################################################################################
+################################################################################
+################################################################################
+# API GW CONFIGURATION
+################################################################################
+################################################################################
+################################################################################
+module "api_gateway" {
+  source = "terraform-aws-modules/apigateway-v2/aws"
+
+  name          = "main-GW-${var.environment}"
+  description   = "HTTP API Gateway"
+  protocol_type = "HTTP"
+
+  cors_configuration = {
+    allow_headers = ["content-type", "x-amz-date", "authorization", "x-api-key", "x-amz-security-token", "x-amz-user-agent"]
+    allow_methods = ["*"]
+    allow_origins = ["*"]
+  }
+
+  create_api_domain_name = false
+  # Routes and integrations
+  integrations = {
+    # Auth
+    "POST /address/validation" = {
+      lambda_arn             = module.address_validation.lambda_function_invoke_arn
+      payload_format_version = "2.0"
+      timeout_milliseconds   = 12000
+      # TODO: check if we need an authorizer for calling address validation
+    }
+  }
+
+  api_key_selection_expression = "$request.header.x-api-key"
+
+  tags = {
+    Name = "http-apigateway"
+  }
+}
+
+resource "aws_iam_role" "invocation_role" {
+  name = "api_gateway_auth_invocation"
+  path = "/"
+
+  assume_role_policy = file("./templates/policies/api_gateway_auth_invocation.json.tpl")
+}
+
+################################################################################
+################################################################################
+################################################################################
+# COGNITO POOL
+################################################################################
+################################################################################
+################################################################################
 resource "aws_cognito_user_pool" "ecommerce-auth-pool" {
   name                     = var.ecommerce_cognito_pool_name
   mfa_configuration        = "OFF"

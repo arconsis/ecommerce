@@ -29,7 +29,7 @@ variable "default_tags" {
 ################################################################################
 variable "vpc_name" {
   description = "The name of the VPC. Other names will result from this."
-  default     = "ms-vpc"
+  default     = "ecommerce-vpc"
 }
 
 variable "public_subnet_count" {
@@ -210,4 +210,11 @@ variable "ecommerce_cognito_client_name" {
   description = "Cognito client name"
   type        = string
   default     = "ecommerce_client"
+}
+
+# shippo
+variable "shippo_api_token" {
+  description = "Shippo api token"
+  type        = string
+  sensitive   = true
 }
