@@ -76,7 +76,7 @@ class ProductEntity(
 	var gallery: MutableList<ProductMediaEntity> = mutableListOf(),
 
 	@OneToOne(mappedBy = "product")
-	val order: InventoryEntity? = null,
+	val inventory: InventoryEntity? = null,
 ) {
 	companion object {
 		const val GET_BY_PRODUCT_ID = "ProductEntity.get_by_product_id"
@@ -92,8 +92,8 @@ fun ProductEntity.toProduct() = Product(
 	price = price,
 	currency = currency,
 	tags = tags,
-	inStock = null,
-	quantityInStock = 0,
+	inStock = inventory?.stock != null && inventory?.stock!! > 0,
+	quantityInStock = inventory?.stock,
 	dimensions = ProductDimensions(
 		size = ProductSize(
 			width = width,

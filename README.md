@@ -18,6 +18,11 @@ and then run the cmd:
 docker-compose up --build
 ```
 
+```shell
+nginx
+nginx -s stop
+```
+
 2. Navigate from root path to **serverless** folder:
 
 ```shell
