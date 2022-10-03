@@ -22,4 +22,8 @@ class OrdersRepository(private val ordersDataStore: OrdersDataStore) {
     fun getOrder(orderId: UUID, session: Mutiny.Session): Uni<Order> {
         return ordersDataStore.getOrder(orderId, session)
     }
+
+    fun listOrders(userId: UUID, search: String?, limit: Int, offset: Int): Uni<Pair<List<Order>, Int>> {
+        return ordersDataStore.listOrders(userId, search, limit, offset)
+    }
 }

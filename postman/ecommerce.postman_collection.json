@@ -216,6 +216,33 @@
                 }
               },
               "response": []
+            },
+            {
+              "name": "List user orders",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{orders-host}}/orders?userId=6c238c87-de42-4c69-86fe-fda1cd2ce5d2&search=status:PAID",
+                  "host": [
+                    "{{orders-host}}"
+                  ],
+                  "path": [
+                    "orders"
+                  ],
+                  "query": [
+                    {
+                      "key": "userId",
+                      "value": "6c238c87-de42-4c69-86fe-fda1cd2ce5d2"
+                    },
+                    {
+                      "key": "search",
+                      "value": "status:PAID"
+                    }
+                  ]
+                }
+              },
+              "response": []
             }
           ]
         },
