@@ -1,4 +1,4 @@
-package com.arconsis.presentation.http.orders.dto
+package com.arconsis.presentation.http.orders.dto.request
 
 import com.arconsis.domain.orders.CreateOrder
 import com.arconsis.domain.orders.OrderPaymentMethodType

@@ -7,8 +7,8 @@ import com.arconsis.data.baskets.BasketsRepository
 import com.arconsis.data.orders.OrdersRepository
 import com.arconsis.data.outboxevents.OutboxEventsRepository
 import com.arconsis.domain.baskets.toOrderItem
-import com.arconsis.presentation.http.orders.dto.CreateOrderDto
-import com.arconsis.presentation.http.orders.dto.toCreateOrder
+import com.arconsis.presentation.http.orders.dto.request.CreateOrderDto
+import com.arconsis.presentation.http.orders.dto.request.toCreateOrder
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.smallrye.mutiny.Uni
 import org.hibernate.reactive.mutiny.Mutiny
@@ -52,5 +52,9 @@ class OrdersService(
 		return sessionFactory.withTransaction { session, _ ->
 			ordersRepository.getOrder(orderId, session)
 		}
+	}
+
+	fun listOrders(userId: UUID, search: String?, limit: Int, offset: Int): Uni<Pair<List<Order>, Int>> {
+		return ordersRepository.listOrders(userId, search, limit, offset)
 	}
 }
