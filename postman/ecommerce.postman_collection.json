@@ -460,6 +460,37 @@
               "response": []
             },
             {
+              "name": "Get user by sub",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"firstName\": \"dimos\",\n    \"lastName\": \"botsaris\",\n    \"email\": \"test@gmail.com\",\n    \"password\": \"secret\",\n    \"username\": \"tester\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{users-host}}/users/sub/123",
+                  "host": [
+                    "{{users-host}}"
+                  ],
+                  "path": [
+                    "users",
+                    "sub",
+                    "123"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
               "name": "Create user address",
               "request": {
                 "method": "POST",

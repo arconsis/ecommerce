@@ -23,10 +23,19 @@ class UsersRepository(private val sessionFactory: Mutiny.SessionFactory) {
             .map { userEntity.toUser() }
     }
 
-    fun getUser(userId: UUID): Uni<User> {
+    fun getUser(userId: UUID): Uni<User?> {
         return sessionFactory.withTransaction { s, _ ->
             s.find(UserEntity::class.java, userId)
-                .map { userEntity -> userEntity.toUser() }
+                .map { userEntity -> userEntity?.toUser() }
+        }
+    }
+
+    fun getUserBySub(sub: String): Uni<User?> {
+        return sessionFactory.withTransaction { s, _ ->
+            s.createNamedQuery<UserEntity>(UserEntity.GET_USER_BY_SUB)
+                .setParameter("sub", sub)
+                .singleResultOrNull
+                .map { userEntity -> userEntity?.toUser() }
         }
     }
 }

@@ -1,12 +1,20 @@
 package com.arconsis.data.users
 
 import com.arconsis.data.addresses.AddressEntity
-import io.quarkus.security.jpa.Password
 import java.time.Instant
 import java.util.*
 import javax.persistence.*
 
 @Entity(name = "users")
+@NamedQueries(
+    NamedQuery(
+        name = UserEntity.GET_USER_BY_SUB,
+        query = """
+			select us from users us
+			where us.sub = :sub
+		"""
+    ),
+)
 class UserEntity(
     @Id
     @GeneratedValue
@@ -25,7 +33,7 @@ class UserEntity(
     @Column
     var username: String,
 
-    @Column
+    @Column(unique = true)
     var sub: String,
 
     @Column(name = "created_at")
@@ -36,4 +44,8 @@ class UserEntity(
 
     @OneToMany(mappedBy = "userId", cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
     var addressEntities: MutableList<AddressEntity> = mutableListOf()
-)
+) {
+    companion object {
+        const val GET_USER_BY_SUB = "GET_USER_BY_SUB"
+    }
+}
