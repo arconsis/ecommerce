@@ -24,8 +24,12 @@ class UsersService(
         }
     }
 
-    fun getUser(userId: UUID): Uni<User> {
+    fun getUser(userId: UUID): Uni<User?> {
         return usersRepository.getUser(userId)
+    }
+
+    fun getUserBySub(sub: String): Uni<User?> {
+        return usersRepository.getUserBySub(sub)
     }
 
     private fun Uni<User>.createOutboxEvent(session: Mutiny.Session) = flatMap { user ->

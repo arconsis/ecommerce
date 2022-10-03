@@ -32,8 +32,16 @@ class UserResource(
 	@Path("/{userId}")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	fun getUser(@PathParam("userId") userId: UUID): Uni<User> {
+	fun getUser(@PathParam("userId") userId: UUID): Uni<User?> {
 		return usersService.getUser(userId)
+	}
+
+	@GET
+	@Path("/sub/{subId}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	fun getUserBySub(@PathParam("subId") sub: String): Uni<User?> {
+		return usersService.getUserBySub(sub)
 	}
 
 	@GET
