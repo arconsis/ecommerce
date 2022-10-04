@@ -4,9 +4,18 @@ In this project we have build an complete ecommerce platform using *event driven
 
 ## Quick start ##
 
-You can use Docker and SAM to start the apps locally you have to run the following cmds. 
+You can use Docker and localstack to start the apps locally. Try to run the following cmds. 
 
-1. Navigate from root path to **services** folder:
+1. Run nginx to be used as reverse proxy and entry point for client:
+
+```shell
+nginx
+nginx -s stop
+```
+
+You can find the config at /backend/services/reverse-proxy.conf
+
+2. Navigate from root path to **services** folder:
 
 ```shell
 cd backend/services/
@@ -18,22 +27,19 @@ and then run the cmd:
 docker-compose up --build
 ```
 
-```shell
-nginx
-nginx -s stop
-```
-
-2. Navigate from root path to **serverless** folder:
+3. Navigate from root path to **devops** folder:
 
 ```shell
-cd backend/serverless/
+cd devops/terraform/local
 ```
 
-and
+and run the following cmd to start localstack, which will setup AWS cognito, AWS Lambdas and AWS API GW locally.
 
+```shell
+tflocal init
+tflocal apply
 ```
-sam local start-api --env-vars ./addressValidation/.local.env.json
-```
+Then use the terraform output variables to setup the client + ADDRESS_VALIDATION_URL.
 
 #### Kubernetes setup
 

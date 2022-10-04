@@ -228,6 +228,20 @@ data "template_file" "payment_connector_initializer" {
 ################################################################################
 ################################################################################
 ################################################################################
+# S3
+################################################################################
+################################################################################
+################################################################################
+module "s3_bucket" {
+  source = "terraform-aws-modules/s3-bucket/aws"
+
+  bucket        = "bucket-with-lambda-builds"
+  force_destroy = true
+}
+
+################################################################################
+################################################################################
+################################################################################
 # LAMBDAS
 ################################################################################
 ################################################################################
@@ -245,7 +259,7 @@ module "post_confirmation" {
   source_path = "../../backend/serverless/auth/postConfirmation"
 
   store_on_s3 = true
-  s3_bucket   = "bucket-with-lambda-builds"
+  s3_bucket   = module.s3_bucket.s3_bucket_id
 
   attach_dead_letter_policy = false
 
@@ -256,7 +270,7 @@ module "post_confirmation" {
   allowed_triggers = {
     cognito = {
       principal  = "cognito-idp.amazonaws.com"
-      source_arn = aws_cognito_user_pool.ecommerce-auth-pool.arn
+      source_arn = aws_cognito_user_pool.ecommerce_auth_pool.arn
     }
   }
 }
@@ -275,7 +289,7 @@ module "address_validation" {
   source_path = "../../backend/serverless/addresses/addressValidation"
 
   store_on_s3 = true
-  s3_bucket   = "bucket-with-lambda-builds"
+  s3_bucket   = module.s3_bucket.s3_bucket_id
 
   vpc_subnet_ids         = module.networking.private_subnet_ids
   vpc_security_group_ids = [module.private_vpc_sg.security_group_id]
@@ -360,7 +374,7 @@ resource "aws_iam_role" "invocation_role" {
 ################################################################################
 ################################################################################
 ################################################################################
-resource "aws_cognito_user_pool" "ecommerce-auth-pool" {
+resource "aws_cognito_user_pool" "ecommerce_auth_pool" {
   name                     = var.ecommerce_cognito_pool_name
   mfa_configuration        = "OFF"
   auto_verified_attributes = ["email"]
@@ -422,5 +436,5 @@ resource "aws_cognito_user_pool" "ecommerce-auth-pool" {
 
 resource "aws_cognito_user_pool_client" "ecommerce_client" {
   name = var.ecommerce_cognito_client_name
-  user_pool_id = aws_cognito_user_pool.ecommerce-auth-pool.id
+  user_pool_id = aws_cognito_user_pool.ecommerce_auth_pool.id
 }
