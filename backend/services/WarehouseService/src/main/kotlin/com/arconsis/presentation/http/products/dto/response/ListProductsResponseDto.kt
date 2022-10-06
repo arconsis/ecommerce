@@ -4,7 +4,7 @@ import com.arconsis.domain.products.Product
 import com.fasterxml.jackson.annotation.JsonProperty
 
 data class ListProductsResponseDto(
-	@JsonProperty("products") val products: List<Product>,
+	@JsonProperty("data") val data: List<Product>,
 	@JsonProperty("pagination") val pagination: ListProductsPaginationResponseDto
 )
 
