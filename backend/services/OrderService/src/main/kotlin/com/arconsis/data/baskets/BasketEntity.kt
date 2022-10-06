@@ -43,7 +43,7 @@ import javax.persistence.NamedQuery
 		name = UPDATE_BASKET_SHIPPING_PROVIDER,
 		query = """
             update baskets b
-            set b.shippingProviderName = :shippingProviderName, b.externalShippingProviderId = :externalShippingProviderId, b.shippingPrice = :shippingPrice, b.carrierAccount = :carrierAccount, b.totalPrice = :shippingPrice + b.totalPrice
+            set b.shippingProviderName = :shippingProviderName, b.externalShippingProviderId = :externalShippingProviderId, b.shippingPrice = :shippingPrice, b.carrierAccount = :carrierAccount, b.totalPrice = :shippingPrice + b.totalPrice - b.shippingPrice
             where b.basketId = :basketId
         """
 	),

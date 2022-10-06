@@ -128,7 +128,8 @@ fun OrderEntity.toOrder() = Order(
         price = shippingPrice,
         currency = currency,
         carrierAccount = carrierAccount
-    )
+    ),
+    createdAt = createdAt
 )
 
 fun CreateOrder.toOrderEntity(status: OrderStatus, basket: BasketEntity) = OrderEntity(

@@ -6,6 +6,7 @@ import com.arconsis.domain.outboxevents.CreateOutboxEvent
 import com.arconsis.domain.outboxevents.OutboxEventType
 import com.fasterxml.jackson.databind.ObjectMapper
 import java.math.BigDecimal
+import java.time.Instant
 import java.util.*
 
 data class Order(
@@ -21,7 +22,8 @@ data class Order(
 	val shippingAddress: ShippingAddress,
 	val billingAddress: ShippingAddress,
 	// shippingProvider
-	val shippingProvider: OrderShippingProvider
+	val shippingProvider: OrderShippingProvider,
+	val createdAt: Instant? = null
 )
 
 data class OrderItem(

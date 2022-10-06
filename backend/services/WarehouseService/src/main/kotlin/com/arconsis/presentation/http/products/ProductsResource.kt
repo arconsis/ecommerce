@@ -22,12 +22,16 @@ class ProductsResource(val productsService: ProductsService) {
 
 	@GET
 	@Path("/")
-	fun listProducts(@QueryParam("offset") offset: Int?, @QueryParam("limit") limit: Int?, @QueryParam("search") search: String?): Uni<ListProductsResponseDto> {
+	fun listProducts(
+		@QueryParam("offset") offset: Int?,
+		@QueryParam("limit") limit: Int?,
+		@QueryParam("search") search: String?
+	): Uni<ListProductsResponseDto> {
 		val (queryOffset, queryLimit) = getPaginationSize(offset, limit)
 		return productsService.listProducts(queryOffset, queryLimit, search)
 			.map { (products, total) ->
 				ListProductsResponseDto(
-					products = products,
+					data = products,
 					pagination = ListProductsPaginationResponseDto(
 						offset = queryOffset,
 						limit = queryLimit,
