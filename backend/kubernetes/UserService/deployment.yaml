@@ -16,7 +16,7 @@ spec:
         name: user-app
     spec:
       containers:
-      - name: user-eda
+      - name: user-ecommerce
         imagePullPolicy: Always
         image: eldimious/user-ecommerce:latest
         ports:
@@ -33,31 +33,31 @@ spec:
           - name: POSTGRES_HOST
             valueFrom:
               configMapKeyRef:
-                name: eda-configmap
+                name: ecommerce-configmap
                 key: POSTGRES_HOST
           - name: POSTGRES_PORT
             valueFrom:
               configMapKeyRef:
-                name: eda-configmap
+                name: ecommerce-configmap
                 key: POSTGRES_PORT
           - name: POSTGRES_DB
             valueFrom:
               configMapKeyRef:
-                name: eda-configmap
+                name: ecommerce-configmap
                 key: USERS_POSTGRES_DB
           - name: KAFKA_BROKERS
             valueFrom:
               configMapKeyRef:
-                name: eda-configmap
+                name: ecommerce-configmap
                 key: KAFKA_BROKERS
           - name: POSTGRES_USER
             valueFrom:
               secretKeyRef:
-                name: eda-secrets
+                name: ecommerce-secrets
                 key: POSTGRES_USER
           - name: POSTGRES_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: eda-secrets
+                name: ecommerce-secrets
                 key: POSTGRES_PASSWORD
             
