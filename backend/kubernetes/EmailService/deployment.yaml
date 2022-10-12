@@ -16,7 +16,7 @@ spec:
         name: email-app
     spec:
       containers:
-      - name: email-eda
+      - name: email-ecommerce
         imagePullPolicy: Always
         image: eldimious/email-ecommerce:latest
         ports:
@@ -33,20 +33,20 @@ spec:
           - name: USERS_SERVICE_URL
             valueFrom:
               configMapKeyRef:
-                name: eda-configmap
+                name: ecommerce-configmap
                 key: USERS_SERVICE_URL
           - name: KAFKA_BROKERS
             valueFrom:
               configMapKeyRef:
-                name: eda-configmap
+                name: ecommerce-configmap
                 key: KAFKA_BROKERS
           - name: QUARKUS_MAILGUN_DOMAIN_NAME
             valueFrom:
               configMapKeyRef:
-                name: eda-configmap
+                name: ecommerce-configmap
                 key: QUARKUS_MAILGUN_DOMAIN_NAME
           - name: QUARKUS_MAILGUN_API_KEY
             valueFrom:
               secretKeyRef:
-                name: eda-secrets
+                name: ecommerce-secrets
                 key: QUARKUS_MAILGUN_API_KEY

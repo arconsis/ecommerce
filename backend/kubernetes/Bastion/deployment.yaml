@@ -16,7 +16,7 @@ spec:
         app: bastion
     spec:
       containers:
-        - name: bastion-eda
+        - name: bastion-ecommerce
           imagePullPolicy: Always
           image: eldimious/bastion-ecommerce:latest
           ports:
@@ -33,22 +33,22 @@ spec:
             - name: PORT
               valueFrom:
                 configMapKeyRef:
-                  name: eda-configmap
+                  name: ecommerce-configmap
                   key: BASTION_PORT
             - name: DEBEZIUM_HOST
               valueFrom:
                 configMapKeyRef:
-                  name: eda-configmap
+                  name: ecommerce-configmap
                   key: DEBEZIUM_HOST
             - name: DATABASE_URL
               valueFrom:
                 secretKeyRef:
-                  name: eda-secrets
+                  name: ecommerce-secrets
                   key: DATABASE_URL
             - name: BOOTSTRAP_SERVERS
               valueFrom:
                 configMapKeyRef:
-                  name: eda-configmap
+                  name: ecommerce-configmap
                   key: KAFKA_BROKERS
             - name: SECURITY_PROTOCOL
               value: "SSL"

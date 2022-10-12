@@ -33,27 +33,27 @@ spec:
             - name: BOOTSTRAP_SERVERS
               valueFrom:
                 configMapKeyRef:
-                  name: eda-configmap
+                  name: ecommerce-configmap
                   key: KAFKA_BROKERS_PLAINTEXT
             - name: GROUP_ID
               valueFrom:
                 configMapKeyRef:
-                  name: eda-configmap
+                  name: ecommerce-configmap
                   key: GROUP_ID
             - name: CONFIG_STORAGE_TOPIC
               valueFrom:
                 configMapKeyRef:
-                  name: eda-configmap
+                  name: ecommerce-configmap
                   key: CONFIG_STORAGE_TOPIC
             - name: OFFSET_STORAGE_TOPIC
               valueFrom:
                 configMapKeyRef:
-                  name: eda-configmap
+                  name: ecommerce-configmap
                   key: OFFSET_STORAGE_TOPIC
             - name: STATUS_STORAGE_TOPIC
               valueFrom:
                 configMapKeyRef:
-                  name: eda-configmap
+                  name: ecommerce-configmap
                   key: STATUS_STORAGE_TOPIC
             - name: CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR
               value: "3"
